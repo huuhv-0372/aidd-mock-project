@@ -1,0 +1,28 @@
+{
+  "task": "F001 Countdown Prelaunch Screen — countdown UI + site-wide navigation-lock gate",
+  "acceptanceCriteria": [
+    ".env.example documents the env var",
+    "countdown-unit.tsx renders padded 2-digit value + label",
+    "countdown-screen.tsx ticks every second, clamps at 0, clears interval on unmount",
+    "Title reads VI/EN from NEXT_LOCALE cookie",
+    "app/page.tsx wires the env var through",
+    "npm run build passes",
+    "middleware created with the matcher excluding static assets",
+    "Redirect fires for any non-/ path before target time",
+    "No redirect fires for any path at/after target time (including / itself)",
+    "Malformed/missing env var fails open (no redirect) rather than crashing"
+  ],
+  "touchpoints": [
+    "app/page.tsx",
+    "app/countdown/countdown-screen.tsx",
+    "app/countdown/countdown-unit.tsx",
+    "app/countdown/countdown-time.ts",
+    "proxy.ts",
+    ".env.example",
+    "public/countdown/background.png",
+    ".gitignore",
+    "docs/code-standards.md"
+  ],
+  "blastRadius": "proxy.ts gates every route in the app (site-wide, every visitor); countdown UI changes are scoped to the / route only.",
+  "contracts": "None external — proxy.ts/middleware is Next.js's own file convention, not a project-defined API contract."
+}

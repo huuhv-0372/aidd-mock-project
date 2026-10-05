@@ -26,6 +26,12 @@ Bộ nguyên tắc nền tảng cho toàn bộ codebase. Mọi thay đổi code 
 - Route Handlers (`app/**/route.ts`) chỉ xử lý một trách nhiệm; validate input trước khi
   dùng, trả lỗi với status code đúng ngữ nghĩa.
 - Metadata khai báo qua `generateMetadata`/`metadata` export, không chèn thẻ `<head>` thủ công.
+- Next.js 16 đổi tên `middleware.ts` thành **`proxy.ts`** (cùng thư mục gốc project, cạnh
+  `app/`) — chức năng giữ nguyên, chỉ đổi tên file/convention. Dùng `proxy.ts`, không tạo lại
+  `middleware.ts`.
+- Biến môi trường tiền tố **`NEXT_PUBLIC_`** sẽ bị inline vào bundle client — chỉ dùng cho giá
+  trị không nhạy cảm (ví dụ mốc thời gian, feature flag hiển thị công khai). Secret/API key/
+  credential luôn để không tiền tố, chỉ đọc ở server (xem mục 6 — Secrets management).
 
 ## 3. Cloudflare Workers (khi triển khai lên Cloudflare)
 
@@ -82,7 +88,7 @@ Bộ nguyên tắc nền tảng cho toàn bộ codebase. Mọi thay đổi code 
 - **CSRF/SSRF**: validate và allowlist mọi URL được fetch từ input động; Route Handler nhận
   state-changing request nên kiểm tra origin/method phù hợp.
 - **Security Misconfiguration**: không bật debug/verbose error ra production response; set
-  security headers cơ bản (CSP, X-Frame-Options, v.v.) ở tầng Next.js config/middleware khi
+  security headers cơ bản (CSP, X-Frame-Options, v.v.) ở tầng Next.js config/`proxy.ts` khi
   phù hợp.
 - **Vulnerable Dependencies**: theo dõi advisory của dependency chính (Next.js, React,
   Supabase client) và cập nhật khi có bản vá bảo mật.

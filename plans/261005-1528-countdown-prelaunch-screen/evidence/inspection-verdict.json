@@ -1,0 +1,59 @@
+{
+  "score": 9.5,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    ".env.example documents the env var — present, documents NEXT_PUBLIC_EVENT_START_AT with format/timezone/fallback",
+    "countdown-unit.tsx renders padded 2-digit value + label — confirmed via code read",
+    "countdown-screen.tsx ticks every second, clamps at 0, clears interval on unmount — confirmed via code read and build",
+    "Title reads VI/EN from NEXT_LOCALE cookie — confirmed, now via a validated allowlist",
+    "app/page.tsx wires the env var through — confirmed",
+    "npm run build passes — confirmed, final clean run",
+    "middleware created with the matcher excluding static assets — confirmed, proxy.ts matcher excludes _next/static, _next/image, favicon.ico, static extensions",
+    "Redirect fires for any non-/ path before target time — confirmed via tester manual trace",
+    "No redirect fires for any path at/after target time (including / itself) — confirmed via tester manual trace",
+    "Malformed/missing env var fails open (no redirect) rather than crashing — confirmed via code read (NaN-safe check) and reviewer verification"
+  ],
+  "regressionChecked": [
+    "Full npm run build covers the entire app surface (only route in the repo); no other features exist yet to regress against"
+  ],
+  "contractStatus": "N/A - no external API contracts in this feature",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "critical",
+      "category": "correctness",
+      "location": "app/countdown/countdown-screen.tsx:71",
+      "summary": "NEXT_LOCALE cookie value could reach a plain-object lookup via the prototype chain, crashing the mandatory landing page.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "high",
+      "category": "correctness",
+      "location": "app/countdown/countdown-screen.tsx:53-54",
+      "summary": "Server and client independently recomputed time-left, risking a hydration mismatch at a minute boundary.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "high",
+      "category": "correctness",
+      "location": "app/countdown/countdown-unit.tsx:13",
+      "summary": "Days value not clamped to the documented 00-99 range.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "medium",
+      "category": "delivery",
+      "location": ".gitignore:34",
+      "summary": ".env.example was silently excluded from git by the blanket .env* ignore rule.",
+      "disposition": "Accept"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": true
+  }
+}

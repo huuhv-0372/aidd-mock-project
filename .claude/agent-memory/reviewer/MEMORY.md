@@ -1,0 +1,2 @@
+- [aidd-mock-project .env.example gitignore trap](project_aidd-mock-project-env-gitignore.md) — blanket `.env*` ignore silently drops new `.env.example` docs
+- [aidd-mock-project countdown proxy.ts site gate](project_aidd-mock-project-countdown-proxy-gate.md) — F001's proxy.ts gates every route; future routes/i18n cookie lookups must be checked against it
