@@ -1,0 +1,9 @@
+{
+  "$schema": "./schemas/tkm-config.schema.json",
+  "takumi": {
+    "sddMode": "on"
+  },
+  "locale": {
+    "responseLanguage": "vi"
+  }
+}

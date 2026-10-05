@@ -1,0 +1,29 @@
+{
+  "name": "takumi-kit-extras",
+  "version": "1.1.0",
+  "description": "Extras agent kit for Claude Code — extension kit installed alongside takumi-kit-engineer.",
+  "buildDate": "2026-09-28T08:59:30.498Z",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sun-asterisk-internal/takumi-extras.git"
+  },
+  "telemetry_endpoint": "https://agent-kit.sun-asterisk.ai/api",
+  "deletions": [
+    "agents/jp-project-manager.md",
+    "references/kpi-insight/kpi-insight-kpi-reference.md",
+    "references/kpi-insight/kpi-insight-mcp-config.json",
+    "references/kpi-insight/kpi-insight-mcp-connection.md",
+    "rules/function-breakdown.md",
+    "rules/project-layout.md",
+    "rules/wbs-task-breakdown.md",
+    "skills/ba-brain-storming/SKILL.md",
+    "skills/ba-brain-storming/references/selection-modes.md",
+    "skills/ba-brain-storming/references/skeletons.md",
+    "skills/ba-brain-storming/references/techniques.md"
+  ],
+  "download": {
+    "lastDownloadedAt": null,
+    "downloadedBy": null,
+    "installCount": 0
+  }
+}

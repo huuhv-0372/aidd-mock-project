@@ -1,0 +1,1 @@
+- [Next16 docs blocked + env ignore](project-nextjs16-docs-blocked-and-env-ignore.md) — tkmignore blocks next/dist/docs; `.env*` swallows example files; F001 plan location

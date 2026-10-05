@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "2.0",
+  "scoringModel": "standard-work-point",
+  "scoringModelVersion": "swp-matrix-v2",
+  "run": {
+    "sourceFamily": "github", "sourceLabel": "Hostile fixture </script>",
+    "sourceUrl": "https://github.com/orgs/example/projects/1", "project": "1", "period": null,
+    "generatedAt": "2026-08-25T00:00:00Z", "calibrationStatus": "skipped"
+  },
+  "issues": [{
+    "sourceType": "github", "issueRef": "demo/hostile#1", "url": "javascript:alert(1)",
+    "title": "</script><img src=x onerror=alert(1)> & Unicode separator github_pat_abcdefghijklmnopqrstuvwxyz123456",
+    "body": "Authorization: Bearer never-embed-this", "labels": ["hostile"], "project": "1", "period": null,
+    "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+    "primaryDiscipline": "Unknown", "workType": "other", "scopeSignature": ["single-component"], "complexitySignature": ["routine"],
+    "initialScope": 1, "initialComplexity": 0, "initialSWP": 1, "finalScope": 1, "finalComplexity": 0, "finalSWP": 1,
+    "confidence": "low", "evidenceStatus": "AMBIGUOUS", "rationale": "Treat <b>markup</b> and </script> as text.",
+    "assumptions": ["Quote: \" & apostrophe '"], "gaps": [], "supportingEvidence": [], "splitRecommended": false, "splitReason": null,
+    "calibration": {"isRepresentative": true, "selectionReasons": ["all-issues"], "approvedScope": null, "approvedComplexity": null, "issueSpecific": false, "matchedRuleId": null, "scopeBandDelta": 0, "complexityBandDelta": 0, "saturated": false, "status": "skipped"}
+  }],
+  "parents": [],
+  "representatives": [{"sourceType": "github", "issueRef": "demo/hostile#1", "selectionReasons": ["all-issues"]}],
+  "corrections": [], "calibrationRules": [], "caveats": ["No external assets & no executable markup."]
+}

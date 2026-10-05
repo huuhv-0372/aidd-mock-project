@@ -1,0 +1,53 @@
+{
+  "1": [
+    "株式会社テストクライアント",
+    "○○株式会社 御中",
+    "2026.03.01"
+  ],
+  "2": [
+    "AGENDA",
+    "システムの概要 — System Overview システムの導入のメリット — Advantage of system introduction 提案の要諦 — The essence of the proposal Sun*のスコープ — Sun*'s Scope お見積りの前提条件 — Estimated Assumptions システム構成図の提案 — System Architecture 想定成果物 — The Expected Output 実施スケジュール — Implementation Schedule 費用 — Cost",
+    "開発費用 — Development Cost インフラコスト — Infra Cost"
+  ],
+  "3": [
+    "System Overview",
+    "システムの概要"
+  ],
+  "4": [
+    "System Overview ｜ プロジェクト背景・目的",
+    "現状の課題",
+    "現状の課題があります。",
+    "目的・実現したいこと",
+    "目的はこれです。",
+    "プロジェクト背景・目的",
+    "現状の課題"
+  ],
+  "5": [
+    "System Overview ｜ 機能一覧",
+    "機能一覧",
+    "機能の説明文です。"
+  ],
+  "6": [
+    "Appendix ｜ 機能一覧表",
+    "機能一覧表"
+  ],
+  "7": [
+    "Advantage of system introduction",
+    "システムの導入のメリット"
+  ],
+  "8": [
+    "システム導入のメリット — Advantages",
+    "Advantage of system introduction ｜ システム導入のメリット — Advantages",
+    "導入効果",
+    "効果の説明。"
+  ],
+  "9": [
+    "Cost",
+    "費用"
+  ],
+  "10": [
+    "費用の概要です。",
+    "開発費用",
+    "Cost ｜ 費用 — Cost"
+  ]
+}

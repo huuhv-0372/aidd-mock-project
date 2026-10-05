@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "momorph": {
+      "type": "http",
+      "url": "https://mcp.momorph.ai/mcp",
+      "headers": {
+        "x-github-token": "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"
+      }
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ],
+      "env": {}
+    }
+  }
+}

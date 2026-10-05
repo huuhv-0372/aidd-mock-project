@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "2.0",
+  "scoringModel": "standard-work-point",
+  "scoringModelVersion": "swp-matrix-v2",
+  "run": {
+    "sourceFamily": "github",
+    "sourceLabel": "Synthetic Sun Estimate corpus",
+    "sourceUrl": "https://github.com/orgs/example/projects/1",
+    "project": "1",
+    "period": null,
+    "generatedAt": "2026-08-25T00:00:00Z",
+    "calibrationStatus": "pending"
+  },
+  "issues": [
+    {
+      "sourceType": "github", "issueRef": "demo/app#1", "url": "https://github.com/demo/app/issues/1",
+      "title": "Update static UI copy", "body": "Change one localized label.", "labels": ["ui"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "UI", "workType": "feature", "scopeSignature": ["single-component"], "complexitySignature": ["routine"],
+      "initialScope": 1, "initialComplexity": 0, "initialSWP": 1, "finalScope": 1, "finalComplexity": 0, "finalSWP": 1,
+      "confidence": "high", "evidenceStatus": "EXTRACTED", "rationale": "One bounded UI copy change with routine implementation.",
+      "assumptions": [], "gaps": [], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/app#2", "url": "https://github.com/demo/app/issues/2",
+      "title": "Add client-side form validation", "body": "Validate three fields and show inline errors.", "labels": ["ui"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["title", "body"], "notes": []},
+      "primaryDiscipline": "UI", "workType": "feature", "scopeSignature": ["single-component"], "complexitySignature": ["stateful"],
+      "initialScope": 2, "initialComplexity": 1, "initialSWP": 3, "finalScope": 2, "finalComplexity": 1, "finalSWP": 3,
+      "confidence": "high", "evidenceStatus": "EXTRACTED", "rationale": "One form component with bounded validation state.",
+      "assumptions": [], "gaps": [], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/api#3", "url": "https://github.com/demo/api/issues/3",
+      "title": "Add account preference API", "body": "Add handler, service and validation for preferences.", "labels": ["api"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "API", "workType": "feature", "scopeSignature": ["multi-component"], "complexitySignature": ["stateful"],
+      "initialScope": 2, "initialComplexity": 2, "initialSWP": 3, "finalScope": 2, "finalComplexity": 2, "finalSWP": 3,
+      "confidence": "high", "evidenceStatus": "EXTRACTED", "rationale": "Several API modules with bounded state rules.",
+      "assumptions": [], "gaps": [], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/api#4", "url": "https://github.com/demo/api/issues/4",
+      "title": "Add notification preference API", "body": "Add handler, service and validation for notifications.", "labels": ["api"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "API", "workType": "feature", "scopeSignature": ["multi-component"], "complexitySignature": ["stateful"],
+      "initialScope": 2, "initialComplexity": 2, "initialSWP": 3, "finalScope": 2, "finalComplexity": 2, "finalSWP": 3,
+      "confidence": "high", "evidenceStatus": "EXTRACTED", "rationale": "Same structural API cohort as the account preference change.",
+      "assumptions": [], "gaps": [], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/worker#5", "url": "https://github.com/demo/worker/issues/5",
+      "title": "Retry failed background deliveries", "body": "Add exponential retry and idempotency state.", "labels": ["backend"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "API", "workType": "feature", "scopeSignature": ["single-component"], "complexitySignature": ["stateful", "concurrency"],
+      "initialScope": 2, "initialComplexity": 5, "initialSWP": 6, "finalScope": 2, "finalComplexity": 5, "finalSWP": 6,
+      "confidence": "medium", "evidenceStatus": "INFERRED", "rationale": "A bounded worker with concurrent retry and idempotency behavior.",
+      "assumptions": ["Existing queue supports delayed retry"], "gaps": [], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/app#6", "url": "https://github.com/demo/app/issues/6",
+      "title": "Add account settings across UI and API", "body": "Add page, endpoint and persistence mapping.", "labels": ["full-stack"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "Integration", "workType": "feature", "scopeSignature": ["multi-component", "cross-layer"], "complexitySignature": ["stateful"],
+      "initialScope": 5, "initialComplexity": 2, "initialSWP": 8, "finalScope": 5, "finalComplexity": 2, "finalSWP": 8,
+      "confidence": "high", "evidenceStatus": "EXTRACTED", "rationale": "A cross-layer user flow touches UI, API and persistence mapping.",
+      "assumptions": [], "gaps": [], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/integration#7", "url": "https://github.com/demo/integration/issues/7",
+      "title": "Integrate external payment status", "body": "Consume signed callbacks and reconcile status.", "labels": ["integration"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "Integration", "workType": "feature", "scopeSignature": ["cross-system"], "complexitySignature": ["stateful", "external-integration", "operational-safety"],
+      "initialScope": 3, "initialComplexity": 5, "initialSWP": 9, "finalScope": 3, "finalComplexity": 5, "finalSWP": 9,
+      "confidence": "medium", "evidenceStatus": "EXTRACTED", "rationale": "Cross-system callbacks require state reconciliation and safe operations.",
+      "assumptions": [], "gaps": ["Provider retry limits need confirmation"], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/data#8", "url": "https://github.com/demo/data/issues/8",
+      "title": "Backfill normalized customer keys", "body": "Migrate keys and backfill existing rows without downtime.", "labels": ["database"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "Migration", "workType": "migration", "scopeSignature": ["multi-component", "data-migration"], "complexitySignature": ["migration", "operational-safety"],
+      "initialScope": 5, "initialComplexity": 5, "initialSWP": 15, "finalScope": 5, "finalComplexity": 5, "finalSWP": 15,
+      "confidence": "medium", "evidenceStatus": "EXTRACTED", "rationale": "Schema and data backfill require online migration safety.",
+      "assumptions": [], "gaps": ["Production row count is not stated"], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/legacy#9", "url": "https://github.com/demo/legacy/issues/9",
+      "title": "Fix intermittent legacy sync", "body": null, "labels": ["bug"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "metadata-only", "fields": ["title"], "notes": ["Issue body unavailable"]},
+      "primaryDiscipline": "Bugfix", "workType": "bugfix", "scopeSignature": ["single-component"], "complexitySignature": ["legacy-unknown"],
+      "initialScope": 1, "initialComplexity": 3, "initialSWP": 2, "finalScope": 1, "finalComplexity": 3, "finalSWP": 2,
+      "confidence": "low", "evidenceStatus": "AMBIGUOUS", "rationale": "The title limits scope to legacy sync but implementation behavior is inherently unknown.",
+      "assumptions": [], "gaps": ["No reproduction steps or body"], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/qa#10", "url": "https://github.com/demo/qa/issues/10",
+      "title": "Design regression matrix for checkout", "body": "Cover web, mobile and three payment methods.", "labels": ["qa"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "QA", "workType": "test-design", "scopeSignature": ["qa-matrix"], "complexitySignature": ["routine"],
+      "initialScope": 5, "initialComplexity": 1, "initialSWP": 6, "finalScope": 5, "finalComplexity": 1, "finalSWP": 6,
+      "confidence": "high", "evidenceStatus": "EXTRACTED", "rationale": "The QA matrix spans multiple clients and payment paths with routine test design.",
+      "assumptions": [], "gaps": [], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/release#11", "url": "https://github.com/demo/release/issues/11",
+      "title": "Coordinate multi-service rollout", "body": "Roll out four services with compatibility gates and rollback.", "labels": ["deployment"], "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "Deploy", "workType": "deployment", "scopeSignature": ["cross-repository", "release-wide"], "complexitySignature": ["operational-safety"],
+      "initialScope": 8, "initialComplexity": 5, "initialSWP": 24, "finalScope": 8, "finalComplexity": 5, "finalSWP": 24,
+      "confidence": "medium", "evidenceStatus": "EXTRACTED", "rationale": "A release-wide rollout spans repositories and requires safe rollback gates.",
+      "assumptions": [], "gaps": [], "supportingEvidence": [], "splitRecommended": false, "splitReason": null
+    },
+    {
+      "sourceType": "github", "issueRef": "demo/platform#12", "url": "https://github.com/demo/platform/issues/12",
+      "title": "Rebuild the shared identity platform", "body": "Replace identity across repositories, migrate data and roll out independently deliverable clients.", "labels": ["platform"], "issueType": "task", "project": "1", "period": null,
+      "provenance": {"retrievedVia": "fixture", "detailStatus": "full", "fields": ["body", "title"], "notes": []},
+      "primaryDiscipline": "Integration", "workType": "feature", "scopeSignature": ["multi-component", "cross-repository", "cross-system", "data-migration", "release-wide"], "complexitySignature": ["stateful", "migration", "external-integration", "operational-safety"],
+      "initialScope": 13, "initialComplexity": 8, "initialSWP": 65, "finalScope": 13, "finalComplexity": 8, "finalSWP": 65,
+      "confidence": "medium", "evidenceStatus": "EXTRACTED", "rationale": "The issue exceeds a single delivery unit across systems, migration and rollout.",
+      "assumptions": [], "gaps": [], "supportingEvidence": [], "splitRecommended": true, "splitReason": "Clients and migration phases can be delivered independently."
+    }
+  ],
+  "parents": [],
+  "representatives": [],
+  "corrections": [],
+  "calibrationRules": [],
+  "caveats": []
+}

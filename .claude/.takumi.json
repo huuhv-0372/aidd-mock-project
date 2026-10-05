@@ -1,0 +1,18 @@
+{
+  "kits": {
+    "Core": {
+      "installedSettings": {
+        "hooks": [],
+        "mcpServers": []
+      }
+    },
+    "Takumi Extras": {
+      "installedSettings": {
+        "hooks": [
+          "node $HOME/.claude/hooks/iac-routing-guard.cjs"
+        ],
+        "mcpServers": []
+      }
+    }
+  }
+}

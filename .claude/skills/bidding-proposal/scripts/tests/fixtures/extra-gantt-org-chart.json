@@ -1,0 +1,20 @@
+[
+  {"layout": "gantt", "title": "全体スケジュール案", "anchor_section": "project_background", "legend": true,
+   "rows": [
+     {"task": "P1 要件定義", "owner": "sun", "start": "2026/12", "end": "2027/03"},
+     {"task": "業務規程・別表の提供", "owner": "貴社", "start": "2026/12", "end": "2026/12"},
+     {"task": "要件レビュー・承認", "owner": "client", "start": "2027/03", "end": "2027/03"},
+     {"task": "P1 開発・テスト", "owner": "Sun*", "start": "2027/02", "end": "2027/08"},
+     {"task": "受入テスト（UAT）", "owner": "client", "start": "2027/08", "end": "2027/08"},
+     {"task": "P1 移行・並行運用", "owner": "sun", "start": "2027/09", "end": "2027/11"},
+     {"task": "P2 開発・テスト", "owner": "次フェーズ", "start": "2027/09", "end": "2027/11"}
+   ],
+   "milestones": [{"label": "▲要件定義完了", "at": "2027/03"}, {"label": "★P1稼働", "at": "2027/09"}, {"label": "★P2リリース", "at": "2027/11"}]},
+  {"layout": "org_chart", "title": "プロジェクト体制（要件定義）", "anchor_section": "project_background",
+   "lead": "要件定義フェーズにおいて想定している体制図および各メンバーの役割は、以下の通りです。",
+   "lanes": [
+     {"title": "貴社", "accent": "gold", "nodes": [{"label": "専務取締役", "sub": "最終意思決定"}, {"label": "業務部長", "sub": "窓口・承認"}, {"label": "現場担当", "sub": "業務ヒアリング"}]},
+     {"title": "Sun*（ベトナム・日本語対応）", "accent": "red", "nodes": [{"label": "PSM", "sub": "全体管理・定例"}, {"label": "Lead BrSE", "sub": "要件定義"}, {"label": "Communicator", "sub": "翻訳・議事録"}, {"label": "Lead Designer・Designer", "sub": "WF・画面設計書"}, {"label": "Lead SE", "sub": "DB/API設計"}, {"label": "Lead FE・Lead QA・Infra", "sub": "UI基盤・テスト計画・環境"}]}
+   ],
+   "roles": [{"name": "PSM", "desc": "全体管理・定例・意思決定支援"}, {"name": "Lead BrSE", "desc": "要件定義・仕様確認・設計書レビュー"}, {"name": "Communicator", "desc": "日越翻訳・議事録"}, {"name": "Lead Designer / Designer", "desc": "デザインシステム・WF・画面設計書"}, {"name": "Lead SE", "desc": "アーキテクチャ・DB/API設計"}, {"name": "Lead FE", "desc": "フロント設計・UI基盤"}, {"name": "Lead QA", "desc": "テスト計画・実機検証計画"}, {"name": "Infra Engineer", "desc": "3環境構築・CI/CD・監視"}]}
+]

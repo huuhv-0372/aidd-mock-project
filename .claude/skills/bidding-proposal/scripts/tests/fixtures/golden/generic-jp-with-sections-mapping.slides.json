@@ -1,0 +1,79 @@
+{
+  "1": [
+    "東京物流株式会社",
+    "○○株式会社 御中",
+    "2026.03.15"
+  ],
+  "2": [
+    "AGENDA",
+    "本システムの全体像 — Solution Overview 導入効果 — Expected Impact ご提案方針 — Our Approach 前提事項 — Preconditions 構成案 — Architecture 開発工程 — Delivery Plan お見積り — Pricing"
+  ],
+  "3": [
+    "Solution Overview",
+    "本システムの全体像"
+  ],
+  "4": [
+    "Solution Overview ｜ 現行業務の課題と狙い",
+    "現状の課題",
+    "紙とExcelによる受発注管理が属人化しています。",
+    "目的・実現したいこと",
+    "在庫と受注をひとつの基盤に統合することが狙いです。",
+    "現行業務の課題と狙い",
+    "現状の課題"
+  ],
+  "5": [
+    "Solution Overview ｜ 提供機能の一覧",
+    "提供機能の一覧",
+    "主要機能は以下の通りです。"
+  ],
+  "6": [
+    "Expected Impact",
+    "導入効果"
+  ],
+  "7": [
+    "導入効果",
+    "Expected Impact ｜ 導入効果",
+    "生産性",
+    "入力工数を6割削減",
+    "品質",
+    "転記ミスの解消"
+  ],
+  "8": [
+    "Preconditions",
+    "前提事項"
+  ],
+  "9": [
+    "前提事項",
+    "Preconditions｜ 前提事項"
+  ],
+  "10": [
+    "Architecture",
+    "構成案"
+  ],
+  "11": [
+    "© 2025 Sun* Inc. | 株式会社 Sun Asterisk",
+    "インフラ構成",
+    "Architecture ｜ 構成案"
+  ],
+  "12": [
+    "Delivery Plan",
+    "開発工程"
+  ],
+  "13": [
+    "2026年4月着手、9月稼働を想定しています。",
+    "Sun*",
+    "貴社",
+    "次フェーズ",
+    "その他",
+    "開発工程",
+    "Delivery Plan ｜ 開発工程"
+  ],
+  "14": [
+    "Pricing",
+    "お見積り"
+  ],
+  "15": [
+    "開発費用",
+    "Pricing ｜ お見積り"
+  ]
+}

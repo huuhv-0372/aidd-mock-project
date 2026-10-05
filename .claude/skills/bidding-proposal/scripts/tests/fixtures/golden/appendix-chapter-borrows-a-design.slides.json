@@ -1,0 +1,54 @@
+{
+  "1": [
+    "Northwind Robotics",
+    "2026.05.04"
+  ],
+  "2": [
+    "AGENDA",
+    "System Overview Ways of Working Cost"
+  ],
+  "3": [
+    "System Overview",
+    "System Overview"
+  ],
+  "4": [
+    "System Overview ｜ Project Background",
+    "Current Issues",
+    "Northwind runs three warehouse sites on a scheduling tool built in 2014.",
+    "Objectives",
+    "Project Background",
+    "Current Issues"
+  ],
+  "5": [
+    "Ways of Working",
+    "Ways of Working"
+  ],
+  "6": [
+    "Ways of Working",
+    "Appendix ｜ Ways of Working",
+    "One Team, Two Timezones",
+    "Engineers sit in Da Nang and Osaka.",
+    "Standups run at the overlap hour, and every decision is written down before it is acted on.",
+    "Trunk-Based Delivery",
+    "Every change lands on main behind a flag.",
+    "Releases are a config switch, not an event.",
+    "Evidence Over Opinion",
+    "Each sprint closes with measured numbers.",
+    "Nothing is reported as done without a run that proves it.",
+    "Handover From Day One",
+    "Documentation is written as the code is written.",
+    "The client's own team can take the system over at any point.",
+    "01",
+    "02",
+    "03",
+    "04"
+  ],
+  "7": [
+    "Cost",
+    "Cost"
+  ],
+  "8": [
+    "Cost Summary — Supplementary",
+    "Cost ｜ Cost"
+  ]
+}

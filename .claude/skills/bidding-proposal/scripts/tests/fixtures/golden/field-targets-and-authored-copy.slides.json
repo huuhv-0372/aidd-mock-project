@@ -1,0 +1,41 @@
+{
+  "1": [
+    "Meridian Wearables",
+    "2026.06.01"
+  ],
+  "2": [
+    "AGENDA",
+    "System Overview Schedule"
+  ],
+  "3": [
+    "System Overview",
+    "System Overview"
+  ],
+  "4": [
+    "Appendix ｜ 1.1. Project Background",
+    "1.1. Project Background",
+    "Meridian is building a wellness ring with several on-device sensors. The ring produces high-throughput data, well above what a typical consumer wearable emits, and no companion application exists to receive it yet. This build is for internal verification only and will not be published."
+  ],
+  "5": [
+    "System Overview ｜ Current Challenges",
+    "Current Issues",
+    "Integration unverified Throughput pipeline Wellness positioning Hardware timeline Algorithms on the server Consumer release later",
+    "Objectives",
+    "The purpose of the application is to test the hardware and confirm the ring functions correctly. Concrete success indicators: Data from all ring sensors reaches the application without loss. Connectivity stays stable under realistic daily usage. Every algorithm receives correct input and returns the expected output.",
+    "Current Challenges",
+    "Current Issues"
+  ],
+  "6": [
+    "Schedule",
+    "Schedule"
+  ],
+  "7": [
+    "Requirements locked by end of month one Closed beta build ready for the hardware milestone",
+    "Sun*",
+    "Client",
+    "Next Phase",
+    "Other",
+    "Schedule",
+    "Schedule ｜ Schedule"
+  ]
+}
