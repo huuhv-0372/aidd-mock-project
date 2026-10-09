@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "statusLine": {
     "type": "command",
-    "command": "tkm statusline",
+    "command": "tkm-windows-x64 statusline",
     "padding": 0
   },
   "hooks": {
@@ -17,47 +17,8 @@
           },
           {
             "type": "command",
-            "command": "tkm hook-exec --hook extension.skill --event pre-tool-use -a claude",
+            "command": "tkm-windows-x64 hook-exec --hook extension.skill --event pre-tool-use -a claude",
             "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|Glob|Grep|Read|Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook guard.jailbreak --event pre-tool-use -a claude",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook guard.breadth-scout --event pre-tool-use -a claude",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook guard.secret-read --event pre-tool-use -a claude",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook convention.descriptive-name --event pre-tool-use -a claude",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook metrics.record --event pre-tool-use -a claude",
-            "timeout": 15
           }
         ]
       },
@@ -95,22 +56,51 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Bash|Glob|Grep|Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook guard.jailbreak --event pre-tool-use -a claude",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook guard.breadth-scout --event pre-tool-use -a claude",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook guard.secret-read --event pre-tool-use -a claude",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook convention.descriptive-name --event pre-tool-use -a claude",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook metrics.record --event pre-tool-use -a claude",
+            "timeout": 15
+          }
+        ]
       }
     ],
     "SessionStart": [
       {
         "matcher": "startup|resume|clear|compact",
         "hooks": [
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook session.init --event session-start -a claude",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook metrics.record --event session-start -a claude",
-            "timeout": 15
-          },
           {
             "type": "command",
             "command": "tkm hook-exec --eval hooks/graph-reindex-sync.cjs --project --event session-start -a claude",
@@ -130,6 +120,16 @@
             "type": "command",
             "command": "tkm hook-exec --eval hooks/takumi-bootstrap.cjs --project --event session-start -a claude",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook session.init --event session-start -a claude",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook metrics.record --event session-start -a claude",
+            "timeout": 15
           }
         ]
       },
@@ -137,7 +137,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "tkm hook-exec --hook perf.usage-cache --event session-start -a claude",
+            "command": "tkm-windows-x64 hook-exec --hook perf.usage-cache --event session-start -a claude",
             "timeout": 15
           }
         ]
@@ -147,44 +147,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "tkm hook-exec --hook session.activity --event session-start -a claude",
-            "timeout": 15
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook session.prompt-context --event user-prompt-submit -a claude",
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook metrics.record --event user-prompt-submit -a claude",
-            "timeout": 15
-          },
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook perf.usage-cache --event user-prompt-submit -a claude",
+            "command": "tkm-windows-x64 hook-exec --hook session.activity --event session-start -a claude",
             "timeout": 15
           }
         ]
       }
     ],
     "SubagentStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook session.subagent-init --event subagent-start -a claude",
-            "timeout": 10
-          }
-        ]
-      },
       {
         "hooks": [
           {
@@ -193,14 +162,13 @@
             "timeout": 10
           }
         ]
-      }
-    ],
-    "PreCompact": [
+      },
       {
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "tkm hook-exec --hook session.wip-checkpoint --event pre-compact -a claude",
+            "command": "tkm-windows-x64 hook-exec --hook session.subagent-init --event subagent-start -a claude",
             "timeout": 10
           }
         ]
@@ -212,17 +180,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "tkm hook-exec --hook convention.quality-gate --event post-tool-use -a claude",
-            "timeout": 10
-          },
-          {
-            "type": "command",
             "command": "tkm hook-exec --eval hooks/plan-format-kanban.cjs --project --event post-tool-use -a claude",
             "timeout": 10
           },
           {
             "type": "command",
             "command": "tkm hook-exec --eval hooks/post-edit-simplify-reminder.cjs --project --event post-tool-use -a claude",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook convention.quality-gate --event post-tool-use -a claude",
             "timeout": 10
           }
         ]
@@ -231,12 +199,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "tkm hook-exec --hook metrics.record --event post-tool-use -a claude",
+            "command": "tkm-windows-x64 hook-exec --hook metrics.record --event post-tool-use -a claude",
             "timeout": 15
           },
           {
             "type": "command",
-            "command": "tkm hook-exec --hook perf.usage-cache --event post-tool-use -a claude",
+            "command": "tkm-windows-x64 hook-exec --hook perf.usage-cache --event post-tool-use -a claude",
             "timeout": 15
           }
         ]
@@ -246,7 +214,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "tkm hook-exec --hook session.activity --event post-tool-use -a claude",
+            "command": "tkm-windows-x64 hook-exec --hook session.activity --event post-tool-use -a claude",
             "timeout": 15
           }
         ]
@@ -257,16 +225,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "tkm hook-exec --hook metrics.flush --event stop -a claude",
-            "timeout": 15
-          },
-          {
-            "type": "command",
-            "command": "tkm hook-exec --hook session.activity --event stop -a claude",
-            "timeout": 15
-          },
-          {
-            "type": "command",
             "command": "tkm hook-exec --eval hooks/memory-graph-queue.cjs --project --event stop -a claude",
             "timeout": 15
           },
@@ -274,16 +232,15 @@
             "type": "command",
             "command": "tkm hook-exec --eval hooks/session-state.cjs --project --event stop -a claude",
             "timeout": 10
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
+          },
           {
             "type": "command",
-            "command": "tkm hook-exec --hook metrics.flush --event session-end -a claude",
+            "command": "tkm-windows-x64 hook-exec --hook metrics.flush --event stop -a claude",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook session.activity --event stop -a claude",
             "timeout": 15
           }
         ]
@@ -294,13 +251,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "tkm hook-exec --hook session.activity --event subagent-stop -a claude",
-            "timeout": 15
+            "command": "tkm hook-exec --eval hooks/session-state.cjs --project --event subagent-stop -a claude",
+            "timeout": 10
           },
           {
             "type": "command",
-            "command": "tkm hook-exec --eval hooks/session-state.cjs --project --event subagent-stop -a claude",
-            "timeout": 10
+            "command": "tkm-windows-x64 hook-exec --hook session.activity --event subagent-stop -a claude",
+            "timeout": 15
           }
         ]
       },
@@ -311,6 +268,49 @@
             "type": "command",
             "command": "tkm hook-exec --eval hooks/takumi-after-plan-reminder.cjs --project --event subagent-stop -a claude",
             "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook session.prompt-context --event user-prompt-submit -a claude",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook metrics.record --event user-prompt-submit -a claude",
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook perf.usage-cache --event user-prompt-submit -a claude",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook session.wip-checkpoint --event pre-compact -a claude",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tkm-windows-x64 hook-exec --hook metrics.flush --event session-end -a claude",
+            "timeout": 15
           }
         ]
       }
