@@ -157,7 +157,7 @@ lang: vi
 | Mốc bắt đầu thiếu hoặc sai định dạng | Không khóa trang nào; mở trang đếm ngược thì sang đăng nhập; lỗi được ghi phía máy chủ | None — silent handling |
 | Trước giờ mở, người dùng đã đăng nhập hoặc phiên hết hạn | Vẫn bị đưa về trang đếm ngược, không có chuyển hướng riêng vì phiên | None — chỉ thấy trang đếm ngược |
 | Trước giờ mở, địa chỉ không tồn tại | Đưa về trang đếm ngược | None — chỉ thấy trang đếm ngược |
-| Sau giờ mở nhưng màn Login chưa được làm | Đăng nhập là trang không tồn tại cho tới khi màn Login xong | "Không tìm thấy trang" |
+| Sau giờ mở, người dùng đã đăng nhập mở màn Login | Được đưa sang trang chủ `/` (do `proxy.ts` sau cổng, ngoài phạm vi F001) | None — silent handling |
 
 ## 10. Edge Behaviours to Verify
 

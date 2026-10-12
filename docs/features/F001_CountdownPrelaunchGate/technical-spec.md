@@ -45,7 +45,7 @@ Cổng chờ trước giờ mở SAA 2025 gồm hai phần nhỏ. Một quy tắ
 - **BR-002 — Mốc thiếu hoặc sai định dạng thì coi như đã bắt đầu và ghi log lỗi phía server.** Gate không khóa gì trong trường hợp này. *(§ 4.4)*
 
 **Result** · read-only — **no DB write**. Redirect 307 tới `/countdown` hoặc `/login`; ngoài hai trường hợp DEC trên thì request đi tiếp.
-**Source:** `proxy.ts:6-12` (cổng), `proxy.ts:14-18` (matcher), `lib/countdown/resolve-gate-redirect.ts:4-9`, `lib/event/get-event-start-at.ts:24-26`
+**Source:** `proxy.ts:8-12` (cổng), `proxy.ts:20-24` (matcher), `lib/countdown/resolve-gate-redirect.ts:4-9`, `lib/event/get-event-start-at.ts:24-26`
 
 ---
 
@@ -85,7 +85,7 @@ Cổng chờ trước giờ mở SAA 2025 gồm hai phần nhỏ. Một quy tắ
 | A1 | Trước giờ, truy cập `/login`, trang chủ hoặc URL không tồn tại | 307 về `/countdown` (DEC-001) |
 | A1 | Trước giờ, request tới `_next/static`, `_next/image`, `images/`, `favicon.ico`, `robots.txt`, `sitemap.xml` | Không qua gate; nếu không loại, trang đếm ngược mất CSS/ảnh |
 | A1 | Trước giờ, người dùng đã đăng nhập hoặc phiên hết hạn | Vẫn về `/countdown`; gate chạy trước kiểm tra phiên nên không có redirect sang login vì phiên |
-| A1 · A2 | Sau giờ, mở `/countdown` | 307 sang `/login` (DEC-002); `/login` trả 404 cho tới khi màn Login được làm |
+| A1 · A2 | Sau giờ, mở `/countdown` | 307 sang `/login` (DEC-002); `/login` là màn Login đã làm (ngoài phạm vi F001); `proxy.ts` chuyển người đã đăng nhập từ `/login` sang `/` sau gate |
 | A3 | Còn lại < 1 ngày | Days `00`, Hours/Minutes tiếp tục giảm |
 | A3 | Giá trị âm, Hours ≥ 24, Minutes ≥ 60 (đầu vào hàm định dạng) | Hiển thị `00` |
 | A3 | Days > 99 | Kẹp ở `99` |
@@ -231,7 +231,7 @@ Kiểm thử theo `e2e-red-first`: viết E2E (Playwright) đỏ trước cho A1
 
 1. **Đồng hồ máy khách lệch** *(A1, A3)*: nếu đồng hồ máy khách nhanh hơn server, A3 chuyển `/login`, A1 trả lại `/countdown`, A3 lại chuyển — vòng lặp. Hiệu chỉnh bằng giờ server (truyền `serverNow` cùng mốc) hay chấp nhận rủi ro; liên quan Open Decision D001 trong functional-spec. **RESOLVED 2026-10-09:** server truyền `serverNow` cùng `target`; client đếm theo độ lệch `serverNow - Date.now()` lúc nhận.
 2. **`cacheComponents` và giá trị đầu tiên** *(A2, A3)*: đọc env và `Date.now()` trong Server Component cần ranh giới động (Suspense hoặc `connection()`); render lần đầu cần tránh lệch hydration và tránh nháy `00` trước khi tính xong. Cách chọn để lúc triển khai.
-3. **Thứ tự với việc khác trong `proxy.ts`** *(A1)*: CSP theo nonce và làm mới phiên Supabase bằng `getClaims()` cũng sống ở đây (CLAUDE.md); gate nên đặt đầu và trả sớm, chưa chốt cách ghép.
+3. **Thứ tự với việc khác trong `proxy.ts`** *(A1)*: CSP theo nonce và làm mới phiên Supabase bằng `getClaims()` cũng sống ở đây (CLAUDE.md); gate nên đặt đầu và trả sớm, chưa chốt cách ghép. **PARTLY RESOLVED 2026-10-12:** gate đặt đầu và trả sớm; sau gate, `updateSession` (`lib/supabase/update-session.ts`, `getClaims()`) làm mới phiên rồi `resolveAuthRedirect` chuyển người đã đăng nhập khỏi `/login`; CSP theo nonce chưa làm.
 4. **Đọc env trong proxy trên OpenNext** *(A1)*: xác nhận `vars` trong `wrangler.jsonc` có sẵn qua `process.env` ở edge.
 
 ### 5.4 Source References

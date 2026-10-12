@@ -29,6 +29,7 @@ process.env.E2E_FUTURE_TARGET_MS = String(futureTargetMs);
 process.env.E2E_FUTURE_URL = "http://localhost:3100";
 process.env.E2E_PAST_URL = "http://localhost:3101";
 process.env.E2E_INVALID_URL = "http://localhost:3102";
+process.env.E2E_SUPABASE_URL = "http://127.0.0.1:54399";
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -44,6 +45,10 @@ export default defineConfig({
     url: `http://localhost:${port}/favicon.ico`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    env: { EVENT_START_AT: eventStartAt },
+    env: {
+      EVENT_START_AT: eventStartAt,
+      NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54399",
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_e2e_fake",
+    },
   })),
 });

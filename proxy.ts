@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { resolveAuthRedirect } from "@/lib/auth/resolve-auth-redirect";
 import { resolveGateRedirect } from "@/lib/countdown/resolve-gate-redirect";
 import { getEventStartAt, isEventLaunched } from "@/lib/event/get-event-start-at";
+import { redirectWithSession, updateSession } from "@/lib/supabase/update-session";
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const launched = isEventLaunched(getEventStartAt(), Date.now());
   const target = resolveGateRedirect(request.nextUrl.pathname, launched);
   // Gate returns early; CSP nonce / Supabase session logic composes after this point.
   if (target) return NextResponse.redirect(new URL(target, request.url), 307);
-  return NextResponse.next();
+
+  const { response, isAuthenticated } = await updateSession(request);
+  const authTarget = resolveAuthRedirect(request.nextUrl.pathname, isAuthenticated);
+  if (authTarget) return redirectWithSession(response, new URL(authTarget, request.url));
+  return response;
 }
 
 export const config = {

@@ -131,8 +131,8 @@ N/A — no conditional UI detected.
 
 | Action | Element | Condition | Destination | Result | Source |
 |--------|---------|-----------|-------------|--------|--------|
-| Bộ đếm về 0 | E03, E05, E07 | Thời gian còn lại ≤ 0 | TBD (draft) — màn Login (task riêng) | redirect | TBD (draft) |
-| Mở màn này sau giờ mở | — | Đã đến giờ mở sự kiện | TBD (draft) — màn Login (task riêng) | redirect trước khi hiển thị | TBD (draft) |
+| Bộ đếm về 0 | E03, E05, E07 | Thời gian còn lại ≤ 0 | `/login` — màn Login (task riêng) | redirect | TBD (draft) |
+| Mở màn này sau giờ mở | — | Đã đến giờ mở sự kiện | `/login` — màn Login (task riêng) | redirect trước khi hiển thị | TBD (draft) |
 
 ## 9. Accessibility
 

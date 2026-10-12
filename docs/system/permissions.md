@@ -17,23 +17,26 @@ lang: vi
 
 **System Type**: other
 
-Hiện chỉ có một cổng theo thời gian (kiểu env-gate), chưa có vai trò hay chủ sở hữu tài nguyên. Phân quyền theo vai trò sẽ do các feature đăng nhập và nghiệp vụ bổ sung sau.
+Có một cổng theo thời gian (kiểu env-gate) và đăng nhập Google qua Supabase; chưa có vai trò hay chủ sở hữu tài nguyên. Phân quyền theo vai trò sẽ do các feature nghiệp vụ bổ sung sau.
 
 **Identified Roles**:
-- Visitor — mọi người truy cập, đã hoặc chưa đăng nhập; cổng không phân biệt
+- Visitor — mọi người truy cập, đã hoặc chưa đăng nhập; cổng theo thời gian không phân biệt
+- Người đã đăng nhập — có phiên Supabase hợp lệ; hiện chỉ khác Visitor ở chỗ bị đưa khỏi trang đăng nhập
 
 ## Curated View
 
 - **Visitor** trước giờ mở sự kiện chỉ xem được trang đếm ngược và tài nguyên tĩnh (ảnh, giao diện); mọi trang khác đều bị đưa về trang đếm ngược.
 - **Visitor** sau giờ mở sự kiện không còn xem được trang đếm ngược, mở trang này sẽ được đưa thẳng sang trang đăng nhập; các trang khác không bị cổng chặn nữa.
+- **Người đã đăng nhập** mở trang đăng nhập (sau giờ mở) được đưa sang trang chủ `/`; trang đăng nhập và các trang khác vẫn mở cho người chưa đăng nhập, chưa có trang nào đòi phiên.
 
 ## Access Boundaries
 
-Ranh giới ở đây là thời gian chứ không phải danh tính: không có ngoại lệ cho quản trị viên hay người đã đăng nhập, và cổng chạy trước mọi kiểm tra phiên. Trang đếm ngược công khai, không cần đăng nhập. Việc người dùng được làm gì sau khi đăng nhập thuộc các feature khác.
+Ranh giới ở đây là thời gian chứ không phải danh tính: không có ngoại lệ cho quản trị viên hay người đã đăng nhập, và cổng chạy trước mọi kiểm tra phiên (phiên chỉ được làm mới sau khi qua cổng). Trang đếm ngược công khai, không cần đăng nhập. Việc người dùng được làm gì sau khi đăng nhập thuộc các feature khác.
 
 ## Special Conditions
 
 - **Cổng theo thời gian (env-gate):** quyết định bằng mốc bắt đầu sự kiện đặt khi triển khai (`EVENT_START_AT`, ISO 8601 kèm +07:00), so theo thời điểm tuyệt đối; đổi mốc cần triển khai lại hoặc đổi cấu hình.
 - **Khi mốc thiếu hoặc sai:** coi như sự kiện đã bắt đầu, cổng không khóa gì và lỗi được ghi phía máy chủ. Đây là chọn lựa không khóa khi lỗi, nên cần xem log khi triển khai.
 - **Phạm vi:** áp dụng cho mọi route của ứng dụng trừ trang đếm ngược và tài nguyên tĩnh (`_next/static`, `_next/image`, `images/`, `favicon.ico`, `robots.txt`, `sitemap.xml`), thực thi ở `proxy.ts` (Next.js 16). Chỉ dùng Web API để sau này chạy được trên Cloudflare Workers; chưa triển khai lên Cloudflare. Tài nguyên tĩnh mới đặt ngoài các đường dẫn trên sẽ bị cổng chặn trước giờ mở.
+- **Phiên đăng nhập:** làm mới ở `proxy.ts` bằng `getClaims()` (kiểm chữ ký, không đọc cookie thô). Thiếu hoặc sai biến Supabase thì ghi log và coi mọi người là chưa đăng nhập; không trang nào bị khóa vì lỗi này. Sau đăng nhập luôn về `/`, không nhận địa chỉ đích từ client. Bảng dữ liệu và RLS chưa có.
 - **Đề xuất ADR:** ghi lại lý do chọn cổng theo thời gian đặt ở lớp chặn request, và chọn không khóa khi cấu hình lỗi, vào một ADR trong `docs/decisions/` (do người viết, không sinh tự động).

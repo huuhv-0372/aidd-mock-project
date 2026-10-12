@@ -17,6 +17,12 @@
   --font-digital-numbers: var(--next-font-digital-numbers), ui-monospace, monospace;
   --color-countdown-bg: #00101a;
   --color-countdown-digit-border: #ffea9e;
+
+  /* Login page (MoMorph GzbNeVGJHz) design tokens. */
+  --color-login-bg: #00101a;
+  --color-login-header-bg: rgb(11 15 18 / 0.8);
+  --color-login-accent: #ffea9e;
+  --color-login-divider: #2e3940;
 }
 
 @media (prefers-color-scheme: dark) {

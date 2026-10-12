@@ -1,12 +1,12 @@
 # SAA 2025 (AIDD mock project)
 
-Next.js 16 (App Router, TypeScript) + Tailwind CSS v4. Supabase and Cloudflare Workers (OpenNext) are planned but **not installed yet**. See `CLAUDE.md` for the target stack and conventions.
+Next.js 16 (App Router, TypeScript) + Tailwind CSS v4. Supabase Auth (Google login) is wired in; Cloudflare Workers (OpenNext) is planned but **not installed yet**. See `CLAUDE.md` for the target stack and conventions.
 
 ## Run
 
 ```bash
 npm install
-cp .env.example .env.local   # then adjust EVENT_START_AT
+cp .env.example .env.local   # then adjust EVENT_START_AT and the Supabase keys
 npm run dev                  # http://localhost:3000
 ```
 
@@ -30,9 +30,17 @@ First time running e2e: `npx playwright install chromium`.
 - `EVENT_START_AT` missing or invalid: the gate stays open (no countdown) and an error is logged on the server.
 - Format: ISO 8601 with an explicit offset, e.g. `2025-12-01T09:00:00+07:00`. Server-only, never prefix with `NEXT_PUBLIC_`.
 
-**`/login` is not implemented yet**: once the event starts (or the countdown reaches zero) the redirect lands on a 404.
+Once the event starts (or the countdown reaches zero) the redirect lands on `/login`.
 
 To preview the countdown locally, set `EVENT_START_AT` to a future time in `.env.local`.
+
+## Login (Google via Supabase)
+
+`/login` signs in with Google through Supabase (PKCE). After the gate, `proxy.ts` refreshes the session with `getClaims()`; a signed-in user opening `/login` is redirected to `/`. The OAuth callback is `/auth/callback`; failures return to `/login?error=auth_failed`.
+
+- Env (see `.env.example`, read at runtime): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. If missing, the app logs an error and treats everyone as signed out.
+- Supabase dashboard: enable the Google provider and allow `<your-origin>/auth/callback` as a redirect URL. Production also needs both variables set on the Worker.
+- `npm run test:e2e` passes fake Supabase values, so no real project is needed for the tests.
 
 ## Docs
 
