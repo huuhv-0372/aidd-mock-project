@@ -5,6 +5,7 @@ import {
   LOGIN_PATH,
   POST_LOGIN_PATH,
 } from "@/lib/auth/constants";
+import { isAllowedEmail } from "@/lib/auth/is-allowed-email";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseAuthCallbackQuery } from "@/lib/validation/auth-callback";
 
@@ -23,9 +24,17 @@ export async function GET(request: NextRequest) {
 
   try {
     const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(query.code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(query.code);
     if (error) {
       console.error("[auth/callback] exchangeCodeForSession failed", error);
+      return NextResponse.redirect(loginError);
+    }
+    // Defense in depth: the DB rejects new non-domain users, but accounts created before the
+    // gate can still complete OAuth. Drop their session and show the generic error.
+    if (!isAllowedEmail(data.user?.email)) {
+      console.error("[auth/callback] rejected sign-in: email domain not allowed");
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) console.error("[auth/callback] signOut failed", signOutError);
       return NextResponse.redirect(loginError);
     }
   } catch (err) {

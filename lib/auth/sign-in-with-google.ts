@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
+  ALLOWED_EMAIL_DOMAIN,
   CALLBACK_PATH,
   LOGIN_ERROR_PARAM,
   LOGIN_ERROR_VALUE,
@@ -23,7 +24,11 @@ async function getGoogleAuthorizeUrl(): Promise<string | null> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${origin}${CALLBACK_PATH}` },
+    options: {
+      redirectTo: `${origin}${CALLBACK_PATH}`,
+      // UX hint only (pre-filters Google's account chooser); enforcement is in callback + DB.
+      queryParams: { hd: ALLOWED_EMAIL_DOMAIN },
+    },
   });
   if (error || !data.url) {
     console.error("[sign-in-with-google] signInWithOAuth failed", error ?? "no url returned");
