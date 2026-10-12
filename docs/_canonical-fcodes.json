@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-10-09T06:42:06Z",
+  "plan": "261009-1222-countdown-prelaunch-page",
+  "features": [
+    {
+      "fcode": "F001",
+      "name": "Countdown Prelaunch Gate",
+      "slug": "F001_CountdownPrelaunchGate",
+      "priority": "P0",
+      "type": "ui",
+      "related": {
+        "screens": [
+          "SCR001_CountdownPrelaunch"
+        ],
+        "user_stories": [
+          "US001",
+          "US002",
+          "US003"
+        ],
+        "routes": [
+          "/countdown"
+        ],
+        "models": [],
+        "bl": [],
+        "perms": []
+      }
+    }
+  ]
+}

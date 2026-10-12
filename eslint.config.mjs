@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Takumi agent kit (gitignored tooling, not project source).
+    ".claude/**",
+    // Test runner artifacts.
+    "test-results/**",
+    "playwright-report/**",
   ]),
 ]);
 

@@ -1,0 +1,10 @@
+{
+  "primary_lang": "vi",
+  "last_rebuild_sha": "",
+  "last_feature_spec_run_sha": "9d9a5b5f2a67bf4597bb3a92ef1a5fa1914f0044",
+  "fcode_index_sha": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "doc_shas": {},
+  "screen_spec_shas": {
+    "SCR001": "ad5b23ac3c507f2fba3bbf1890939e02a03e93175a85f5d0ab8bd5bfad705ef5"
+  }
+}

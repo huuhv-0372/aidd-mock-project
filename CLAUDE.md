@@ -27,8 +27,9 @@ Backend/DB/Auth dùng **Supabase**. UI dựng bằng Tailwind CSS v4 (CSS-first,
 ## Next.js 16 + Cloudflare Workers
 
 - Build/deploy qua `wrangler.jsonc` + `open-next.config.ts`; bật `compatibility_flags: ["nodejs_compat"]`.
-- `middleware.ts` đã đổi tên thành `proxy.ts` ở Next.js 16 — luôn chạy ở edge runtime, không dùng được
-  Node API đầy đủ (vd. `crypto` chỉ có Web Crypto, không có `fs`/`path`).
+- `middleware.ts` đã đổi tên thành `proxy.ts` ở Next.js 16 — mặc định chạy **Node.js runtime** (không đặt được
+  `runtime` trong proxy). Dù vậy, code proxy chỉ dùng Web API (Web Crypto, không `fs`/`path`) để chạy ổn trên
+  Cloudflare Workers qua OpenNext.
 - Giữ các flag `cacheComponents`, `partialPrefetching` đã bật trong `next.config.ts` — OpenNext hỗ trợ tốt.
 - Bí mật/biến môi trường: `wrangler secret put` cho production, không để secret thật trong `vars` của
   `wrangler.jsonc` (dễ bị commit nhầm dạng plaintext).

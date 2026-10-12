@@ -8,8 +8,15 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--next-font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+
+  /* Countdown prelaunch page (MoMorph 8PJQswPZmU) design tokens.
+     --next-font-* are set by next/font in app/layout.tsx. */
+  --font-montserrat: var(--next-font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-digital-numbers: var(--next-font-digital-numbers), ui-monospace, monospace;
+  --color-countdown-bg: #00101a;
+  --color-countdown-digit-border: #ffea9e;
 }
 
 @media (prefers-color-scheme: dark) {
