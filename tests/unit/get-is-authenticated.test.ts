@@ -1,3 +1,4 @@
+import { AuthSessionMissingError } from "@supabase/supabase-js";
 import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import { getIsAuthenticated } from "@/lib/auth/get-is-authenticated";
 
@@ -36,6 +37,12 @@ describe("getIsAuthenticated", () => {
   it("returns false for claims without a subject", async () => {
     const client = fakeClient(async () => ({ data: { claims: { sub: "" } }, error: null }));
     expect(await getIsAuthenticated(client)).toBe(false);
+  });
+
+  it("returns false without logging when getClaims reports a missing session", async () => {
+    const client = fakeClient(async () => ({ data: null, error: new AuthSessionMissingError() }));
+    expect(await getIsAuthenticated(client)).toBe(false);
+    expect(errorSpy).not.toHaveBeenCalled();
   });
 
   it("returns false and logs when getClaims reports an error", async () => {

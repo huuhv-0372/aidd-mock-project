@@ -36,7 +36,7 @@ To preview the countdown locally, set `EVENT_START_AT` to a future time in `.env
 
 ## Access control (default-deny)
 
-After the gate, `proxy.ts` refreshes the session and an anonymous visitor may open only the exact paths in `PUBLIC_PATHS` (`lib/auth/constants.ts`): `/` (the homepage: guests see it with a login link in the header), `/login`, `/auth/callback`, `/countdown`. Every other path redirects (307) to `/login` (`//` and unknown paths included). Add new public routes to that list. Static assets excluded by the matcher in `proxy.ts` do not go through this check. If the Supabase env is missing everyone counts as signed out, so everything outside the list redirects to `/login`. The proxy is only the first layer: pages that serve data must re-verify the session on the server.
+After the gate, `proxy.ts` refreshes the session and an anonymous visitor may open only the exact paths in `PUBLIC_PATHS` (`lib/auth/constants.ts`): `/` (the homepage: guests see it with a login link in the header), `/login`, `/auth/callback`, `/countdown`. Every other path redirects (307) to `/login` (unknown paths included; a path of only slashes such as `//` counts as `/`). Add new public routes to that list. Static assets excluded by the matcher in `proxy.ts` do not go through this check. If the Supabase env is missing everyone counts as signed out, so everything outside the list redirects to `/login`. The proxy is only the first layer: pages that serve data must re-verify the session on the server.
 
 ## Homepage (`/`)
 

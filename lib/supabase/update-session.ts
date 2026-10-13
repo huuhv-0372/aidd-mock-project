@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
-import { isAuthSessionMissingError } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import { isSignedInClaims } from "@/lib/auth/is-signed-in-claims";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 
 export type SessionResult = { response: NextResponse; isAuthenticated: boolean };
@@ -39,11 +39,7 @@ export async function updateSession(request: NextRequest): Promise<SessionResult
   });
 
   try {
-    const { data, error } = await supabase.auth.getClaims();
-    if (error && !isAuthSessionMissingError(error)) {
-      console.error("[supabase] getClaims failed:", error);
-    }
-    return { response, isAuthenticated: !error && Boolean(data?.claims) };
+    return { response, isAuthenticated: isSignedInClaims(await supabase.auth.getClaims(), "supabase") };
   } catch (error) {
     console.error("[supabase] getClaims threw:", error);
     return { response, isAuthenticated: false };
