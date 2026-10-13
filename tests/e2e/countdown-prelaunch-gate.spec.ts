@@ -146,8 +146,8 @@ test.describe("Countdown Prelaunch Gate", () => {
 
   test("test-8: invalid server root not redirected; /countdown ends at /login", async ({ page }) => {
     await page.goto(`${E2E_INVALID_URL}/`, { waitUntil: "networkidle" });
-    // Homepage phase 03: anonymous `/` is now login-protected, so root lands on /login (never /countdown).
-    expect(new URL(page.url()).pathname).toBe("/login");
+    // Contract (phase 06, spec ID-0): `/` is public again, so anonymous root stays on `/` (never /countdown, never /login).
+    expect(new URL(page.url()).pathname).toBe("/");
 
     await page.goto(`${E2E_INVALID_URL}/countdown`, { waitUntil: "networkidle" });
     expect(new URL(page.url()).pathname).toBe("/login");

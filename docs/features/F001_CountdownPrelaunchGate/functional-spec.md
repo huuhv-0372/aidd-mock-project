@@ -128,7 +128,7 @@ lang: vi
 
 ### US001 — Error: cấu hình mốc thời gian sai
 
-**Given** mốc bắt đầu bị thiếu hoặc sai định dạng, **When** người dùng mở trang chủ, **Then** cổng không chặn (không về trang đếm ngược); người chưa đăng nhập vẫn bị bước kiểm phiên đưa sang `/login` (ngoài phạm vi F001), người đã đăng nhập thấy trang chủ.
+**Given** mốc bắt đầu bị thiếu hoặc sai định dạng, **When** người dùng mở trang chủ, **Then** cổng không chặn (không về trang đếm ngược); trang chủ công khai nên cả người chưa đăng nhập lẫn đã đăng nhập đều thấy trang chủ (header khác nhau, ngoài phạm vi F001); đường dẫn khác ngoài danh sách công khai vẫn bị bước kiểm phiên đưa sang `/login`.
 
 ### US002 — Happy Path
 
@@ -158,7 +158,7 @@ lang: vi
 | Trước giờ mở, người dùng đã đăng nhập hoặc phiên hết hạn | Vẫn bị đưa về trang đếm ngược, không có chuyển hướng riêng vì phiên | None — chỉ thấy trang đếm ngược |
 | Trước giờ mở, địa chỉ không tồn tại | Đưa về trang đếm ngược | None — chỉ thấy trang đếm ngược |
 | Sau giờ mở, người dùng đã đăng nhập mở màn Login | Được đưa sang trang chủ `/` (do `proxy.ts` sau cổng, ngoài phạm vi F001) | None — silent handling |
-| Sau giờ mở, người chưa đăng nhập mở trang chủ hoặc đường dẫn khác ngoài `/login`, `/auth/callback`, `/countdown` | Cổng cho qua, nhưng bước kiểm phiên sau cổng (ngoài phạm vi F001) đưa sang `/login` | None — silent handling |
+| Sau giờ mở, người chưa đăng nhập mở đường dẫn ngoài `/`, `/login`, `/auth/callback`, `/countdown` (trang chủ `/` công khai nên vẫn mở được) | Cổng cho qua, nhưng bước kiểm phiên sau cổng (ngoài phạm vi F001) đưa sang `/login` | None — silent handling |
 
 ## 10. Edge Behaviours to Verify
 

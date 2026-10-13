@@ -3,19 +3,22 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { LanguageSelector } from "@/components/ui/language-selector";
 import { HOME_PATH } from "@/lib/navigation/routes";
-import { AccountMenu } from "./account-menu";
 import { FOCUS_RING, GLOW_ON_HOVER, GLOW_WHEN_CURRENT } from "./home-class-names";
 import { LOGO_ALT, NAV_LINKS } from "./home-copy";
 import { HomeLink } from "./home-link";
-import { NotificationButton } from "./notification-button";
 
 /* Homepage is the "About SAA 2025" page, so that link carries the active state. */
 const ACTIVE_HREF = HOME_PATH;
 
 const NAV_LINK_BASE = `flex min-h-11 items-center rounded border-b border-transparent px-2 text-sm leading-5 font-bold tracking-[0.1px] text-white hover:bg-[rgb(255_234_158/0.1)] ${GLOW_ON_HOVER} aria-[current=page]:border-login-accent aria-[current=page]:text-login-accent ${GLOW_WHEN_CURRENT} lg:p-4 motion-safe:transition-colors motion-safe:duration-200 ${FOCUS_RING}`;
 
-/* Below lg the nav drops to its own row and the header scrolls away; sticky from lg up. */
-export function HomeHeader({ signOutSlot }: { signOutSlot: ReactNode }) {
+/*
+ * Below lg the nav drops to its own row and the header scrolls away; sticky from lg up.
+ * `controls` is the session-dependent part (bell + account menu, or the guest login link); its items
+ * are direct flex children of the right group (no wrapper) and place themselves with `order`:
+ * bell 1, language 2 (always rendered, static), account / login link 3 = Figma order bell, VN, profile.
+ */
+export function HomeHeader({ controls }: { controls: ReactNode }) {
   return (
     // mm:2167:9091
     <header className="relative z-30 w-full bg-home-header-bg font-montserrat lg:sticky lg:top-0">
@@ -42,9 +45,10 @@ export function HomeHeader({ signOutSlot }: { signOutSlot: ReactNode }) {
         </nav>
         {/* mm:I2167:9091;186:1601 */}
         <div className="order-2 ml-auto flex items-center gap-1 lg:order-3 lg:gap-4">
-          <NotificationButton />
-          <LanguageSelector />
-          <AccountMenu>{signOutSlot}</AccountMenu>
+          <div className="order-2">
+            <LanguageSelector />
+          </div>
+          {controls}
         </div>
       </div>
     </header>

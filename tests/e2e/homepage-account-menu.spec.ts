@@ -110,7 +110,12 @@ test.describe("Homepage: sign out (authenticated)", () => {
     const seen = await (await request.get(`${FAKE}/__logout-seen?session=${sessionId}`)).json();
     expect(seen.seen, "fake saw POST /auth/v1/logout for this session").toBe(true);
 
+    // Session cleared: `/` is public (ID-0) and now renders the guest header; a protected path bounces.
     await page.goto(`${AUTHED}/`);
+    expect(path(page)).toBe("/");
+    await expect(page.getByRole("banner").getByRole("link", { name: "Đăng nhập" })).toBeVisible();
+    await expect(page.getByTestId("account-menu-button")).toHaveCount(0);
+    await page.goto(`${AUTHED}/does-not-exist`);
     expect(path(page)).toBe("/login");
   });
 });

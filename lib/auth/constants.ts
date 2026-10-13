@@ -1,3 +1,5 @@
+import { HOME_PATH } from "@/lib/navigation/routes";
+
 export const LOGIN_PATH = "/login";
 export const CALLBACK_PATH = "/auth/callback";
 /** Single post-login target; no `next` param means no open-redirect surface. */
@@ -11,5 +13,6 @@ export const ALLOWED_EMAIL_DOMAIN = "sun-asterisk.com";
 /**
  * Exact paths an anonymous visitor may open; every other path redirects to /login (default-deny).
  * Add new public routes here. /countdown stays public: the pre-launch gate sends everyone there.
+ * The homepage is public per spec (guests see public content; the header shows a login link).
  */
-export const PUBLIC_PATHS: readonly string[] = [LOGIN_PATH, CALLBACK_PATH, "/countdown"];
+export const PUBLIC_PATHS: readonly string[] = [HOME_PATH, LOGIN_PATH, CALLBACK_PATH, "/countdown"];

@@ -27,3 +27,6 @@ export const HEADER_PANEL =
 /** 40px icon button of the header (bell, profile); 44px touch target below lg. */
 export const HEADER_ICON_BUTTON =
   "flex size-11 cursor-pointer items-center justify-center rounded text-white hover:bg-white/10 aria-expanded:bg-white/10 lg:size-10 motion-safe:transition-colors motion-safe:duration-200";
+
+/** Fixed width shared by the guest login link and the header-controls Suspense placeholder (no layout shift). */
+export const GUEST_CONTROL_WIDTH = "w-28";

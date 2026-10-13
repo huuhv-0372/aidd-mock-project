@@ -36,14 +36,15 @@ To preview the countdown locally, set `EVENT_START_AT` to a future time in `.env
 
 ## Access control (default-deny)
 
-After the gate, `proxy.ts` refreshes the session and an anonymous visitor may open only the exact paths in `PUBLIC_PATHS` (`lib/auth/constants.ts`): `/login`, `/auth/callback`, `/countdown`. Every other path, including `/`, redirects (307) to `/login`. Add new public routes to that list. Static assets excluded by the matcher in `proxy.ts` do not go through this check. If the Supabase env is missing everyone counts as signed out, so everything outside the list redirects to `/login`. The proxy is only the first layer: pages that serve data must re-verify the session on the server.
+After the gate, `proxy.ts` refreshes the session and an anonymous visitor may open only the exact paths in `PUBLIC_PATHS` (`lib/auth/constants.ts`): `/` (the homepage: guests see it with a login link in the header), `/login`, `/auth/callback`, `/countdown`. Every other path redirects (307) to `/login` (`//` and unknown paths included). Add new public routes to that list. Static assets excluded by the matcher in `proxy.ts` do not go through this check. If the Supabase env is missing everyone counts as signed out, so everything outside the list redirects to `/login`. The proxy is only the first layer: pages that serve data must re-verify the session on the server.
 
 ## Homepage (`/`)
 
-The SAA homepage (`app/page.tsx`, `components/home/`, images in `public/images/home/`) is reachable only after launch and only when signed in. Its countdown targets the awards ceremony time from the server-only env `AWARDS_CEREMONY_AT` (ISO 8601 with an explicit offset, e.g. `2026-12-26T18:30:00+07:00`; see `.env.example`), read in `lib/event/get-awards-ceremony-at.ts`. `EVENT_START_AT` only drives the prelaunch gate. If `AWARDS_CEREMONY_AT` is missing or invalid, the server logs `[home-countdown] AWARDS_CEREMONY_AT missing or invalid` and the countdown shows `00` with "Coming soon" hidden (same once the time has passed). Production must set it on the Worker (`wrangler.jsonc` vars) once that file exists.
+The SAA homepage (`app/page.tsx`, `components/home/`, images in `public/images/home/`) is reachable only after launch, and is public: guests and signed-in users both get it. Its countdown targets the awards ceremony time from the server-only env `AWARDS_CEREMONY_AT` (ISO 8601 with an explicit offset, e.g. `2026-12-26T18:30:00+07:00`; see `.env.example`), read in `lib/event/get-awards-ceremony-at.ts`. `EVENT_START_AT` only drives the prelaunch gate. If `AWARDS_CEREMONY_AT` is missing or invalid, the server logs `[home-countdown] AWARDS_CEREMONY_AT missing or invalid` and the countdown shows `00` with "Coming soon" hidden (same once the time has passed). Production must set it on the Worker (`wrangler.jsonc` vars) once that file exists.
 
-- Account menu: Profile (`/profile`) and Sign out. Sign out is the server action `lib/auth/sign-out.ts` (`scope: local`, this browser only) and always ends on `/login`. No Admin Dashboard item (no roles yet).
-- The notification bell opens an empty panel (no notification data yet). The language selector (`components/ui/language-selector.tsx`, shared with `/login`) is UI only.
+- Header controls depend on the session, read on the server by `components/home/header-session-controls.tsx` (`getIsAuthenticated()` in `lib/auth/get-is-authenticated.ts`, verified with `getClaims()`; any failure counts as a guest). It sits inside `<Suspense>` with a same-size placeholder as fallback, so `/` stays Partial Prerender. Signed in: notification bell plus account menu. Guest: a "Đăng nhập" link to `/login` (`components/home/login-link.tsx`). The language selector is always shown.
+- Account menu (signed in only): Profile (`/profile`) and Sign out. Sign out is the server action `lib/auth/sign-out.ts` (`scope: local`, this browser only) and always ends on `/login`. No Admin Dashboard item (no roles yet).
+- The notification bell (signed in only) opens an empty panel (no notification data yet). The language selector (`components/ui/language-selector.tsx`, shared with `/login`) is UI only.
 - Nav, CTA and award links point to `/awards-information` (with `#<slug>` per award), `/sun-kudos`, `/tieu-chuan-chung`, `/profile` (constants in `lib/navigation/routes.ts`). Those pages are not built yet and return 404.
 - Hero image is now a ~315 KB WebP (`public/images/home/keyvisual-bg.webp`). Before deploy: add the Cloudflare images binding (`next/image` optimization on OpenNext).
 
@@ -74,5 +75,7 @@ Before running the migration, disable the Email, Phone and Anonymous providers (
 ## Docs
 
 - `docs/codebase-summary.md` — layout of the code, how the gate and the access control work.
+- `docs/system/permissions.md` — who may open what (Vietnamese).
+- `docs/project-changelog.md` — notable behaviour changes, newest first (Vietnamese).
 - `docs/features/F001_CountdownPrelaunchGate/` — functional and technical spec of the gate.
 - `docs/screens/SCR001_CountdownPrelaunch/spec.md` — countdown screen spec.

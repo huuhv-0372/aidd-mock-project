@@ -1,6 +1,6 @@
 import { test, expect, type Page, type APIRequestContext } from "@playwright/test";
-// Homepage SAA (MoMorph i87tDx10uM). Anonymous cases run on the PAST server; authenticated cases on
-// the AUTHED server (3103), whose Supabase URL is the test-only fake (tests/e2e/support): the real
+// Homepage SAA (MoMorph i87tDx10uM). Authenticated cases run on the AUTHED server (3103); guest cases are in
+// homepage-guest.spec.ts. The AUTHED server's Supabase URL is the test-only fake (tests/e2e/support): the real
 // proxy runs the real getClaims() against the fake's JWKS. No prod-side bypass exists. Selector contract (phases 02/03/04 must match):
 // - Header getByRole('banner'); logo link 'Sun* Annual Awards 2025' href '/' (also once in contentinfo)
 // - Nav in banner: 'About SAA 2025' ('/', aria-current="page"), 'Awards Information' ('/awards-information'), 'Sun* Kudos' ('/sun-kudos')
@@ -16,12 +16,12 @@ import { test, expect, type Page, type APIRequestContext } from "@playwright/tes
 //   kudos-section (link 'Chi tiết' -> /sun-kudos), widget-button (fixed bottom-right)
 // - Footer contentinfo: logo link, About SAA 2025 / Awards Information / Sun* Kudos / Tiêu chuẩn chung
 //   (/tieu-chuan-chung), 'Bản quyền thuộc về Sun* © 2025' (Figma verbatim)
-// ID-0 SUPERSEDED: clarified "require login", anonymous / -> /login. ID-12/13/43 now E2E (ceremony countdown);
+// ID-0 (guest sees /): homepage-guest.spec.ts (guest header: language selector + 'Đăng nhập' link href '/login',
+// no bell/account; signed in: login link count 0). ID-12/13/43 now E2E (ceremony countdown);
 // unit-only ID-41/42/60, 39, 40, 56, 57. Deferred: ID-5/37 (no roles), 28 (no notifications table), 25/26 (i18n plan),
 // 54 (widget menu plan), 59 (destinations 404 by design; here every a[href] must be a known route), 62 (slugs are
 // compile-time constants). Menus, sign out, hover: homepage-account-menu.spec.ts.
 
-const PAST = process.env.E2E_PAST_URL || "http://localhost:3101";
 const AUTHED = process.env.E2E_AUTHED_URL || "http://localhost:3103";
 const FAKE = process.env.E2E_FAKE_SUPABASE_URL || "http://127.0.0.1:54398";
 const CEREMONY_MS = Number(process.env.E2E_AWARDS_CEREMONY_AT_MS); // authed server's AWARDS_CEREMONY_AT
@@ -30,8 +30,8 @@ const ROUTES = ["/", "/awards-information", "/sun-kudos", "/tieu-chuan-chung", "
 const LOGO = "Sun* Annual Awards 2025";
 const path = (page: Page) => new URL(page.url()).pathname;
 
-async function signIn(page: Page, request: APIRequestContext, forged = false) {
-  const res = await request.get(`${FAKE}/__mint${forged ? "?forged=1" : ""}`);
+async function signIn(page: Page, request: APIRequestContext) {
+  const res = await request.get(`${FAKE}/__mint`);
   expect(res.ok()).toBe(true);
   const minted = await res.json();
   expect(minted.value.length).toBeLessThan(3180); // one @supabase/ssr cookie chunk
@@ -48,31 +48,6 @@ async function clickTo(page: Page, link: ReturnType<Page["locator"]>, expected: 
   await link.click();
   await page.waitForURL((u) => u.pathname + u.hash === expected);
 }
-
-test.describe("Homepage: protection", () => {
-  test("anonymous / and unknown paths -> /login; /login and /auth/callback stay reachable", async ({ page }) => {
-    for (const p of ["/", "/does-not-exist"]) {
-      await page.goto(`${PAST}${p}`);
-      expect(path(page), `anonymous ${p}`).toBe("/login");
-    }
-    await page.goto(`${PAST}/login`);
-    await expect(page.getByRole("heading", { level: 1, name: "ROOT FURTHER" })).toBeVisible();
-    await page.goto(`${PAST}/auth/callback?error=x`);
-    expect(page.url()).toContain("/login?error=auth_failed");
-  });
-
-  test("forged-key session cookie is not trusted: / -> /login", async ({ page, request }) => {
-    await signIn(page, request, true);
-    await page.goto(`${AUTHED}/`);
-    expect(path(page)).toBe("/login");
-  });
-
-  test("authenticated /login -> /", async ({ page, request }) => {
-    await signIn(page, request);
-    await page.goto(`${AUTHED}/login`);
-    expect(path(page)).toBe("/");
-  });
-});
 
 test.describe("Homepage: render (authenticated, launched event)", () => {
   for (const [width, height] of [[1440, 900], [375, 812]]) {
@@ -134,6 +109,8 @@ test.describe("Homepage: render (authenticated, launched event)", () => {
     await expect(page.getByTestId("language-selector")).toContainText("VN");
     await expect(page.getByTestId("notification-button")).toBeVisible();
     await expect(page.getByTestId("notification-badge")).toHaveCount(0);
+    await expect(page.getByTestId("account-menu-button")).toBeVisible();
+    await expect(banner.getByRole("link", { name: "Đăng nhập" })).toHaveCount(0); // signed in: no login link
   });
 });
 
