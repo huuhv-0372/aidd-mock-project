@@ -128,7 +128,7 @@ lang: vi
 
 ### US001 — Error: cấu hình mốc thời gian sai
 
-**Given** mốc bắt đầu bị thiếu hoặc sai định dạng, **When** người dùng mở trang chủ, **Then** trang chủ mở bình thường, không bị chặn.
+**Given** mốc bắt đầu bị thiếu hoặc sai định dạng, **When** người dùng mở trang chủ, **Then** cổng không chặn (không về trang đếm ngược); người chưa đăng nhập vẫn bị bước kiểm phiên đưa sang `/login` (ngoài phạm vi F001), người đã đăng nhập thấy trang chủ.
 
 ### US002 — Happy Path
 
@@ -154,15 +154,16 @@ lang: vi
 | Giá trị âm hoặc Hours ≥ 24, Minutes ≥ 60 | Khối đó hiển thị 00 | None — hiển thị 00 |
 | Days lớn hơn 99 | Days hiển thị 99 | None — hiển thị 99 |
 | Thời gian còn lại bằng hoặc dưới 0 | Cả ba khối hiện 00 rồi tự sang đăng nhập | None — silent handling |
-| Mốc bắt đầu thiếu hoặc sai định dạng | Không khóa trang nào; mở trang đếm ngược thì sang đăng nhập; lỗi được ghi phía máy chủ | None — silent handling |
+| Mốc bắt đầu thiếu hoặc sai định dạng | Cổng không khóa trang nào; mở trang đếm ngược thì sang đăng nhập; lỗi được ghi phía máy chủ | None — silent handling |
 | Trước giờ mở, người dùng đã đăng nhập hoặc phiên hết hạn | Vẫn bị đưa về trang đếm ngược, không có chuyển hướng riêng vì phiên | None — chỉ thấy trang đếm ngược |
 | Trước giờ mở, địa chỉ không tồn tại | Đưa về trang đếm ngược | None — chỉ thấy trang đếm ngược |
 | Sau giờ mở, người dùng đã đăng nhập mở màn Login | Được đưa sang trang chủ `/` (do `proxy.ts` sau cổng, ngoài phạm vi F001) | None — silent handling |
+| Sau giờ mở, người chưa đăng nhập mở trang chủ hoặc đường dẫn khác ngoài `/login`, `/auth/callback`, `/countdown` | Cổng cho qua, nhưng bước kiểm phiên sau cổng (ngoài phạm vi F001) đưa sang `/login` | None — silent handling |
 
 ## 10. Edge Behaviours to Verify
 
 - **FR-001** → Đổi mốc cấu hình thì số đếm đổi theo; đổi múi giờ máy người dùng không làm số đổi.
-- **FR-002** → Bỏ trống hoặc sai mốc: mở trang nào cũng không bị chặn.
+- **FR-002** → Bỏ trống hoặc sai mốc: cổng không chặn trang nào (người chưa đăng nhập vẫn bị bước kiểm phiên đưa sang `/login`).
 - **FR-101** → Trước giờ, trang chủ, trang đăng nhập và địa chỉ không tồn tại đều về trang đếm ngược; ảnh và giao diện vẫn tải.
 - **FR-102** → Sau giờ, mở trang đếm ngược dẫn thẳng tới đăng nhập.
 - **FR-103** → Mở trang lúc còn vài giây, bộ đếm về 0 thì tự sang đăng nhập.

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { LanguageSelector } from "./language-selector";
+import { LanguageSelector } from "@/components/ui/language-selector";
 
 export function LoginHeader() {
   return (

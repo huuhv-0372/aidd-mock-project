@@ -6,7 +6,7 @@ Next.js 16 (App Router, TypeScript) + Tailwind CSS v4. Supabase Auth (Google log
 
 ```bash
 npm install
-cp .env.example .env.local   # then adjust EVENT_START_AT and the Supabase keys
+cp .env.example .env.local   # then adjust EVENT_START_AT, AWARDS_CEREMONY_AT and the Supabase keys
 npm run dev                  # http://localhost:3000
 ```
 
@@ -17,7 +17,7 @@ npm run dev                  # http://localhost:3000
 | `npm run start` | Serve the production build |
 | `npm run lint` | ESLint |
 | `npm test` | Unit tests (Vitest, `tests/unit/`) |
-| `npm run test:e2e` | `next build` then Playwright (`tests/e2e/`); starts three servers on ports 3100-3102 |
+| `npm run test:e2e` | `next build` then Playwright (`tests/e2e/`); starts four app servers on ports 3100-3103 plus a test-only fake Supabase on 127.0.0.1:54398 |
 
 First time running e2e: `npx playwright install chromium`.
 
@@ -26,13 +26,26 @@ First time running e2e: `npx playwright install chromium`.
 `proxy.ts` gates every route on the server environment variable `EVENT_START_AT` (see `.env.example`):
 
 - Before that time, every route except `/countdown` and static assets redirects (307) to `/countdown`.
-- After that time, `/countdown` redirects to `/login`; other routes pass through.
+- After that time, `/countdown` redirects to `/login`; the gate lets other routes through (see Access control below for who may open them).
 - `EVENT_START_AT` missing or invalid: the gate stays open (no countdown) and an error is logged on the server.
 - Format: ISO 8601 with an explicit offset, e.g. `2025-12-01T09:00:00+07:00`. Server-only, never prefix with `NEXT_PUBLIC_`.
 
 Once the event starts (or the countdown reaches zero) the redirect lands on `/login`.
 
 To preview the countdown locally, set `EVENT_START_AT` to a future time in `.env.local`.
+
+## Access control (default-deny)
+
+After the gate, `proxy.ts` refreshes the session and an anonymous visitor may open only the exact paths in `PUBLIC_PATHS` (`lib/auth/constants.ts`): `/login`, `/auth/callback`, `/countdown`. Every other path, including `/`, redirects (307) to `/login`. Add new public routes to that list. Static assets excluded by the matcher in `proxy.ts` do not go through this check. If the Supabase env is missing everyone counts as signed out, so everything outside the list redirects to `/login`. The proxy is only the first layer: pages that serve data must re-verify the session on the server.
+
+## Homepage (`/`)
+
+The SAA homepage (`app/page.tsx`, `components/home/`, images in `public/images/home/`) is reachable only after launch and only when signed in. Its countdown targets the awards ceremony time from the server-only env `AWARDS_CEREMONY_AT` (ISO 8601 with an explicit offset, e.g. `2026-12-26T18:30:00+07:00`; see `.env.example`), read in `lib/event/get-awards-ceremony-at.ts`. `EVENT_START_AT` only drives the prelaunch gate. If `AWARDS_CEREMONY_AT` is missing or invalid, the server logs `[home-countdown] AWARDS_CEREMONY_AT missing or invalid` and the countdown shows `00` with "Coming soon" hidden (same once the time has passed). Production must set it on the Worker (`wrangler.jsonc` vars) once that file exists.
+
+- Account menu: Profile (`/profile`) and Sign out. Sign out is the server action `lib/auth/sign-out.ts` (`scope: local`, this browser only) and always ends on `/login`. No Admin Dashboard item (no roles yet).
+- The notification bell opens an empty panel (no notification data yet). The language selector (`components/ui/language-selector.tsx`, shared with `/login`) is UI only.
+- Nav, CTA and award links point to `/awards-information` (with `#<slug>` per award), `/sun-kudos`, `/tieu-chuan-chung`, `/profile` (constants in `lib/navigation/routes.ts`). Those pages are not built yet and return 404.
+- Hero image is now a ~315 KB WebP (`public/images/home/keyvisual-bg.webp`). Before deploy: add the Cloudflare images binding (`next/image` optimization on OpenNext).
 
 ## Login (Google via Supabase)
 
@@ -60,6 +73,6 @@ Before running the migration, disable the Email, Phone and Anonymous providers (
 
 ## Docs
 
-- `docs/codebase-summary.md` — layout of the code and how the gate works.
+- `docs/codebase-summary.md` — layout of the code, how the gate and the access control work.
 - `docs/features/F001_CountdownPrelaunchGate/` — functional and technical spec of the gate.
 - `docs/screens/SCR001_CountdownPrelaunch/spec.md` — countdown screen spec.

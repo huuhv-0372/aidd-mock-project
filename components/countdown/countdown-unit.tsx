@@ -31,7 +31,7 @@ function DigitBox({ digit }: { digit: string }) {
       {/* mm:I2268:35141;186:2616 */}
       <span
         aria-hidden="true"
-        className="absolute inset-0 rounded-[calc(12px*var(--s,1))] border-[0.75px] border-solid border-countdown-digit-border bg-linear-to-b from-white to-white/10 opacity-50 backdrop-blur-[25px]"
+        className="absolute inset-0 rounded-[calc(12px*var(--s,1))] border-[0.75px] border-solid border-countdown-digit-border bg-linear-to-b from-white to-white/10 opacity-50 backdrop-blur-[var(--countdown-digit-blur,25px)]"
       />
       {/* mm:I2268:35141;186:2617 */}
       <span aria-hidden="true" className="relative font-digital-numbers text-[length:calc(73.728px*var(--s,1))] leading-[1.288] font-normal text-white">
@@ -44,7 +44,7 @@ function DigitBox({ digit }: { digit: string }) {
 export function CountdownUnit({ label, value, testId }: CountdownUnitProps) {
   return (
     // mm:2268:35139
-    <div className="flex w-[calc(175px*var(--s,1))] flex-col items-start justify-center gap-[calc(21px*var(--s,1))]">
+    <div className="flex w-[var(--countdown-unit-w,calc(175px*var(--s,1)))] flex-col items-start justify-center gap-[calc(21px*var(--s,1))]">
       {/* mm:2268:35140 — textContent of this element is exactly `value` */}
       <div
         role="group"

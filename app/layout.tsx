@@ -5,7 +5,7 @@ import "./globals.css";
 
 const montserrat = Montserrat({
   subsets: ["latin", "vietnamese"],
-  weight: ["700"],
+  weight: ["400", "500", "700"],
   variable: "--next-font-montserrat",
 });
 

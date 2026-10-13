@@ -8,3 +8,8 @@ export const LOGIN_ERROR_VALUE = "auth_failed";
 export const LOGIN_ERROR_MESSAGE = "Đăng nhập không thành công. Vui lòng thử lại.";
 /** Only Google accounts on this domain may sign in (also enforced by the DB, see profiles migration). */
 export const ALLOWED_EMAIL_DOMAIN = "sun-asterisk.com";
+/**
+ * Exact paths an anonymous visitor may open; every other path redirects to /login (default-deny).
+ * Add new public routes here. /countdown stays public: the pre-launch gate sends everyone there.
+ */
+export const PUBLIC_PATHS: readonly string[] = [LOGIN_PATH, CALLBACK_PATH, "/countdown"];
