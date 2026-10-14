@@ -1,4 +1,4 @@
-import { MENU_ITEM } from "./home-class-names";
+import { MENU_ITEM } from "./shell-class-names";
 
 /* Plain submit menuitem: the parent page wraps it in the sign-out <form action={...}>. */
 export function SignOutButton() {

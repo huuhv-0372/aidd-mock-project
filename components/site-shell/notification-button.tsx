@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useId, useRef, useState } from "react";
-import { HEADER_ICON_BUTTON, HEADER_PANEL } from "./home-class-names";
-import { IconBell } from "./home-icons";
+import { HEADER_ICON_BUTTON, HEADER_PANEL } from "./shell-class-names";
+import { IconBell } from "./shell-icons";
 import { useDismissable } from "./use-dismissable";
 
 /* No notifications source yet (clarified): always the empty panel, never a badge. */

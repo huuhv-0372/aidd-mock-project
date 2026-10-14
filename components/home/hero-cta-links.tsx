@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AWARDS_INFORMATION_PATH, SUN_KUDOS_PATH } from "@/lib/navigation/routes";
-import { FOCUS_RING, PRIMARY_CTA_HOVER } from "./home-class-names";
-import { IconArrowUpRight } from "./home-icons";
+import { FOCUS_RING, PRIMARY_CTA_HOVER } from "@/components/site-shell/shell-class-names";
+import { IconArrowUpRight } from "@/components/site-shell/shell-icons";
 
 const CTA_BASE = `flex min-h-14 items-center gap-2 rounded-lg text-lg leading-7 font-bold md:text-[22px] motion-safe:transition-[background-color,box-shadow] motion-safe:duration-200 ${FOCUS_RING}`;
 

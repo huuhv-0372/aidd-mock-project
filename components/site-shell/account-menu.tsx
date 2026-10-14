@@ -11,8 +11,8 @@ import {
   type ReactNode,
 } from "react";
 import { PROFILE_PATH } from "@/lib/navigation/routes";
-import { HEADER_ICON_BUTTON, HEADER_PANEL, MENU_ITEM } from "./home-class-names";
-import { IconUserProfile } from "./home-icons";
+import { HEADER_ICON_BUTTON, HEADER_PANEL, MENU_ITEM } from "./shell-class-names";
+import { IconUserProfile } from "./shell-icons";
 import { useDismissable } from "./use-dismissable";
 
 const menuItems = (menu: HTMLElement | null) =>

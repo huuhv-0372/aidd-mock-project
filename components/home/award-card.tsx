@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { awardHref } from "@/lib/navigation/routes";
 import type { AwardCardData } from "./award-cards-data";
-import { FOCUS_RING, GLOW_SHADOW } from "./home-class-names";
-import { IconArrowUpRight } from "./home-icons";
+import { FOCUS_RING, GLOW_SHADOW } from "@/components/site-shell/shell-class-names";
+import { IconArrowUpRight } from "@/components/site-shell/shell-icons";
 
 const TILE_SIZE = 336; // Figma tile edge; name images are scaled relative to it.
 

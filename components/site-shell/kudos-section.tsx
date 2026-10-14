@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SUN_KUDOS_PATH } from "@/lib/navigation/routes";
-import { FOCUS_RING, PRIMARY_CTA_HOVER } from "./home-class-names";
-import { KUDOS_COPY } from "./home-copy";
-import { IconArrowUpRight } from "./home-icons";
+import { FOCUS_RING, PRIMARY_CTA_HOVER } from "./shell-class-names";
+import { KUDOS_COPY } from "./shell-copy";
+import { IconArrowUpRight } from "./shell-icons";
 
 /* Sun* Kudos promo card (Figma 1120x500 inside the 1224px column). */
 export function KudosSection() {

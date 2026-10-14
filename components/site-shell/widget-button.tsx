@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { GLOW_SHADOW } from "./home-class-names";
-import { IconPen } from "./home-icons";
+import { GLOW_SHADOW } from "./shell-class-names";
+import { IconPen } from "./shell-icons";
 
 /* Floating widget (button only; its quick-action menu belongs to the floating-action plan). */
 export function WidgetButton() {

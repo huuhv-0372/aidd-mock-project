@@ -2,9 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Montserrat_Alternates } from "next/font/google";
 import { HOME_PATH } from "@/lib/navigation/routes";
-import { FOCUS_RING, GLOW_ON_HOVER } from "./home-class-names";
+import { FOCUS_RING, GLOW_ON_HOVER } from "./shell-class-names";
 import { HomeLink } from "./home-link";
-import { FOOTER_COPYRIGHT, FOOTER_LINKS, LOGO_ALT } from "./home-copy";
+import { FOOTER_COPYRIGHT, FOOTER_LINKS, LOGO_ALT } from "./shell-copy";
 
 const montserratAlternates = Montserrat_Alternates({
   subsets: ["latin", "vietnamese"],
@@ -14,7 +14,7 @@ const montserratAlternates = Montserrat_Alternates({
 const FOOTER_LINK = `flex min-h-11 items-center rounded p-4 text-base leading-6 font-bold tracking-[0.15px] text-white hover:bg-[rgb(255_234_158/0.1)] ${GLOW_ON_HOVER} motion-safe:transition-colors motion-safe:duration-200 ${FOCUS_RING}`;
 
 /* Rendered outside <main> by the page so it keeps the contentinfo landmark. */
-export function HomeFooter() {
+export function SiteFooter() {
   return (
     // mm:5001:14800
     <footer className="mt-20 w-full border-t border-login-divider font-montserrat xl:mt-[125px]">

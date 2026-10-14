@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LOGIN_PATH } from "@/lib/auth/constants";
-import { GUEST_CONTROL_WIDTH } from "./home-class-names";
+import { GUEST_CONTROL_WIDTH } from "./shell-class-names";
 
 /*
  * Guest header control (no Figma frame): same visual language as the profile button next to it,
