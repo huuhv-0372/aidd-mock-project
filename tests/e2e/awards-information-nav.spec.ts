@@ -51,6 +51,25 @@ test.describe("Awards Information: navigation (authenticated, 1440)", () => {
     }
   });
 
+  test("scroll-spy: an instant jump that leaves the spy line between two cards still updates the active item", async ({ page, request }) => {
+    await openAwards(page, request);
+    await expect.poll(() => activeSlugs(page)).toEqual([AWARDS[0].slug]);
+    // At the top no card is under the spy line (scroll-margin-top + 16px). Jump so the line sits in the gap
+    // between best-manager and the next card: neither position has a card under the line, so the jump
+    // crosses no observer band and only a re-measure after the scroll can update the nav.
+    const gap = await page.evaluate(() => {
+      const line = parseFloat(getComputedStyle(document.getElementById("top-talent")!).scrollMarginTop) + 16;
+      const docY = (id: string, edge: "top" | "bottom") =>
+        document.getElementById(id)!.getBoundingClientRect()[edge] + window.scrollY;
+      window.scrollTo({ top: (docY("best-manager", "bottom") + docY("signature-2025-creator", "top")) / 2 - line, behavior: "instant" });
+      const above = document.getElementById("best-manager")!.getBoundingClientRect().bottom;
+      const below = document.getElementById("signature-2025-creator")!.getBoundingClientRect().top;
+      return above < line && line < below;
+    });
+    expect(gap, "spy line lands in the gap between the two cards").toBe(true);
+    await expect.poll(() => activeSlugs(page), { message: "spy after a jump into the gap" }).toEqual(["best-manager"]);
+  });
+
   test("landing on #best-manager (from Homepage) scrolls the card into view and activates its item", async ({ page, request }) => {
     await openAwards(page, request, { hash: "#best-manager" });
     await expect.poll(() => activeSlugs(page)).toEqual(["best-manager"]);
@@ -77,7 +96,17 @@ test.describe("Awards Information: navigation (authenticated, 1440)", () => {
     page.on("pageerror", (err) => errors.push(err));
     await openAwards(page, request, { hash: "#nope" });
     await expect.poll(() => activeSlugs(page)).toEqual([AWARDS[0].slug]);
-    await page.evaluate(() => { location.hash = "#nope"; });
+    // A different unknown hash, so `hashchange` really fires (re-assigning "#nope" is a no-op). The test's
+    // listener is added after the page's, so once it resolves the page has handled the change.
+    const fired = await page.evaluate(
+      () =>
+        new Promise<boolean>((resolve) => {
+          window.addEventListener("hashchange", () => resolve(true), { once: true });
+          window.setTimeout(() => resolve(false), 2_000);
+          location.hash = "#nope-2";
+        }),
+    );
+    expect(fired, "hashchange fired for the second unknown hash").toBe(true);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
     await expect.poll(() => activeSlugs(page)).toEqual([AWARDS[0].slug]);
     expect(errors).toEqual([]);
