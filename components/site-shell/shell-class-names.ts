@@ -9,7 +9,7 @@ export const GLOW_WHEN_CURRENT =
 /** Figma elevation of the widget button and award tiles. */
 export const GLOW_SHADOW = "shadow-[0_4px_4px_rgb(0_0_0/0.25),0_0_6px_#fae287]";
 
-/** Hover state of the gold primary CTAs (hero "ABOUT AWARDS", kudos "Chi tiết"). */
+/** Hover state of the gold primary CTAs (hero "ABOUT AWARDS", kudos details link). */
 export const PRIMARY_CTA_HOVER =
   "hover:bg-[#fff3c4] hover:shadow-[0_4px_4px_rgb(0_0_0/0.25),0_0_6px_#fae287]";
 

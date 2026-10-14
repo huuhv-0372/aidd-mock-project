@@ -58,7 +58,7 @@ Cổng chờ trước giờ mở SAA 2025 gồm hai phần nhỏ. Một quy tắ
 **BE** · `` `CountdownPage#render` `` gọi `getEventStartAt` (§ 4.1) và truyền kết quả xuống `CountdownTimer`; không có route handler hay Server Action.
 **Rule** · **BR-002 — Mốc thiếu hoặc sai thì coi như đã bắt đầu.** Trang chuyển sang `/login` thay vì dựng bộ đếm; trên thực tế A1 đã chặn trường hợp này trước nên đây chỉ là nhánh an toàn cho kiểu dữ liệu `null`. *(§ 4.4)*
 **Result** · read-only — **no DB write**. Người dùng thấy tiêu đề và ba khối Days/Hours/Minutes.
-**Source:** `app/countdown/page.tsx:11-32`, `components/countdown/countdown-screen.tsx`
+**Source:** `app/[locale]/countdown/page.tsx:17-41`, `components/countdown/countdown-screen.tsx`
 
 ---
 
@@ -101,7 +101,7 @@ Cổng chờ trước giờ mở SAA 2025 gồm hai phần nhỏ. Một quy tắ
 |---|---|---|---|
 | `proxy` | Gate redirect theo DEC-001/DEC-002, matcher loại asset tĩnh (danh sách tường minh) | A1 | `proxy.ts` |
 | `getEventStartAt`, `isEventLaunched` | Đọc và parse `EVENT_START_AT` thành epoch ms, trả `null` và log lỗi khi thiếu/sai (BR-002); điểm duy nhất cần sửa khi chuyển nguồn sang Supabase | A1, A2 | `lib/event/get-event-start-at.ts` |
-| `CountdownPage` | Server Component: layout tĩnh, truyền mốc xuống client | A2 | `app/countdown/page.tsx` |
+| `CountdownPage` | Server Component: layout tĩnh, truyền mốc xuống client | A2 | `app/[locale]/countdown/page.tsx` |
 | `CountdownTimer` | Client leaf: interval 1s, đếm theo giờ server, redirect khi về 0 | A3 | `components/countdown/countdown-timer.tsx` |
 | `CountdownUnit` | Một khối đơn vị: hai hộp chữ số LED và nhãn | A3 | `components/countdown/countdown-unit.tsx` |
 | `splitRemainingTime` | Hàm thuần cho ALG-001, dễ kiểm bằng Vitest | A3 | `lib/countdown/split-remaining-time.ts` |
@@ -138,7 +138,7 @@ launched = (Date.now() >= eventStartAtMs)
 
 **BR-002 — Mốc thiếu hoặc sai định dạng thì coi như đã bắt đầu và ghi log lỗi phía server.**
 Used in: **A1** · **A2**. `getEventStartAt` trả `null`; cả hai nơi xử lý `null` như "đã bắt đầu" để không khóa nhầm toàn bộ site.
-**Source:** `lib/event/get-event-start-at.ts:14-21`, `app/countdown/page.tsx:14`
+**Source:** `lib/event/get-event-start-at.ts:14-21`, `app/[locale]/countdown/page.tsx:20`
 ```text
 eventStartAtMs = parseIso(env.EVENT_START_AT)      # ISO 8601, có offset
 if eventStartAtMs is NaN or env missing:
@@ -237,7 +237,7 @@ Kiểm thử theo `e2e-red-first`: viết E2E (Playwright) đỏ trước cho A1
 
 ### 5.4 Source References
 
-Mã nguồn: `proxy.ts`, `lib/countdown/*.ts`, `lib/event/get-event-start-at.ts`, `app/countdown/page.tsx`, `components/countdown/*.tsx`. Kiểm thử: `tests/unit/*.test.ts` (Vitest), `tests/e2e/countdown-prelaunch-gate.spec.ts` (Playwright, ba server giả lập: mốc ở tương lai / quá khứ / không hợp lệ).
+Mã nguồn: `proxy.ts`, `lib/countdown/*.ts`, `lib/event/get-event-start-at.ts`, `app/[locale]/countdown/page.tsx`, `components/countdown/*.tsx`. Kiểm thử: `tests/unit/*.test.ts` (Vitest), `tests/e2e/countdown-prelaunch-gate.spec.ts` (Playwright, ba server giả lập: mốc ở tương lai / quá khứ / không hợp lệ).
 
 #### Data Flow
 

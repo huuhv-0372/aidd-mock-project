@@ -1,4 +1,5 @@
 import { HOME_PATH } from "@/lib/navigation/routes";
+import { login as viLogin } from "@/messages/vi/login";
 
 export const LOGIN_PATH = "/login";
 export const CALLBACK_PATH = "/auth/callback";
@@ -6,8 +7,8 @@ export const CALLBACK_PATH = "/auth/callback";
 export const POST_LOGIN_PATH = "/";
 export const LOGIN_ERROR_PARAM = "error";
 export const LOGIN_ERROR_VALUE = "auth_failed";
-/** The only auth failure text a client ever sees; details stay in server logs. */
-export const LOGIN_ERROR_MESSAGE = "Đăng nhập không thành công. Vui lòng thử lại.";
+/** Default-locale (vi) failure text; localised copy lives in the dictionary. Details stay in server logs. */
+export const LOGIN_ERROR_MESSAGE = viLogin.errorMessage;
 /** Only Google accounts on this domain may sign in (also enforced by the DB, see profiles migration). */
 export const ALLOWED_EMAIL_DOMAIN = "sun-asterisk.com";
 /**

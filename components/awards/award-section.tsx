@@ -1,3 +1,4 @@
+import type { Dictionary } from "@/messages/vi";
 import { AwardContent } from "./award-content";
 import type { AwardSectionData } from "./award-sections-data";
 import { AwardTile } from "./award-tile";
@@ -9,10 +10,12 @@ import { AwardTile } from "./award-tile";
  */
 export function AwardSection({
   award,
+  copy,
   reverse,
   showDivider,
 }: {
   award: AwardSectionData;
+  copy: Dictionary["awards"];
   reverse: boolean;
   showDivider: boolean;
 }) {
@@ -26,7 +29,7 @@ export function AwardSection({
     >
       <div className={`flex flex-col gap-6 lg:gap-10 ${reverse ? "lg:flex-row-reverse" : "lg:flex-row"}`}>
         <AwardTile slug={award.slug} title={award.title} />
-        <AwardContent award={award} />
+        <AwardContent award={award} copy={copy} />
       </div>
       {showDivider ? <div aria-hidden="true" className="h-px w-full bg-login-divider" /> : null}
     </section>

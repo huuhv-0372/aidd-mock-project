@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { HeroCtaLinks } from "./hero-cta-links";
 import { HeroEventInfo } from "./hero-event-info";
+import type { Dictionary } from "@/messages/vi";
 
 /*
  * Key visual + countdown + event info + CTAs (Figma 1512px artboard, content column 1224px).
@@ -9,7 +10,7 @@ import { HeroEventInfo } from "./hero-event-info";
  * section and runs on behind the Root Further block, so the later sections are `relative` too.
  * From lg the section slides 80px under the sticky header (header is translucent).
  */
-export function HomeHero({ countdown }: { countdown: ReactNode }) {
+export function HomeHero({ countdown, copy }: { countdown: ReactNode; copy: Dictionary["home"] }) {
   return (
     // mm:2167:9030
     <section className="relative isolate w-full font-montserrat lg:-mt-20">
@@ -53,9 +54,9 @@ export function HomeHero({ countdown }: { countdown: ReactNode }) {
         {/* mm:2167:9034 */}
         <div className="flex flex-col gap-4">
           {countdown}
-          <HeroEventInfo />
+          <HeroEventInfo info={copy.eventInfo} />
         </div>
-        <HeroCtaLinks />
+        <HeroCtaLinks copy={copy.cta} />
       </div>
     </section>
   );

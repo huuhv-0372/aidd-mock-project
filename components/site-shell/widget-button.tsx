@@ -3,13 +3,13 @@ import { GLOW_SHADOW } from "./shell-class-names";
 import { IconPen } from "./shell-icons";
 
 /* Floating widget (button only; its quick-action menu belongs to the floating-action plan). */
-export function WidgetButton() {
+export function WidgetButton({ label }: { label: string }) {
   return (
     // mm:5022:15169
     <button
       type="button"
       data-testid="widget-button"
-      aria-label="Viết Kudos / Thể lệ SAA"
+      aria-label={label}
       className={`fixed right-[19px] bottom-6 z-40 flex h-16 min-w-[106px] cursor-pointer items-center justify-center gap-2 rounded-full bg-login-accent p-4 text-login-bg hover:bg-[#fff3c4] hover:shadow-[0_4px_8px_rgb(0_0_0/0.35),0_0_10px_#fae287] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-safe:transition-[background-color,box-shadow] motion-safe:duration-200 ${GLOW_SHADOW}`}
     >
       {/* mm:I5022:15169;214:3839;186:1935 */}

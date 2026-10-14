@@ -3,7 +3,7 @@
  * While `pending` the button is disabled and a spinner overlays the Google icon slot
  * (the icon stays in the DOM so the slot width never shifts).
  */
-export function GoogleLoginButton({ pending = false }: { pending?: boolean }) {
+export function GoogleLoginButton({ label, pending = false }: { label: string; pending?: boolean }) {
   return (
     // mm:662:14426
     <button
@@ -13,7 +13,7 @@ export function GoogleLoginButton({ pending = false }: { pending?: boolean }) {
       className="inline-flex min-h-15 font-montserrat min-w-11 cursor-pointer items-center gap-2 rounded-lg bg-login-accent px-6 py-4 text-[22px] leading-7 font-bold whitespace-nowrap text-login-bg outline-offset-4 outline-white focus-visible:outline-2 enabled:hover:shadow-[0_8px_24px_rgba(255,234,158,0.4)] enabled:active:translate-y-px enabled:active:shadow-[0_2px_8px_rgba(255,234,158,0.4)] disabled:cursor-not-allowed disabled:opacity-80 motion-safe:transition-[box-shadow,transform] motion-safe:duration-200 motion-safe:ease-out"
     >
       {/* mm:I662:14426;186:1568 */}
-      <span>LOGIN With Google</span>
+      <span>{label}</span>
       {/* mm:I662:14426;186:1766 */}
       <span className="relative inline-flex size-6 shrink-0">
         <svg

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { awardHref } from "@/lib/navigation/routes";
 import type { AwardCardData } from "./award-cards-data";
+import type { AwardCardCopy } from "@/messages/vi/home";
 import { FOCUS_RING, GLOW_SHADOW } from "@/components/site-shell/shell-class-names";
 import { IconArrowUpRight } from "@/components/site-shell/shell-icons";
 
@@ -9,10 +10,19 @@ const TILE_SIZE = 336; // Figma tile edge; name images are scaled relative to it
 
 /*
  * The wrapper carries data-testid="award-card" and contains exactly ONE anchor
- * (tile image, title, description and "Chi tiết" all live inside it).
+ * (tile image, title, description and the details label all live inside it).
  */
-export function AwardCard({ award }: { award: AwardCardData }) {
-  const { slug, title, description, name } = award;
+export function AwardCard({
+  award,
+  copy,
+  detailsLabel,
+}: {
+  award: AwardCardData;
+  copy: AwardCardCopy;
+  detailsLabel: string;
+}) {
+  const { slug, name } = award;
+  const { title, description } = copy;
   return (
     // mm:2167:9075
     <div
@@ -60,7 +70,7 @@ export function AwardCard({ award }: { award: AwardCardData }) {
           {/* mm:I2167:9075;214:1023 */}
           <span className="flex min-h-11 items-center gap-1 py-2 text-base leading-6 font-medium tracking-[0.15px] text-white md:py-4">
             {/* mm:I2167:9075;214:1023;186:1439 */}
-            Chi tiết
+            {detailsLabel}
             {/* mm:I2167:9075;214:1023;186:1441 */}
             <IconArrowUpRight />
           </span>

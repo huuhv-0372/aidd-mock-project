@@ -1,5 +1,6 @@
 import { CountdownRow, CountdownUnit } from "@/components/countdown/countdown-unit";
-import { COMING_SOON } from "./home-copy";
+/* English in the Figma and in both locales (clarification), so it is not a dictionary entry. */
+const COMING_SOON = "Coming soon";
 
 type HomeCountdownProps = {
   days: string;

@@ -4,6 +4,21 @@ Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi ti�
 
 ## 2026-10-14
 
+### Thêm: đa ngôn ngữ VI/EN (tính năng #10)
+
+- Bộ chọn ngôn ngữ (`components/ui/language-selector.tsx`) nay đổi ngôn ngữ thật cho login, trang chủ, `/awards-information`, `/countdown` và trang 404. Trước đây VN/EN chỉ là giao diện. Mặc định `vi`.
+- URL công khai không đổi. Lựa chọn lưu ở cookie httpOnly `NEXT_LOCALE` (Server Action `lib/i18n/set-locale-action.ts`, kiểm bằng zod `lib/validation/locale.ts`). `proxy.ts` rewrite sang cây `app/[locale]/` bằng `lib/i18n/resolve-locale-rewrite.ts`, sau cổng thời gian và bước chặn đăng nhập; cookie phiên Supabase đi kèm qua `rewriteWithSession` (`lib/supabase/update-session.ts`), response mang `Cache-Control: private, no-cache`. `app/auth/*` không bị rewrite.
+- Mọi trang chuyển vào `app/[locale]/` (`git mv`); `app/[locale]/layout.tsx` là layout gốc, đặt `<html lang>` và `generateStaticParams` cho `vi`/`en`; thêm `app/[locale]/[...rest]/page.tsx` gọi `notFound()` để 404 hiện trong layout gốc.
+- Chữ chuyển sang `messages/vi/*` và `messages/en/*`; `Dictionary = typeof vi`, bản `en` phải thoả kiểu đó (thiếu khóa là lỗi build). Đọc qua `lib/i18n/get-dictionary.ts`. Xoá `components/site-shell/shell-copy.ts`, `components/home/home-copy.ts`, `components/home/root-further-copy.ts`; thêm `components/site-shell/shell-links.ts`.
+- `components/ui/locale-change-reload.tsx`: đồng bộ tab khác qua `BroadcastChannel("locale")` và tải lại khi trang khôi phục từ bfcache.
+- Test: `tests/unit/locale.test.ts`, `resolve-locale-rewrite.test.ts`, `rewrite-with-session.test.ts`, `set-locale-action.test.ts`; `tests/e2e/language-switch.spec.ts`.
+- Giới hạn đã biết:
+  - Thân trang 404 render ở client (`components/not-found/not-found-content.tsx` đọc segment `locale` bằng `useParams`) vì `not-found.tsx` không nhận `params`, nên với `cacheComponents` phần chữ theo ngôn ngữ chỉ có sau khi client chạy.
+  - Chưa kiểm `Cache-Control: private, no-cache` trên OpenNext/Cloudflare (Cloudflare chưa cài; header mới được kiểm ở bản chạy cục bộ). `Vary: Cookie` không dùng được vì Next ghi đè `Vary` của response trang.
+  - Đổi ngôn ngữ phải tải lại cả trang, không làm mới mềm.
+  - Các chuỗi EN đánh dấu "not from Figma" (liệt kê ở `plans/261014-1115-multi-language-vi-en/reports/en-localizations.md`) chờ BTC duyệt; chuỗi lấy từ MoMorph cũng mới ở trạng thái `is_reviewed: false`.
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`, đường dẫn `app/[locale]/countdown/page.tsx` trong spec F001 (`technical-spec.md`).
+
 ### Sửa: menu danh mục giải thưởng đánh dấu sai mục (`/awards-information`)
 
 - Mức độ: trung bình (hiển thị sai, không mất dữ liệu). Menu đứng yên ở mục cũ khi trang nhảy cuộn tức thời từ khe giữa hai thẻ sang khe khác (kéo thanh cuộn, khôi phục vị trí cuộn), khi bấm hai mục liên tiếp nhanh (`scrollend` của lượt cuộn trước bị nhận nhầm), hoặc khi người dùng ngắt cuộn mượt giữa chừng.

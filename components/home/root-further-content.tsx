@@ -1,14 +1,10 @@
 import Image from "next/image";
-import {
-  ROOT_FURTHER_INTRO,
-  ROOT_FURTHER_OUTRO,
-  ROOT_FURTHER_QUOTE,
-} from "./root-further-copy";
+import type { Dictionary } from "@/messages/vi";
 
 const BODY = "whitespace-pre-line text-justify text-base leading-7 font-bold text-white md:text-xl md:leading-8 xl:text-2xl";
 
 /* `relative` so it paints above the hero backdrop that runs on behind this block. */
-export function RootFurtherContent() {
+export function RootFurtherContent({ copy }: { copy: Dictionary["home"]["rootFurther"] }) {
   return (
     // mm:3204:10152
     <section
@@ -39,15 +35,15 @@ export function RootFurtherContent() {
       {/* mm:5001:14827 */}
       <div className="mx-auto flex w-full max-w-[1152px] flex-col gap-8">
         {/* mm:3204:10156 */}
-        <p className={BODY}>{ROOT_FURTHER_INTRO}</p>
+        <p className={BODY}>{copy.intro}</p>
         {/* mm:3204:10161 */}
         <p className="pt-0.5 text-center text-xl leading-8 font-bold text-white md:text-2xl">
-          <span className="ps-[0.26em]">{ROOT_FURTHER_QUOTE.line1}</span>
+          <span className="ps-[0.26em]">{copy.quote.line1}</span>
           <br />
-          <span className="ps-[0.26em] text-base md:text-xl">{ROOT_FURTHER_QUOTE.line2}</span>
+          <span className="ps-[0.26em] text-base md:text-xl">{copy.quote.line2}</span>
         </p>
         {/* mm:3204:10162 */}
-        <p className={BODY}>{ROOT_FURTHER_OUTRO}</p>
+        <p className={BODY}>{copy.outro}</p>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { IconDiamond, IconLicense, IconTarget } from "./awards-icons";
+import type { Dictionary } from "@/messages/vi";
 import type { AwardSectionData } from "./award-sections-data";
 
 const LABEL = "text-2xl leading-8 font-bold text-login-accent";
@@ -9,7 +10,7 @@ const CAPTION = "text-sm leading-5 font-bold tracking-[0.1px] text-white";
 const Divider = () => <div aria-hidden="true" className="h-px w-full bg-login-divider" />;
 
 /* Right/left content column of an award card (Figma D.x.2): title, description, quantity, prize(s). */
-export function AwardContent({ award }: { award: AwardSectionData }) {
+export function AwardContent({ award, copy }: { award: AwardSectionData; copy: Dictionary["awards"] }) {
   const { slug, title, paragraphs, alignLeft, quantity, prizes } = award;
   return (
     // mm:I313:8467;214:2526
@@ -36,27 +37,27 @@ export function AwardContent({ award }: { award: AwardSectionData }) {
       {/* mm:I313:8467;214:2534 */}
       <div data-testid="award-quantity" className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <IconDiamond className="size-6 shrink-0 text-white" />
-        <p className={LABEL}>Số lượng giải thưởng:</p>
-        {/* mm:I313:8467;214:3552 (number + unit; the literal space keeps "10 Cá nhân" in the text content) */}
+        <p className={LABEL}>{copy.quantityLabel}</p>
+        {/* mm:I313:8467;214:3552 (number + unit; the literal space keeps e.g. "10 Individual" in the text content) */}
         <p className="flex items-center gap-2">
           <span className={VALUE}>{quantity.value}</span> <span className={`w-[60px] ${CAPTION}`}>{quantity.unit}</span>
         </p>
       </div>
       <Divider />
-      {/* mm:I313:8467;214:2540 (one block per prize line, "Hoặc" between them on Signature) */}
+      {/* mm:I313:8467;214:2540 (one block per prize line, the "or" divider between them on Signature) */}
       {prizes.map((prize, index) => (
         <Fragment key={prize.value}>
           {index > 0 ? (
             // mm:313:8498
             <p className="flex items-center gap-2 text-sm leading-5 font-bold tracking-[0.1px] text-login-divider">
-              Hoặc
+              {copy.prizeOr}
               <span aria-hidden="true" className="h-px flex-1 bg-login-divider" />
             </p>
           ) : null}
           <div data-testid="award-prize" className="flex flex-col gap-4">
             <div className="flex items-center gap-4">
               <IconLicense className="size-6 shrink-0 text-white" />
-              <p className={LABEL}>Giá trị giải thưởng:</p>
+              <p className={LABEL}>{copy.prizeLabel}</p>
             </div>
             <p className={VALUE}>{prize.value}</p>
             {prize.note ? <p className={CAPTION}>{prize.note}</p> : null}

@@ -6,7 +6,7 @@ import { IconBell } from "./shell-icons";
 import { useDismissable } from "./use-dismissable";
 
 /* No notifications source yet (clarified): always the empty panel, never a badge. */
-export function NotificationButton() {
+export function NotificationButton({ label, emptyText }: { label: string; emptyText: string }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -26,7 +26,7 @@ export function NotificationButton() {
         ref={buttonRef}
         type="button"
         data-testid="notification-button"
-        aria-label="Thông báo"
+        aria-label={label}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onClick={() => setOpen((prev) => !prev)}
@@ -40,10 +40,10 @@ export function NotificationButton() {
           id={panelId}
           data-testid="notification-panel"
           role="region"
-          aria-label="Thông báo"
+          aria-label={label}
           className={`${HEADER_PANEL} min-w-60`}
         >
-          <p className="px-4 py-3 text-base leading-6 font-bold text-white">Chưa có thông báo</p>
+          <p className="px-4 py-3 text-base leading-6 font-bold text-white">{emptyText}</p>
         </div>
       ) : null}
     </div>

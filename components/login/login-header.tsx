@@ -1,7 +1,9 @@
 import Image from "next/image";
 import { LanguageSelector } from "@/components/ui/language-selector";
+import type { Locale } from "@/lib/i18n/locales";
+import type { Dictionary } from "@/messages/vi";
 
-export function LoginHeader() {
+export function LoginHeader({ locale, copy }: { locale: Locale; copy: Dictionary["shell"] }) {
   return (
     // mm:662:14391
     <header className="sticky top-0 z-20 w-full bg-login-header-bg">
@@ -12,7 +14,7 @@ export function LoginHeader() {
           {/* mm:I662:14391;178:1033;178:1030 */}
           <Image
             src="/images/login/logo.png"
-            alt="Sun* Annual Awards 2025"
+            alt={copy.logoAlt}
             width={52}
             height={48}
             sizes="52px"
@@ -20,7 +22,7 @@ export function LoginHeader() {
           />
         </div>
         {/* mm:I662:14391;186:1601 */}
-        <LanguageSelector />
+        <LanguageSelector locale={locale} listLabel={copy.languageListLabel} />
       </div>
     </header>
   );

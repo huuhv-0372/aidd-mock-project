@@ -22,7 +22,15 @@ const menuItems = (menu: HTMLElement | null) =>
  * Profile button + dropdown. `children` is the sign-out slot (a <form> holding SignOutButton),
  * rendered only while the menu is open. Items: Profile + Sign out (no Admin Dashboard: no roles yet).
  */
-export function AccountMenu({ children }: { children: ReactNode }) {
+export function AccountMenu({
+  label,
+  profileLabel,
+  children,
+}: {
+  label: string;
+  profileLabel: string;
+  children: ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -74,7 +82,7 @@ export function AccountMenu({ children }: { children: ReactNode }) {
         ref={buttonRef}
         type="button"
         data-testid="account-menu-button"
-        aria-label="Tài khoản"
+        aria-label={label}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
@@ -89,12 +97,12 @@ export function AccountMenu({ children }: { children: ReactNode }) {
           ref={menuRef}
           id={menuId}
           role="menu"
-          aria-label="Tài khoản"
+          aria-label={label}
           onKeyDown={onMenuKeyDown}
           className={HEADER_PANEL}
         >
           <Link href={PROFILE_PATH} role="menuitem" onClick={() => close(false)} className={MENU_ITEM}>
-            Profile
+            {profileLabel}
           </Link>
           <div role="none">{children}</div>
         </div>

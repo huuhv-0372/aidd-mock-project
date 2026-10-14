@@ -1,4 +1,4 @@
-/* Not in the Figma frame: error state from the spec ("Đăng nhập không thành công..."). */
+/* Not in the Figma frame: error state from the spec (a fixed, localised failure message). */
 export function LoginErrorBanner({ message }: { message?: string }) {
   if (!message) return null;
 

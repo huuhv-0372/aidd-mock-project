@@ -19,7 +19,7 @@ const ITEM = `flex min-h-11 w-fit max-w-full shrink-0 items-center gap-1 rounded
  * the viewport (the header is not sticky there); from lg it is the left column and sticks under the
  * sticky header (top-28 = header 72px + gap, same value as the sections' scroll-mt).
  */
-export function AwardsNav({ items }: { items: readonly AwardNavItem[] }) {
+export function AwardsNav({ items, ariaLabel }: { items: readonly AwardNavItem[]; ariaLabel: string }) {
   const slugs = useMemo(() => items.map((item) => item.slug), [items]);
   const { activeSlug, select } = useActiveAward(slugs);
   const navRef = useRef<HTMLElement>(null);
@@ -39,7 +39,7 @@ export function AwardsNav({ items }: { items: readonly AwardNavItem[] }) {
     // mm:313:8459
     <nav
       ref={navRef}
-      aria-label="Danh mục giải thưởng"
+      aria-label={ariaLabel}
       data-testid="awards-nav"
       className="sticky top-0 z-20 -mx-4 flex gap-2 overflow-x-auto bg-login-bg/90 px-4 backdrop-blur [scrollbar-width:none] md:-mx-12 md:px-12 lg:top-28 lg:mx-0 lg:w-[178px] lg:shrink-0 lg:flex-col lg:gap-4 lg:self-start lg:overflow-visible lg:bg-transparent lg:px-0 lg:backdrop-blur-none"
     >

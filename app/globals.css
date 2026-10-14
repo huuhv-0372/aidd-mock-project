@@ -29,6 +29,10 @@
   --color-home-header-bg: rgb(16 20 23 / 0.8);
   --color-home-border: #998c5f;
   --color-home-glow: #fae287;
+
+  /* Language dropdown list (MoMorph hUyaaugye2, node 525:11713): solid #00070C panel; border reuses
+     --color-home-border (#998c5f), selected/hover tint reuses --color-login-accent (#ffea9e). */
+  --color-language-list-bg: #00070c;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -8,7 +8,7 @@ type IconProps = SVGProps<SVGSVGElement>;
 
 const base = { width: 24, height: 24, viewBox: "0 0 24 24", fill: "none", "aria-hidden": true } as const;
 
-/** Arrow used by every CTA and "Chi tiết" label (Figma MM_MEDIA_Up). */
+/** Arrow used by every CTA and details label (Figma MM_MEDIA_Up). */
 export function IconArrowUpRight(props: IconProps) {
   return (
     // mm:I2167:9063;186:1766

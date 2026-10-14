@@ -1,11 +1,18 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { CountdownScreen } from "@/components/countdown/countdown-screen";
 import { CountdownTimer } from "@/components/countdown/countdown-timer";
 import { getEventStartAt } from "@/lib/event/get-event-start-at";
+import { getRouteDictionary } from "@/lib/i18n/get-dictionary";
 
-export const metadata = { title: "SAA 2025 — Sự kiện sẽ bắt đầu sau" };
+type PageProps = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { dict } = await getRouteDictionary(params);
+  return { title: dict.countdown.metaTitle };
+}
 
 // Reads env and the clock per request, so it must stay behind a Suspense boundary.
 async function CountdownTimerSlot() {
@@ -20,9 +27,10 @@ async function CountdownTimerSlot() {
   return <CountdownTimer key={serverNow} target={target} serverNow={serverNow} />;
 }
 
-export default function CountdownPage() {
+export default async function CountdownPage({ params }: PageProps) {
+  const { dict } = await getRouteDictionary(params);
   return (
-    <CountdownScreen>
+    <CountdownScreen title={dict.countdown.title}>
       <Suspense
         fallback={<div aria-hidden="true" className="h-[calc((122.88px+21px+48px)*var(--s,1))]" />}
       >

@@ -1,22 +1,37 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { setLocale } from "@/lib/i18n/set-locale-action";
+import type { Locale } from "@/lib/i18n/locales";
+import { LanguageFlag } from "./language-flags";
+import { reloadIntoLocale } from "./locale-change-reload";
 
-const OPTIONS = ["VN", "EN"] as const;
-/* Default per spec; real locale switching (NEXT_LOCALE) is a separate feature. */
-const SELECTED = "VN";
+/* Option order and visible codes follow the Figma dropdown (A.1 VN, A.2 EN). */
+const OPTIONS: readonly { code: string; locale: Locale }[] = [
+  { code: "VN", locale: "vi" },
+  { code: "EN", locale: "en" },
+];
 
-export function LanguageSelector() {
+type LanguageSelectorProps = {
+  /** Locale currently rendered: drives the trigger flag/code and `aria-selected`. */
+  locale: Locale;
+  /** Accessible name of the option list. */
+  listLabel: string;
+};
+
+export function LanguageSelector({ locale, listLabel }: LanguageSelectorProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
   const listId = useId();
+  const selectedIndex = OPTIONS.findIndex((option) => option.locale === locale);
+  const selectedCode = OPTIONS[selectedIndex]?.code ?? OPTIONS[0].code;
 
   // Focus the selected option when the menu opens.
   useEffect(() => {
-    if (open) optionRefs.current[OPTIONS.indexOf(SELECTED)]?.focus();
-  }, [open]);
+    if (open) optionRefs.current[selectedIndex]?.focus();
+  }, [open, selectedIndex]);
 
   // Outside pointer-down closes the menu.
   useEffect(() => {
@@ -31,6 +46,21 @@ export function LanguageSelector() {
   const close = (restoreFocus: boolean) => {
     setOpen(false);
     if (restoreFocus) buttonRef.current?.focus();
+  };
+
+  // Store the choice (cookie via Server Action), then hard-reload every tab into it (a soft refresh
+  // across the root [locale] param would leave the old tree mounted). A failed action leaves the page
+  // as it is: nothing was stored, so there is nothing to reload into.
+  const choose = async (next: Locale) => {
+    close(true);
+    if (next === locale) return;
+    try {
+      await setLocale(next);
+    } catch (error) {
+      console.error("[language-selector] could not switch the language", error);
+      return;
+    }
+    reloadIntoLocale(next);
   };
 
   const focusOption = (index: number) =>
@@ -57,6 +87,10 @@ export function LanguageSelector() {
         break;
       case "Enter":
       case " ":
+        event.preventDefault();
+        if (current >= 0) choose(OPTIONS[current].locale);
+        else close(true);
+        break;
       case "Escape":
         event.preventDefault();
         close(true);
@@ -90,19 +124,9 @@ export function LanguageSelector() {
         {/* mm:I662:14391;186:1696;186:1821;186:1937 */}
         <span className="flex items-center gap-1">
           {/* mm:I662:14391;186:1696;186:1821;186:1709 */}
-          <svg
-            data-testid="language-flag"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-          >
-            <rect x="2" y="5" width="20" height="15" fill="#E31D1C" />
-            <path d="M12.0396 14.988L8.82029 17.0349L9.9001 13.4517L7.60389 11.1107L10.7696 11.0415L12.1702 7.50412L13.4465 11.0882L16.6047 11.1434L14.2314 13.5273L15.3396 16.9361L12.0396 14.988Z" fill="#FFD221" />
-          </svg>
+          <LanguageFlag locale={locale} testId="language-flag" />
           {/* mm:I662:14391;186:1696;186:1821;186:1439 */}
-          <span className="text-base leading-6 font-bold tracking-[0.15px]">{SELECTED}</span>
+          <span className="text-base leading-6 font-bold tracking-[0.15px]">{selectedCode}</span>
         </span>
         {/* mm:I662:14391;186:1696;186:1821;186:1441 */}
         <svg
@@ -121,22 +145,25 @@ export function LanguageSelector() {
         <ul
           id={listId}
           role="listbox"
+          aria-label={listLabel}
           onKeyDown={onListKeyDown}
-          className="absolute top-full right-0 z-30 mt-1 min-w-full overflow-hidden rounded border border-login-divider bg-login-bg py-1"
+          className="absolute top-full right-0 z-30 mt-1 w-30.5 overflow-hidden rounded-lg border border-home-border bg-language-list-bg p-1.25"
         >
-          {OPTIONS.map((code, index) => (
+          {OPTIONS.map((option, index) => (
             <li
-              key={code}
+              key={option.code}
               ref={(el) => {
                 optionRefs.current[index] = el;
               }}
               role="option"
-              aria-selected={code === SELECTED}
+              aria-selected={option.locale === locale}
               tabIndex={-1}
-              onClick={() => close(true)}
-              className="flex min-h-11 cursor-pointer items-center px-4 text-base leading-6 font-bold tracking-[0.15px] text-white outline-none hover:bg-white/10 focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-white aria-selected:bg-white/10"
+              onClick={() => choose(option.locale)}
+              className="flex h-14 cursor-pointer items-center justify-center gap-1 rounded-xs text-base leading-6 font-bold tracking-[0.15px] text-white outline-none hover:bg-login-accent/10 focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-white aria-selected:bg-login-accent/20 aria-selected:hover:bg-login-accent/20"
             >
-              {code}
+              {/* mm:I525:11713;362:6085;186:1821;186:1709 (A.1) / mm:I525:11713;362:6128;186:1903;186:1709 (A.2) */}
+              <LanguageFlag locale={option.locale} />
+              {option.code}
             </li>
           ))}
         </ul>

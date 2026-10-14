@@ -2,11 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { SUN_KUDOS_PATH } from "@/lib/navigation/routes";
 import { FOCUS_RING, PRIMARY_CTA_HOVER } from "./shell-class-names";
-import { KUDOS_COPY } from "./shell-copy";
+import type { ShellCopy } from "./shell-links";
 import { IconArrowUpRight } from "./shell-icons";
 
 /* Sun* Kudos promo card (Figma 1120x500 inside the 1224px column). */
-export function KudosSection() {
+export function KudosSection({ copy }: { copy: ShellCopy }) {
   return (
     // mm:3390:10349
     <section
@@ -28,14 +28,14 @@ export function KudosSection() {
           {/* mm:I3390:10349;313:8420 */}
           <div className="flex flex-col gap-4">
             {/* mm:I3390:10349;313:8421 */}
-            <p className="text-xl leading-8 font-bold text-white md:text-2xl">{KUDOS_COPY.eyebrow}</p>
+            <p className="text-xl leading-8 font-bold text-white md:text-2xl">{copy.kudos.eyebrow}</p>
             {/* mm:I3390:10349;313:8422 */}
             <h2 className="text-5xl leading-[1.12] font-bold tracking-[-0.25px] text-login-accent md:text-[57px] md:leading-16">
-              {KUDOS_COPY.title}
+              {copy.kudos.title}
             </h2>
             {/* mm:I3390:10349;313:8423 */}
             <p className="whitespace-pre-line text-justify text-base leading-6 font-bold tracking-[0.5px] text-white">
-              {KUDOS_COPY.body}
+              {copy.kudos.body}
             </p>
           </div>
           {/* mm:I3390:10349;313:8424 */}
@@ -46,7 +46,7 @@ export function KudosSection() {
               className={`inline-flex min-h-14 items-center gap-2 rounded bg-login-accent p-4 text-base leading-6 font-bold tracking-[0.15px] text-login-bg ${PRIMARY_CTA_HOVER} motion-safe:transition-[background-color,box-shadow] motion-safe:duration-200 ${FOCUS_RING}`}
             >
               {/* mm:I3390:10349;313:8426;186:1568 */}
-              Chi tiết
+              {copy.details}
               {/* mm:I3390:10349;313:8426;186:1766 */}
               <IconArrowUpRight />
             </Link>

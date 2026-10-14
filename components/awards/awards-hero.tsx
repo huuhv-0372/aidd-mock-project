@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { Dictionary } from "@/messages/vi";
 import { AwardsTitle } from "./awards-title";
 
 /*
@@ -8,7 +9,7 @@ import { AwardsTitle } from "./awards-title";
  * object-cover centred maps it 1:1. Below lg there is no Figma frame; the crop leans to the
  * right/bottom so the ribbons stay visible behind the logo and title.
  */
-export function AwardsHero() {
+export function AwardsHero({ copy }: { copy: Dictionary["awards"] }) {
   return (
     // mm:313:8437
     <section className="relative isolate w-full font-montserrat">
@@ -17,7 +18,7 @@ export function AwardsHero() {
         <Image
           data-testid="awards-keyvisual"
           src="/images/awards/keyvisual-bg.webp"
-          alt="Keyvisual Sun* Annual Award 2025"
+          alt={copy.keyvisualAlt}
           fill
           preload
           sizes="100vw"
@@ -38,7 +39,7 @@ export function AwardsHero() {
           sizes="(min-width: 768px) 338px, 60vw"
           className="h-auto w-3/5 max-w-[338px]"
         />
-        <AwardsTitle />
+        <AwardsTitle subtitle={copy.subtitle} title={copy.title} />
       </div>
     </section>
   );

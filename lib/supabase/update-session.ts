@@ -46,13 +46,34 @@ export async function updateSession(request: NextRequest): Promise<SessionResult
   }
 }
 
-/** Redirect that keeps the refreshed session cookies and no-store headers from `from`. */
-export function redirectWithSession(from: NextResponse, url: URL): NextResponse {
-  const redirect = NextResponse.redirect(url, 307);
-  from.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+/** Copies the refreshed session cookies and no-store headers from `from` onto `to`. */
+function copySession(from: NextResponse, to: NextResponse): NextResponse {
+  from.cookies.getAll().forEach((cookie) => to.cookies.set(cookie));
   ["cache-control", "expires", "pragma"].forEach((key) => {
     const value = from.headers.get(key);
-    if (value) redirect.headers.set(key, value);
+    if (value) to.headers.set(key, value);
   });
-  return redirect;
+  return to;
+}
+
+/** Redirect that keeps the refreshed session cookies and no-store headers from `from`. */
+export function redirectWithSession(from: NextResponse, url: URL): NextResponse {
+  return copySession(from, NextResponse.redirect(url, 307));
+}
+
+/**
+ * Rewrite that keeps what updateSession did: refreshed cookies reach the page via `request`
+ * (setAll wrote them into request.cookies) and the browser via Set-Cookie copied from `from`.
+ * One public URL now renders per cookie (locale, session), so no shared cache may store it: the
+ * guard is `Cache-Control: private, no-cache` (or Supabase's stricter no-store when it refreshed).
+ * `Vary: Cookie` is not an option here — Next replaces the page response's Vary with its own list.
+ */
+export function rewriteWithSession(
+  request: NextRequest,
+  from: NextResponse,
+  url: URL,
+): NextResponse {
+  const rewrite = copySession(from, NextResponse.rewrite(url, { request }));
+  if (!rewrite.headers.has("cache-control")) rewrite.headers.set("cache-control", "private, no-cache");
+  return rewrite;
 }

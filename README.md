@@ -40,17 +40,17 @@ After the gate, `proxy.ts` refreshes the session and an anonymous visitor may op
 
 ## Homepage (`/`)
 
-The SAA homepage (`app/page.tsx`, `components/home/` plus the shared shell in `components/site-shell/`, images in `public/images/home/`) is reachable only after launch, and is public: guests and signed-in users both get it. Its countdown targets the awards ceremony time from the server-only env `AWARDS_CEREMONY_AT` (ISO 8601 with an explicit offset, e.g. `2026-12-26T18:30:00+07:00`; see `.env.example`), read in `lib/event/get-awards-ceremony-at.ts`. `EVENT_START_AT` only drives the prelaunch gate. If `AWARDS_CEREMONY_AT` is missing or invalid, the server logs `[home-countdown] AWARDS_CEREMONY_AT missing or invalid` and the countdown shows `00` with "Coming soon" hidden (same once the time has passed). Production must set it on the Worker (`wrangler.jsonc` vars) once that file exists.
+The SAA homepage (`app/[locale]/page.tsx`, `components/home/` plus the shared shell in `components/site-shell/`, images in `public/images/home/`) is reachable only after launch, and is public: guests and signed-in users both get it. Its countdown targets the awards ceremony time from the server-only env `AWARDS_CEREMONY_AT` (ISO 8601 with an explicit offset, e.g. `2026-12-26T18:30:00+07:00`; see `.env.example`), read in `lib/event/get-awards-ceremony-at.ts`. `EVENT_START_AT` only drives the prelaunch gate. If `AWARDS_CEREMONY_AT` is missing or invalid, the server logs `[home-countdown] AWARDS_CEREMONY_AT missing or invalid` and the countdown shows `00` with "Coming soon" hidden (same once the time has passed). Production must set it on the Worker (`wrangler.jsonc` vars) once that file exists.
 
 - Header controls depend on the session, read on the server by `components/site-shell/header-session-controls.tsx` (`getIsAuthenticated()` in `lib/auth/get-is-authenticated.ts`, verified with `getClaims()`; any failure counts as a guest). It sits inside `<Suspense>` with a same-size placeholder as fallback, so `/` stays Partial Prerender. Signed in: notification bell plus account menu. Guest: a "Đăng nhập" link to `/login` (`components/site-shell/login-link.tsx`). The language selector is always shown.
 - Account menu (signed in only): Profile (`/profile`) and Sign out. Sign out is the server action `lib/auth/sign-out.ts` (`scope: local`, this browser only) and always ends on `/login`. No Admin Dashboard item (no roles yet).
-- The notification bell (signed in only) opens an empty panel (no notification data yet). The language selector (`components/ui/language-selector.tsx`, shared with `/login`) is UI only.
-- Nav, CTA and award links point to `/awards-information` (with `#<slug>` per award), `/sun-kudos`, `/tieu-chuan-chung`, `/profile` (constants in `lib/navigation/routes.ts`). `/awards-information` is built (see below); the other three are not and show the SAA 404 page (`app/not-found.tsx`).
+- The notification bell (signed in only) opens an empty panel (no notification data yet). The language selector (`components/ui/language-selector.tsx`, shared with `/login`) switches VI/EN (see Language below).
+- Nav, CTA and award links point to `/awards-information` (with `#<slug>` per award), `/sun-kudos`, `/tieu-chuan-chung`, `/profile` (constants in `lib/navigation/routes.ts`). `/awards-information` is built (see below); the other three are not and show the SAA 404 page (`app/[locale]/not-found.tsx`).
 - Hero image is now a ~315 KB WebP (`public/images/home/keyvisual-bg.webp`). Before deploy: add the Cloudflare images binding (`next/image` optimization on OpenNext).
 
 ## Awards Information (`/awards-information`)
 
-The awards page (`app/awards-information/page.tsx`, blocks in `components/awards/`) is not in `PUBLIC_PATHS`, so it needs a signed-in user: anonymous visitors are redirected (307) to `/login`. It reuses the header, footer, Kudos block and widget button from `components/site-shell/` (shared with the homepage). The sticky category menu (`components/awards/awards-nav.tsx`) highlights the award in view and follows `#<slug>` (`useActiveAward` in `components/awards/use-active-award.ts`; pure helpers in `lib/awards/`). The six slugs live in `lib/navigation/routes.ts`. Any path that does not exist renders `app/not-found.tsx`.
+The awards page (`app/[locale]/awards-information/page.tsx`, blocks in `components/awards/`) is not in `PUBLIC_PATHS`, so it needs a signed-in user: anonymous visitors are redirected (307) to `/login`. It reuses the header, footer, Kudos block and widget button from `components/site-shell/` (shared with the homepage). The sticky category menu (`components/awards/awards-nav.tsx`) highlights the award in view and follows `#<slug>` (`useActiveAward` in `components/awards/use-active-award.ts`; pure helpers in `lib/awards/`). The six slugs live in `lib/navigation/routes.ts`. Any path that does not exist renders `app/[locale]/not-found.tsx`.
 
 ## Login (Google via Supabase)
 
@@ -61,6 +61,14 @@ Only Google accounts with an `@sun-asterisk.com` email may sign in (`ALLOWED_EMA
 - Env (see `.env.example`, read at runtime): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. If missing, the app logs an error and treats everyone as signed out.
 - Supabase dashboard: enable the Google provider and allow `<your-origin>/auth/callback` as a redirect URL. Disable the Email, Phone and Anonymous providers (the profiles migration assumes Google is the only way in). Production also needs both variables set on the Worker.
 - `npm run test:e2e` passes fake Supabase values, so no real project is needed for the tests.
+
+## Language (VI/EN)
+
+The UI is Vietnamese (default) or English. Public URLs carry no locale: the language selector (`components/ui/language-selector.tsx`) calls the Server Action `setLocale` (`lib/i18n/set-locale-action.ts`), which stores the httpOnly cookie `NEXT_LOCALE`, then reloads the page. `proxy.ts` reads the cookie and rewrites internally to `app/[locale]/` (`lib/i18n/resolve-locale-rewrite.ts`); a missing or unknown value means `vi`. `app/auth/*` is outside `[locale]`.
+
+- All copy lives in `messages/vi/*` and `messages/en/*`. `messages/vi` defines the `Dictionary` type and `messages/en` must satisfy it, so a missing English key fails `npm run build`. Pages read it with `getRouteDictionary` (`lib/i18n/get-dictionary.ts`).
+- English strings that do not come from Figma are marked `/* not from Figma */` in `messages/en/*` and await review; the list is in `plans/261014-1115-multi-language-vi-en/reports/en-localizations.md`.
+- Known limits: the 404 body is client-rendered; `Cache-Control: private, no-cache` on the rewritten response is not yet verified on OpenNext/Cloudflare. See `docs/project-changelog.md`.
 
 ## Profiles (Supabase)
 

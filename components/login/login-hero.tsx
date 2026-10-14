@@ -1,8 +1,9 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import type { Dictionary } from "@/messages/vi";
 
 /* `children` is the slot where the Google login control sits (below the intro text). */
-export function LoginHero({ children }: { children: ReactNode }) {
+export function LoginHero({ copy, children }: { copy: Dictionary["login"]; children: ReactNode }) {
   return (
     // mm:662:14393
     <main className="flex flex-1 flex-col font-montserrat">
@@ -27,8 +28,8 @@ export function LoginHero({ children }: { children: ReactNode }) {
           <div className="flex flex-col items-start gap-6 pl-4">
             {/* mm:662:14753 */}
             <div className="max-w-[480px] text-lg leading-8 font-bold tracking-[0.5px] text-white md:text-xl md:leading-10">
-              <p>Bắt đầu hành trình của bạn cùng SAA 2025.</p>
-              <p>Đăng nhập để khám phá!</p>
+              <p>{copy.introLine1}</p>
+              <p>{copy.introLine2}</p>
             </div>
             {/* mm:662:14425 */}
             <div className="flex flex-col items-start gap-4">{children}</div>

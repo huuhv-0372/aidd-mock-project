@@ -5,7 +5,7 @@ const montserratAlternates = Montserrat_Alternates({
   weight: ["700"],
 });
 
-export function LoginFooter() {
+export function LoginFooter({ copyright }: { copyright: string }) {
   return (
     // mm:662:14447
     <footer className="w-full border-t border-login-divider">
@@ -14,7 +14,7 @@ export function LoginFooter() {
         <p
           className={`${montserratAlternates.className} text-center text-base leading-6 font-bold text-white`}
         >
-          Bản quyền thuộc về Sun* © 2025
+          {copyright}
         </p>
       </div>
     </footer>
