@@ -19,3 +19,13 @@ export type AwardSlug = (typeof AWARD_SLUGS)[number];
 export function awardHref(slug: AwardSlug): string {
   return `${AWARDS_INFORMATION_PATH}#${slug}`;
 }
+
+/** Kudo detail page (route not built yet: resolves to 404 until the detail plan lands). */
+export function kudoDetailHref(id: string): string {
+  return `${SUN_KUDOS_PATH}/${encodeURIComponent(id)}`;
+}
+
+/** Profile page of a Sunner (route not built yet: resolves to 404 until the profile plan lands). */
+export function profileHref(id: string): string {
+  return `${PROFILE_PATH}/${encodeURIComponent(id)}`;
+}
