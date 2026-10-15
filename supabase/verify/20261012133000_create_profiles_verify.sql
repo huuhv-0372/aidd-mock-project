@@ -137,7 +137,7 @@ begin
 
   select * into v_before from public.profiles where id = v_id;
   if not found then raise exception 'no profile before test for user % (see check 5)', v_id; end if;
-  update public.profiles set department = 'verify-temp-dept' where id = v_id;
+  update public.profiles set department = 'CTO' where id = v_id;
   select * into v_before from public.profiles where id = v_id;
 
   -- a) changed identity_data -> name updated, updated_at advances, department/email kept
@@ -147,7 +147,7 @@ begin
   if v_after.full_name is distinct from 'verify-temp-name'
      or v_after.avatar_url is distinct from coalesce(v_data ->> 'avatar_url', v_data ->> 'picture')
      or v_after.email is distinct from v_before.email
-     or v_after.department is distinct from 'verify-temp-dept'
+     or v_after.department is distinct from 'CTO'
      or v_after.created_at is distinct from v_before.created_at
      or not (v_after.updated_at > v_before.updated_at) then
     raise exception 'step a (identity change) failed for user %', v_id;
@@ -170,7 +170,7 @@ begin
   update auth.users set email = 'verify-temp-' || email where id = v_id;
   select * into v_after from public.profiles where id = v_id;
   if v_after.email is distinct from 'verify-temp-' || v_before.email
-     or v_after.department is distinct from 'verify-temp-dept' then
+     or v_after.department is distinct from 'CTO' then
     raise exception 'step d (email change) failed for user %', v_id;
   end if;
 
