@@ -2,6 +2,23 @@
 
 Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi tiết mã nằm ở `git log`.
 
+## 2026-10-15
+
+### Thêm: màn Sun* Kudos, bảng Live (`/sun-kudos`, tính năng #11)
+
+- Route mới `/sun-kudos` (`app/[locale]/sun-kudos/page.tsx`): banner, nút soạn Kudo và ô tìm hồ sơ (chỉ hiển thị, chưa có hành vi), Highlight Kudos (carousel 5 Kudo nhiều tim nhất, lọc theo hashtag và phòng ban), Spotlight Board (canvas kéo/thu phóng, stream sau `<Suspense>`), All Kudos (cuộn vô hạn), bảng số liệu cá nhân và danh sách người nhận quà mới nhất. Cần đăng nhập: không thêm vào `PUBLIC_PATHS`, proxy vẫn mặc định chặn. Dùng lại `components/site-shell/` (`SiteHeader` với `activeHref` = `/sun-kudos`). Khối UI ở `components/kudos/`.
+- Dữ liệu: `lib/kudos/get-kudos-board-data.ts` gọi năm RPC (Spotlight tách riêng bằng `fetchKudosSpotlight` để stream) và hai bảng danh mục (`hashtags`, `departments`) qua client Supabase theo request, kiểm kết quả bằng zod (`lib/validation/kudos.ts`); mỗi khối độc lập, lỗi chỉ log phía server và khối đó hiện thông điệp chung. Trang tiếp theo của All Kudos qua Server Action `loadMoreKudos` (`lib/kudos/load-more-kudos-action.ts`, validate đầu vào, chỉ đọc). Bộ lọc nằm trên URL `?hashtag=<slug>&department=<code>`; giá trị không có trong danh mục bị bỏ (`parse-kudos-filters.ts`; `kudos-filter-href.ts` dựng href phía client).
+- Hàm thuần khác trong `lib/kudos/`: `hero-title.ts` (danh hiệu Hero theo số người gửi khác nhau, số sao theo Kudo nhận), `format-kudo-time.ts`, `kudo-plain-text.ts`, `spotlight-layout.ts` và `pan-zoom.ts` (canvas Spotlight). `lib/navigation/routes.ts` thêm `kudoDetailHref()` và `profileHref()`; hai trang đích chưa làm nên hiện 404.
+- Chữ: `messages/vi/kudos.ts`, `messages/en/kudos.ts` (nối vào `Dictionary`). CSS: khối Kudos trong `app/globals.css`. Ảnh: `public/images/kudos/`.
+- Supabase (chạy tay, xem `docs/codebase-summary.md` mục Sun* Kudos): `supabase/migrations/20261015100000_create_kudos.sql` (kèm `rollbacks/…_down.sql`, `verify/…_verify.sql`), dữ liệu demo `supabase/seed/` (chỉ môi trường demo). Thêm 10 bảng; `profiles.department` thành khoá ngoại tới `departments(code)`; bật RLS trên mọi bảng; client chỉ đọc bảng giao dịch qua 5 RPC `SECURITY DEFINER` (`kudos_feed`, `kudos_highlight`, `kudos_spotlight`, `kudos_my_stats`, `kudos_latest_gift_recipients`) vì Kudo ẩn danh phải giấu `sender_id` mà RLS không giấu được cột.
+- Test: unit `format-kudo-time`, `get-kudos-board-data`, `hero-title`, `kudo-plain-text`, `kudos-validation`, `load-more-kudos-action`, `pan-zoom`, `parse-kudos-filters`, `spotlight-layout` (và `routes`); E2E `tests/e2e/sun-kudos.spec.ts`, `sun-kudos-feed.spec.ts` (dữ liệu giả `support/kudos-fixtures.mjs`, `kudos-contract.ts`; `fake-supabase-server.mjs` thêm route `/rest/v1`).
+- Giới hạn đã biết:
+  - SQL đã chạy trên Supabase thật ngày 2026-10-15 (migration, seed demo, verify 20/20 PASS); E2E vẫn chạy với Supabase giả.
+  - Câu hỏi mở với BTC: tim cộng cho người gửi hay người nhận Kudo. Hiện `kudos_my_stats.hearts_received` tính tim trên Kudo mà người dùng đã gửi; đổi ý chỉ sửa một dòng RPC.
+  - Chỉ đọc: tim, soạn Kudo, tìm hồ sơ, trang chi tiết Kudo và trang hồ sơ thuộc các tính năng sau (#12, #13...); trái tim trên thẻ chưa bấm được, nút soạn Kudo và ô tìm hồ sơ chỉ hiển thị (`aria-disabled`).
+  - Chưa có F###/spec riêng cho Kudos (không chạy SDD); nếu cần thì chạy `/tkm:rebuild-spec --features`.
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`.
+
 ## 2026-10-14
 
 ### Thêm: đa ngôn ngữ VI/EN (tính năng #10)
