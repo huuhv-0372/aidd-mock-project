@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "aidd-mock-project",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_public"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      // Must match "name": OpenNext calls back into this Worker for cache revalidation.
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "aidd-mock-project"
+    }
+  ],
+  // next/image optimization on Workers goes through Cloudflare Images.
+  "images": {
+    "binding": "IMAGES"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // Non-secret runtime config only. Supabase URL/publishable key are set per environment in the
+  // dashboard (or `wrangler secret put`); keep_vars stops each deploy from wiping them.
+  "keep_vars": true,
+  "vars": {
+    "EVENT_START_AT": "2026-10-16T09:00:00+07:00",
+    "AWARDS_CEREMONY_AT": "2026-12-26T18:30:00+07:00"
+  }
+}

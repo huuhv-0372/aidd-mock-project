@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // OpenNext / Wrangler build output.
+    ".open-next/**",
+    ".wrangler/**",
     // Takumi agent kit (gitignored tooling, not project source).
     ".claude/**",
     // Test runner artifacts.

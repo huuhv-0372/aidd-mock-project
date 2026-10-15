@@ -5,8 +5,10 @@ const nextConfig: NextConfig = {
   experimental: {
     agentFeedback: true,
   },
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Off until OpenNext ships workerd staged rendering (opennextjs-cloudflare#1318): with Cache
+  // Components on, any route streaming a dynamic <Suspense> hangs on Workers (error 1101).
+  cacheComponents: false,
+  partialPrefetching: false,
   turbopack: {
     rules: {
       "*.css": {

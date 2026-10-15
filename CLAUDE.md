@@ -30,7 +30,11 @@ Backend/DB/Auth dùng **Supabase**. UI dựng bằng Tailwind CSS v4 (CSS-first,
 - `middleware.ts` đã đổi tên thành `proxy.ts` ở Next.js 16 — mặc định chạy **Node.js runtime** (không đặt được
   `runtime` trong proxy). Dù vậy, code proxy chỉ dùng Web API (Web Crypto, không `fs`/`path`) để chạy ổn trên
   Cloudflare Workers qua OpenNext.
-- Giữ các flag `cacheComponents`, `partialPrefetching` đã bật trong `next.config.ts` — OpenNext hỗ trợ tốt.
+- `cacheComponents`, `partialPrefetching` đang **tắt** trong `next.config.ts`: bật lên thì route có
+  `<Suspense>` động bị treo trên Workers (lỗi 1101, opennextjs-cloudflare#1318). Chỉ bật lại khi bản
+  OpenNext có bản sửa đó và đã chạy thử bằng `npm run preview`.
+- `patches/@opennextjs+cloudflare+*.patch` (áp qua `postinstall`) vá lỗi `preview-props.json` của Next 16.4
+  (opennextjs-cloudflare#1356). Xoá patch và bỏ ghim phiên bản khi upstream phát hành bản sửa.
 - Bí mật/biến môi trường: `wrangler secret put` cho production, không để secret thật trong `vars` của
   `wrangler.jsonc` (dễ bị commit nhầm dạng plaintext).
 - Đẩy `"use client"` xuống component lá nhỏ nhất; Server Component giữ phần layout tĩnh để tận dụng cache/prefetch.
