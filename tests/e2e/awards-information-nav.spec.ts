@@ -1,4 +1,4 @@
-// Awards Information navigation: sticky scroll-spy nav, hash landing, unknown hash, Chi tiết -> SAA 404, mobile 375.
+// Awards Information navigation: sticky scroll-spy nav, hash landing, unknown hash, Chi tiết -> live /sun-kudos, mobile 375.
 // Selector contract: see the header of awards-information.spec.ts (nav = awards-nav / awards-nav-item, active =
 // aria-current="true"). Section band tolerance: section top must sit in [40px, 540px] of a 900px viewport, i.e.
 // below the sticky bars and inside the top of the screen. Scroll assertions use expect.poll, never fixed sleeps.
@@ -112,14 +112,13 @@ test.describe("Awards Information: navigation (authenticated, 1440)", () => {
     expect(errors).toEqual([]);
   });
 
-  test("ID-12/14 'Chi tiết' opens /sun-kudos: HTTP 404, friendly SAA page, link back home", async ({ page, request }) => {
+  test("ID-12/14 'Chi tiết' opens the live /sun-kudos board (HTTP 200), header link goes back home", async ({ page, request }) => {
     await openAwards(page, request);
     await page.getByTestId("kudos-section").getByRole("link", { name: "Chi tiết", exact: true }).click();
     await page.waitForURL((u) => u.pathname === "/sun-kudos");
-    expect((await page.request.get(`${AUTHED}/sun-kudos`)).status()).toBe(404);
-    await expect(page.getByRole("heading", { name: "Không tìm thấy trang" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Về trang chủ" })).toHaveAttribute("href", "/");
-    await page.getByRole("link", { name: "Về trang chủ" }).click();
+    expect((await page.request.get(`${AUTHED}/sun-kudos`)).status()).toBe(200);
+    await expect(page.getByTestId("kudos-kv")).toBeVisible();
+    await page.getByRole("banner").getByRole("link", { name: "About SAA 2025" }).click();
     await page.waitForURL((u) => u.pathname === "/");
     expect(pathOf(page)).toBe("/");
   });

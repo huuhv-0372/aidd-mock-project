@@ -4,6 +4,7 @@
 // signature against this server's JWKS (a fresh keypair + random kid per start).
 import { createServer } from "node:http";
 import { generateKeyPairSync, sign, verify, randomUUID } from "node:crypto";
+import { kudosCatalog, kudosRpc } from "./kudos-fixtures.mjs";
 
 const PORT = Number(process.env.E2E_FAKE_SUPABASE_PORT || 54398);
 const HOST = "127.0.0.1";
@@ -52,9 +53,9 @@ function buildUser(sub) {
   };
 }
 
-function mint(forged) {
+function mint(forged, subOverride) {
   const now = Math.floor(Date.now() / 1000);
-  const sub = randomUUID();
+  const sub = subOverride || randomUUID();
   const sessionId = randomUUID();
   const claims = {
     sub, email: EMAIL, aud: "authenticated", role: "authenticated", session_id: sessionId,
@@ -81,9 +82,39 @@ function send(res, status, body) {
 
 const bearer = (req) => (req.headers.authorization || "").replace(/^Bearer\s+/i, "");
 
+async function readJson(req) {
+  let raw = "";
+  for await (const chunk of req) raw += chunk;
+  return raw ? JSON.parse(raw) : {};
+}
+
+/** PostgREST subset for Kudos: POST /rest/v1/rpc/<fn> and GET /rest/v1/<catalog>. Caller = verified JWT sub. */
+async function handleRest(req, res, url) {
+  const name = url.pathname.slice("/rest/v1/".length);
+  const caller = verifyJwt(bearer(req));
+  const sub = caller ? caller.sub : null;
+  if (req.method === "POST" && name.startsWith("rpc/")) {
+    const result = kudosRpc(name.slice("rpc/".length), await readJson(req), sub);
+    if (result === undefined) return send(res, 404, { code: "PGRST202", message: `no function ${name}` });
+    return send(res, 200, result);
+  }
+  if (req.method === "GET") {
+    const rows = kudosCatalog(name);
+    if (rows !== undefined) return send(res, 200, rows);
+  }
+  return send(res, 404, { code: "PGRST205", message: `fake-supabase: no route ${req.method} ${url.pathname}` });
+}
+
 createServer((req, res) => {
   const url = new URL(req.url || "/", `http://${HOST}:${PORT}`);
   const route = `${req.method} ${url.pathname}`;
+  if (url.pathname.startsWith("/rest/v1/")) {
+    handleRest(req, res, url).catch((error) => {
+      console.error("[fake-supabase]", error);
+      send(res, 500, { code: 500, msg: "fake-supabase error" });
+    });
+    return;
+  }
   try {
     switch (route) {
       case "GET /health":
@@ -102,7 +133,7 @@ createServer((req, res) => {
         return res.end();
       }
       case "GET /__mint":
-        return send(res, 200, mint(url.searchParams.get("forged") === "1"));
+        return send(res, 200, mint(url.searchParams.get("forged") === "1", url.searchParams.get("sub") || undefined));
       case "GET /__logout-seen":
         return send(res, 200, { seen: loggedOutSessions.has(url.searchParams.get("session")) });
       default:
