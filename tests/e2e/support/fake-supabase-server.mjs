@@ -5,6 +5,7 @@
 import { createServer } from "node:http";
 import { generateKeyPairSync, sign, verify, randomUUID } from "node:crypto";
 import { kudosCatalog, kudosRpc } from "./kudos-fixtures.mjs";
+import { handleStorage, kudoControl, mergeCreatedKudos, writeKudoRpc } from "./write-kudo-fixtures.mjs";
 
 const PORT = Number(process.env.E2E_FAKE_SUPABASE_PORT || 54398);
 const HOST = "127.0.0.1";
@@ -94,9 +95,13 @@ async function handleRest(req, res, url) {
   const caller = verifyJwt(bearer(req));
   const sub = caller ? caller.sub : null;
   if (req.method === "POST" && name.startsWith("rpc/")) {
-    const result = kudosRpc(name.slice("rpc/".length), await readJson(req), sub);
+    const fn = name.slice("rpc/".length);
+    const body = await readJson(req);
+    const written = await writeKudoRpc(fn, body, sub); // create_kudo, kudos_search_sunners (write-kudo-fixtures.mjs)
+    if (written) return send(res, written.status, written.body);
+    const result = kudosRpc(fn, body, sub);
     if (result === undefined) return send(res, 404, { code: "PGRST202", message: `no function ${name}` });
-    return send(res, 200, result);
+    return send(res, 200, mergeCreatedKudos(fn, body, sub, result));
   }
   if (req.method === "GET") {
     const rows = kudosCatalog(name);
@@ -105,13 +110,22 @@ async function handleRest(req, res, url) {
   return send(res, 404, { code: "PGRST205", message: `fake-supabase: no route ${req.method} ${url.pathname}` });
 }
 
-createServer((req, res) => {
+const server = createServer((req, res) => {
   const url = new URL(req.url || "/", `http://${HOST}:${PORT}`);
   const route = `${req.method} ${url.pathname}`;
   if (url.pathname.startsWith("/rest/v1/")) {
     handleRest(req, res, url).catch((error) => {
       console.error("[fake-supabase]", error);
       send(res, 500, { code: 500, msg: "fake-supabase error" });
+    });
+    return;
+  }
+  const control = kudoControl(url.pathname, url.searchParams);
+  if (control !== undefined) return send(res, 200, control);
+  if (url.pathname.startsWith("/storage/v1/")) {
+    handleStorage(req, res, url, verifyJwt(bearer(req))?.sub ?? null).catch((error) => {
+      console.error("[fake-supabase]", error);
+      send(res, 500, { statusCode: "500", error: "fake-supabase error" });
     });
     return;
   }
@@ -144,4 +158,8 @@ createServer((req, res) => {
     console.error("[fake-supabase]", error);
     return send(res, 500, { code: 500, msg: "fake-supabase error" });
   }
-}).listen(PORT, HOST, () => console.log(`[fake-supabase] listening on http://${HOST}:${PORT}`));
+});
+// Node drops idle keep-alive sockets after 5 s; a slow test then reuses a socket the server just closed (ECONNRESET on
+// /__kudo-log). Keep them longer than any test's idle gap.
+server.keepAliveTimeout = 30_000;
+server.listen(PORT, HOST, () => console.log(`[fake-supabase] listening on http://${HOST}:${PORT}`));

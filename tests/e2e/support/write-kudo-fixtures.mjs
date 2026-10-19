@@ -1,0 +1,219 @@
+// Test-only write side of the Kudos fake Supabase (see fake-supabase-server.mjs): create_kudo, kudos_search_sunners,
+// Storage bucket "kudo-images", and per-caller control/log endpoints. It mirrors the SQL rules of phase 02
+// (supabase/migrations/20261019110000_create_kudo_write.sql) one to one, in the same check order, with PostgREST-shaped
+// errors (HTTP 400, code 22023, message = short code). Lesson #11: a lenient fake hides real SQL leaks, so keep it strict.
+// Isolation: created kudos, uploads and logs are keyed by the caller's JWT sub, so a test never shows up in another
+// test's feed (other specs count the 28 base kudos). Ids are NOT RFC 4122 v4 (zod z.guid lesson).
+import { HASHTAGS, KUDOS, PEOPLE } from "./kudos-fixtures.mjs";
+
+const BUCKET = "kudo-images";
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MIMES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const BASE_FLOOR_MS = Date.parse("2026-10-15T00:00:00+07:00"); // newer than every base kudo (newest 2026-10-14)
+// Same shape as create_kudo's regex: scheme://host/storage/v1/object/public/kudo-images/{uuid}.{ext}, capture = object name.
+const IMAGE_URL = new RegExp(`^https?://[^/?#@\\s]+/storage/v1/object/public/${BUCKET}/([0-9a-f-]{36}\\.(?:jpg|png|webp))$`);
+const sunnerId = (n) => `2a000000-0000-0000-0000-${String(n).padStart(12, "0")}`;
+
+/** Postgres unaccent + lower (đ is not decomposed by NFD). */
+const fold = (s) => String(s).toLowerCase().replace(/đ/g, "d").normalize("NFD").replace(/\p{M}/gu, "");
+const chars = (s) => [...String(s)].length; // char_length counts code points
+/** Company address of a fixture Sunner: folded name, dots between words ("Nguyễn Văn An" -> nguyen.van.an@sun-asterisk.com). */
+export const sunnerEmail = (fullName) => `${fold(fullName).trim().split(/\s+/).join(".")}@sun-asterisk.com`;
+
+/** Searchable Sunners: the 24 base people + extras (name search, "Nguyễn Văn An", >10 matches for the limit case). */
+export const SUNNERS = [
+  ...Object.entries(PEOPLE).filter(([key]) => key !== "viewer")
+    .map(([key, [full_name, department]]) => ({ id: sunnerId(Number(key.slice(1))), full_name, avatar_url: null, department })),
+  { id: sunnerId(101), full_name: "Nguyễn Văn An", avatar_url: null, department: "CEVC1" },
+  { id: sunnerId(102), full_name: "Nguyễn Văn Bình", avatar_url: null, department: "CEVC2" },
+  { id: sunnerId(103), full_name: "Trần Văn An", avatar_url: null, department: "STVC" },
+  ...Array.from({ length: 12 }, (_, i) => ({
+    id: sunnerId(110 + i), full_name: `Sunner Tester ${String(i + 1).padStart(2, "0")}`, avatar_url: null, department: "CEVC3",
+  })),
+];
+export const sunnerIdByName = (name) => SUNNERS.find((s) => s.full_name === name)?.id;
+// Searchable like profiles.email, but kept out of the SUNNERS objects: those are spread into feed JSON, which never carries email.
+const EMAILS = new Map(SUNNERS.map((s) => [s.id, sunnerEmail(s.full_name)]));
+const SELF = { full_name: "E2E User", avatar_url: null, department: "CEVC1" }; // the signed-in caller (id = JWT sub)
+
+const CREATED = []; // { id, created_at, sender_sub, recipient, title, content, hashtags, images, anon, alias }
+const states = new Map();
+const objects = new Map(); // flat "<uuid>.<ext>" -> { owner, bytes, mime }; owner = the upload's JWT sub (storage.objects.owner_id)
+const stateOf = (sub) => {
+  if (!states.has(sub)) states.set(sub, { rpc: [], uploads: [], deletes: [], failRpc: false, delayMs: 0 });
+  return states.get(sub);
+};
+const pgError = (message, status = 400, code = "22023") => ({ status, body: { code, details: null, hint: null, message } });
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function findRecipient(id, sub) {
+  if (id === sub) return { id: sub, ...SELF };
+  return SUNNERS.find((s) => s.id === id);
+}
+
+function personJson(p, sub) {
+  const key = Object.keys(PEOPLE).find((k) => k !== "viewer" && sunnerId(Number(k.slice(1))) === p.id);
+  const received = KUDOS.filter((k) => (p.id === sub ? k.recipient_key === "viewer" : k.recipient_key === key));
+  const senders = new Set(received.filter((k) => !k.is_anonymous).map((k) => k.sender_key));
+  return { ...p, kudos_received: received.length, distinct_senders: senders.size };
+}
+
+function searchSunners({ p_query, p_limit, p_name_only }, sub) {
+  if (!sub) return [];
+  const q = fold(String(p_query ?? "").trim());
+  const nameOnly = p_name_only === true;
+  const limit = Math.min(Math.max(Number(p_limit ?? 10) || 1, 1), 10);
+  // SQL: blank query -> Sunners that have a name, by full_name then id. Otherwise name (accent-insensitive) OR, unless
+  // p_name_only ("@ + tên"), email substring; order = exact email first (never under p_name_only), then full_name, then id.
+  const exact = (s) => !nameOnly && EMAILS.get(s.id) === q;
+  const hit = (s) => (q ? fold(s.full_name).includes(q) || (!nameOnly && EMAILS.get(s.id).includes(q)) : Boolean(s.full_name?.trim()));
+  return SUNNERS.filter(hit)
+    .sort((a, b) => Number(exact(b)) - Number(exact(a)) || a.full_name.localeCompare(b.full_name, "vi") || a.id.localeCompare(b.id))
+    .slice(0, limit)
+    .map(({ id, full_name, avatar_url, department }) => ({ id, full_name, avatar_url, department })); // never email
+}
+
+function validate(p, sub) {
+  if (!sub) return "forbidden";
+  const recipient = findRecipient(p.p_recipient_id, sub);
+  if (!recipient || recipient.id === sub) return "invalid_recipient";
+  const title = String(p.p_title ?? "").trim();
+  if (chars(title) < 1 || chars(title) > 100) return "invalid_title";
+  const content = String(p.p_content ?? "");
+  if (!content.trim() || chars(content) > 5000) return "invalid_content";
+  const slugs = Array.isArray(p.p_hashtag_slugs) ? p.p_hashtag_slugs : [];
+  if (slugs.length < 1 || slugs.length > 5 || new Set(slugs).size !== slugs.length
+    || !slugs.every((s) => HASHTAGS.some((h) => h.slug === s))) return "invalid_hashtags";
+  const urls = Array.isArray(p.p_image_urls) ? p.p_image_urls : [];
+  // Flat name, no uid (an anonymous Kudo's image URL must not identify the sender); ownership is owner_id, not the path.
+  const imageOk = (url) => {
+    const m = IMAGE_URL.exec(String(url));
+    return Boolean(m) && objects.get(m[1])?.owner === sub;
+  };
+  if (urls.length > 5 || new Set(urls).size !== urls.length || !urls.every(imageOk)) return "invalid_images";
+  if (!p.p_is_anonymous && p.p_anonymous_name != null) return "invalid_alias";
+  if (p.p_is_anonymous && chars(String(p.p_anonymous_name ?? "").trim()) > 50) return "invalid_alias";
+  return null;
+}
+
+async function createKudo(p, sub) {
+  const state = stateOf(sub || "anonymous");
+  if (state.delayMs) await sleep(state.delayMs);
+  const code = validate(p, sub);
+  if (code) return pgError(code);
+  if (state.failRpc) return pgError("fake: injected failure boom-secret-detail", 500, "XX000");
+  const id = `c2000000-0000-0000-0000-${String(CREATED.length + 1).padStart(12, "0")}`;
+  const alias = p.p_is_anonymous ? String(p.p_anonymous_name ?? "").trim() || null : null;
+  CREATED.push({
+    id, sender_sub: sub, created_at: new Date(Math.max(Date.now(), BASE_FLOOR_MS) + CREATED.length).toISOString(),
+    recipient: findRecipient(p.p_recipient_id, sub), title: String(p.p_title).trim(), content: p.p_content,
+    hashtags: HASHTAGS.filter((h) => p.p_hashtag_slugs.includes(h.slug)), images: p.p_image_urls ?? [],
+    anon: Boolean(p.p_is_anonymous), alias,
+  });
+  return { status: 200, body: id };
+}
+
+/** POST /rest/v1/rpc/<fn> for the write RPCs; undefined = not mine. Every call is logged per caller. */
+export async function writeKudoRpc(name, body, sub) {
+  if (name !== "create_kudo" && name !== "kudos_search_sunners") return undefined;
+  stateOf(sub || "anonymous").rpc.push({ name, body });
+  if (name === "create_kudo") return createKudo(body, sub);
+  return { status: 200, body: searchSunners(body, sub) };
+}
+
+const rowOf = (k, sub) => ({
+  id: k.id, created_at: k.created_at, title: k.title, content: k.content, is_anonymous: k.anon, anonymous_name: k.alias,
+  heart_count: 0, liked_by_me: false, is_mine: true,
+  sender: k.anon ? null : personJson({ id: sub, ...SELF }, sub), recipient: personJson(k.recipient, sub),
+  hashtags: k.hashtags.map(({ slug, name_vi, name_en }) => ({ slug, name_vi, name_en })), images: k.images,
+});
+
+/** The caller's own new kudos lead page 1 of kudos_feed (they are newer than every base kudo). */
+export function mergeCreatedKudos(name, body, sub, rows) {
+  if (name !== "kudos_feed" || !sub || (body.p_cursor_created_at && body.p_cursor_id)) return rows;
+  const mine = CREATED.filter((k) => k.sender_sub === sub
+    && (!body.p_hashtag || k.hashtags.some((h) => h.slug === body.p_hashtag))
+    && (!body.p_department || k.recipient.department === body.p_department))
+    .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at) || b.id.localeCompare(a.id));
+  return [...mine.map((k) => rowOf(k, sub)), ...rows].slice(0, Math.min(Math.max(Number(body.p_limit ?? 10) || 1, 1), 20));
+}
+
+/** Test-only control endpoints (GET, keyed by ?sub=): /__kudo-log, /__kudo-fail-rpc, /__kudo-delay?ms=. */
+export function kudoControl(pathname, params) {
+  if (!pathname.startsWith("/__kudo-")) return undefined;
+  const sub = params.get("sub") || "anonymous";
+  const state = stateOf(sub);
+  if (pathname === "/__kudo-fail-rpc") state.failRpc = true;
+  else if (pathname === "/__kudo-delay") state.delayMs = Number(params.get("ms") || 0);
+  else if (pathname === "/__kudo-log") {
+    const own = [...objects].filter(([, o]) => o.owner === sub).map(([path]) => path);
+    return { rpc: state.rpc, uploads: state.uploads, deletes: state.deletes, objects: own };
+  }
+  return { ok: true };
+}
+
+// ---- Storage: POST|PUT /storage/v1/object/kudo-images/<name>, DELETE (single or {prefixes}), public GET ----
+async function readBuffer(req) {
+  const parts = [];
+  for await (const chunk of req) parts.push(chunk);
+  return Buffer.concat(parts);
+}
+
+/** supabase-js sends a File/Blob as multipart (unnamed part with filename) and a Buffer as the raw body. */
+function extractFile(buf, contentType) {
+  const m = /multipart\/form-data;\s*boundary=(?:"([^"]+)"|([^;]+))/i.exec(contentType || "");
+  if (!m) return { bytes: buf, mime: String(contentType || "").split(";")[0].trim() };
+  const boundary = Buffer.from(`--${m[1] || m[2]}`);
+  for (let pos = buf.indexOf(boundary); pos !== -1;) {
+    const next = buf.indexOf(boundary, pos + boundary.length);
+    if (next === -1) break;
+    const part = buf.subarray(pos + boundary.length + 2, next - 2);
+    const split = part.indexOf("\r\n\r\n");
+    const head = part.subarray(0, split).toString("latin1");
+    if (/filename=/i.test(head)) {
+      const mime = /content-type:\s*([^\r\n;]+)/i.exec(head)?.[1]?.trim() ?? "";
+      return { bytes: part.subarray(split + 4), mime };
+    }
+    pos = next;
+  }
+  return { bytes: Buffer.alloc(0), mime: "" };
+}
+
+export async function handleStorage(req, res, url, sub) {
+  const reply = (status, body, headers = { "content-type": "application/json" }) => {
+    res.writeHead(status, headers);
+    res.end(Buffer.isBuffer(body) ? body : JSON.stringify(body));
+  };
+  const denied = () => reply(403, { statusCode: "403", error: "Unauthorized", message: "new row violates row-level security policy" });
+  const root = `/storage/v1/object/${BUCKET}`;
+  const publicRoot = `/storage/v1/object/public/${BUCKET}/`;
+  const path = decodeURIComponent(url.pathname.slice(root.length + 1));
+  if (req.method === "GET" && url.pathname.startsWith(publicRoot)) {
+    const o = objects.get(decodeURIComponent(url.pathname.slice(publicRoot.length)));
+    return o ? reply(200, o.bytes, { "content-type": o.mime }) : reply(404, { statusCode: "404", error: "not_found", message: "Object not found" });
+  }
+  if (!sub) return denied();
+  const state = stateOf(sub);
+  if ((req.method === "POST" || req.method === "PUT") && url.pathname.startsWith(`${root}/`)) {
+    const { bytes, mime } = extractFile(await readBuffer(req), req.headers["content-type"]);
+    // INSERT policy: signed-in caller; the row's owner_id is the JWT sub (Storage sets it, the client cannot). The name is not
+    // restricted here, as in the real policy: create_kudo is what refuses anything but a flat {uuid}.{ext} owned by the sender.
+    if (!path) return denied();
+    if (!MIMES.has(mime)) return reply(415, { statusCode: "415", error: "invalid_mime_type", message: `mime type ${mime} is not supported` });
+    if (bytes.length > MAX_IMAGE_BYTES) return reply(413, { statusCode: "413", error: "Payload too large", message: "The object exceeded the maximum allowed size" });
+    if (objects.has(path) && req.headers["x-upsert"] !== "true") return reply(409, { statusCode: "409", error: "Duplicate", message: "The resource already exists" });
+    objects.set(path, { owner: sub, bytes, mime });
+    state.uploads.push({ path, size: bytes.length, mime, magic: bytes.subarray(0, 4).toString("hex") });
+    return reply(200, { Id: path, Key: `${BUCKET}/${path}` });
+  }
+  if (req.method === "DELETE") {
+    const prefixes = url.pathname === root ? (JSON.parse((await readBuffer(req)).toString() || "{}").prefixes ?? []) : [path];
+    const removed = prefixes.filter((p) => objects.get(p)?.owner === sub); // RLS: only the caller's own objects
+    for (const p of removed) {
+      objects.delete(p);
+      state.deletes.push(p);
+    }
+    return reply(200, url.pathname === root ? removed.map((name) => ({ name, bucket_id: BUCKET, owner: sub })) : { message: "Successfully deleted" });
+  }
+  return reply(404, { statusCode: "404", error: "not_found", message: `fake-supabase: no storage route ${req.method} ${url.pathname}` });
+}

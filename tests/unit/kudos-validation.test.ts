@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   departmentSchema,
   giftRecipientSchema,
@@ -92,5 +92,58 @@ describe("loadMoreKudosInputSchema", () => {
     ["empty filter", { cursor: CURSOR, department: "" }],
   ])("rejects %s", (_name, input) => {
     expect(loadMoreKudosInputSchema.safeParse(input).success).toBe(false);
+  });
+});
+
+describe("kudoRowSchema image allow-list", () => {
+  const SUPABASE = "http://127.0.0.1:54321";
+  const row = (images: string[]) => ({
+    ...structuredClone((kudosRpc("kudos_feed", { p_limit: 1 }, SUB) as Record<string, unknown>[])[0]),
+    images,
+  });
+  const parse = (images: string[]) => {
+    const result = kudoRowSchema.safeParse(row(images));
+    if (!result.success) throw new Error("row should parse");
+    return result.data.images;
+  };
+
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", SUPABASE);
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_test");
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it("keeps internal /images paths and images served by the configured Supabase origin", () => {
+    const own = `${SUPABASE}/storage/v1/object/public/kudo-images/u/a.jpg`;
+    expect(parse(["/images/kudos/demo/kudo-photo-01.jpg", own])).toEqual(["/images/kudos/demo/kudo-photo-01.jpg", own]);
+  });
+
+  it("drops images from any other host, scheme or path shape", () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const own = `${SUPABASE}/storage/v1/object/public/kudo-images/u/a.jpg`;
+    expect(
+      parse([
+        "https://evil.example/pixel.png",
+        `http://127.0.0.1:9999/storage/v1/object/public/kudo-images/u/a.jpg`,
+        "//evil.example/images/x.png",
+        "/\\evil.example/images/x.png",
+        "/images/../secret.png",
+        "/uploads/x.png",
+        "javascript:alert(1)",
+        "data:image/png;base64,AAAA",
+        "not a url",
+        own,
+      ]),
+    ).toEqual([own]);
+  });
+
+  it("falls back to internal paths only when the Supabase env is missing", () => {
+    vi.unstubAllEnvs();
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(parse(["/images/a.jpg", `${SUPABASE}/storage/v1/object/public/kudo-images/u/a.jpg`])).toEqual(["/images/a.jpg"]);
   });
 });
