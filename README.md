@@ -1,6 +1,6 @@
 # SAA 2025 (AIDD mock project)
 
-Next.js 16 (App Router, TypeScript) + Tailwind CSS v4. Supabase Auth (Google login, `@sun-asterisk.com` accounts only) is wired in; Cloudflare Workers (OpenNext) is planned but **not installed yet**. See `CLAUDE.md` for the target stack and conventions.
+Next.js 16 (App Router, TypeScript) + Tailwind CSS v4. Supabase Auth (Google login, `@sun-asterisk.com` accounts only) is wired in; it deploys to Cloudflare Workers through OpenNext (`wrangler.jsonc`, `open-next.config.ts`). See `CLAUDE.md` for the stack and conventions.
 
 ## Run
 
@@ -17,6 +17,8 @@ npm run dev                  # http://localhost:3000
 | `npm run start` | Serve the production build |
 | `npm run lint` | ESLint |
 | `npm test` | Unit tests (Vitest, `tests/unit/`) |
+| `npm run preview` | OpenNext build, then a local workerd preview of the Worker |
+| `npm run deploy` | OpenNext build, then `opennextjs-cloudflare deploy` |
 | `npm run test:e2e` | `next build` then Playwright (`tests/e2e/`); starts four app servers on ports 3100-3103 plus a test-only fake Supabase on 127.0.0.1:54398 |
 
 First time running e2e: `npx playwright install chromium`.
@@ -40,13 +42,13 @@ After the gate, `proxy.ts` refreshes the session and an anonymous visitor may op
 
 ## Homepage (`/`)
 
-The SAA homepage (`app/[locale]/page.tsx`, `components/home/` plus the shared shell in `components/site-shell/`, images in `public/images/home/`) is reachable only after launch, and is public: guests and signed-in users both get it. Its countdown targets the awards ceremony time from the server-only env `AWARDS_CEREMONY_AT` (ISO 8601 with an explicit offset, e.g. `2026-12-26T18:30:00+07:00`; see `.env.example`), read in `lib/event/get-awards-ceremony-at.ts`. `EVENT_START_AT` only drives the prelaunch gate. If `AWARDS_CEREMONY_AT` is missing or invalid, the server logs `[home-countdown] AWARDS_CEREMONY_AT missing or invalid` and the countdown shows `00` with "Coming soon" hidden (same once the time has passed). Production must set it on the Worker (`wrangler.jsonc` vars) once that file exists.
+The SAA homepage (`app/[locale]/page.tsx`, `components/home/` plus the shared shell in `components/site-shell/`, images in `public/images/home/`) is reachable only after launch, and is public: guests and signed-in users both get it. Its countdown targets the awards ceremony time from the server-only env `AWARDS_CEREMONY_AT` (ISO 8601 with an explicit offset, e.g. `2026-12-26T18:30:00+07:00`; see `.env.example`), read in `lib/event/get-awards-ceremony-at.ts`. `EVENT_START_AT` only drives the prelaunch gate. If `AWARDS_CEREMONY_AT` is missing or invalid, the server logs `[home-countdown] AWARDS_CEREMONY_AT missing or invalid` and the countdown shows `00` with "Coming soon" hidden (same once the time has passed). On the Worker it is a `vars` entry in `wrangler.jsonc`.
 
 - Header controls depend on the session, read on the server by `components/site-shell/header-session-controls.tsx` (`getIsAuthenticated()` in `lib/auth/get-is-authenticated.ts`, verified with `getClaims()`; any failure counts as a guest). It sits inside `<Suspense>` with a same-size placeholder as fallback, so `/` stays Partial Prerender. Signed in: notification bell plus account menu. Guest: a "Đăng nhập" link to `/login` (`components/site-shell/login-link.tsx`). The language selector is always shown.
 - Account menu (signed in only): Profile (`/profile`) and Sign out. Sign out is the server action `lib/auth/sign-out.ts` (`scope: local`, this browser only) and always ends on `/login`. No Admin Dashboard item (no roles yet).
 - The notification bell (signed in only) opens an empty panel (no notification data yet). The language selector (`components/ui/language-selector.tsx`, shared with `/login`) switches VI/EN (see Language below).
 - Nav, CTA and award links point to `/awards-information` (with `#<slug>` per award), `/sun-kudos`, `/tieu-chuan-chung`, `/profile` (constants in `lib/navigation/routes.ts`). `/awards-information` and `/sun-kudos` are built (see below); the other two are not and show the SAA 404 page (`app/[locale]/not-found.tsx`).
-- Hero image is now a ~315 KB WebP (`public/images/home/keyvisual-bg.webp`). Before deploy: add the Cloudflare images binding (`next/image` optimization on OpenNext).
+- Hero image is now a ~315 KB WebP (`public/images/home/keyvisual-bg.webp`). `next/image` optimization on the Worker goes through the `IMAGES` binding in `wrangler.jsonc`.
 
 ## Awards Information (`/awards-information`)
 
@@ -54,9 +56,26 @@ The awards page (`app/[locale]/awards-information/page.tsx`, blocks in `componen
 
 ## Sun* Kudos (`/sun-kudos`)
 
-The Live board (`app/[locale]/sun-kudos/page.tsx`, blocks in `components/kudos/`, data and helpers in `lib/kudos/`) is not in `PUBLIC_PATHS`, so it needs a signed-in user. It is read-only for now: Highlight Kudos, the Spotlight Board (streamed in its own `<Suspense>`), All Kudos with infinite scroll (Server Action `loadMoreKudos`), personal stats and the latest gift recipients. The compose button and profile search are display-only, and hearts cannot be toggled yet. Filters live in the URL (`?hashtag=<slug>&department=<code>`; unknown values are ignored). Each block loads independently: a failed read is logged on the server and only that block shows a generic error.
+The Live board (`app/[locale]/sun-kudos/page.tsx`, blocks in `components/kudos/`, data and helpers in `lib/kudos/`) is not in `PUBLIC_PATHS`, so it needs a signed-in user. It shows Highlight Kudos, the Spotlight Board (streamed in its own `<Suspense>`), All Kudos with infinite scroll (Server Action `loadMoreKudos`), personal stats and the latest gift recipients. The compose pill opens the write modal (see Write Kudo below); the profile search is display-only and hearts cannot be toggled yet. Filters live in the URL (`?hashtag=<slug>&department=<code>`; unknown values are ignored). Each block loads independently: a failed read is logged on the server and only that block shows a generic error.
 
 Data comes from `supabase/migrations/20261015100000_create_kudos.sql`: ten tables with RLS on all of them, read only through five `SECURITY DEFINER` functions (`kudos_feed`, `kudos_highlight`, `kudos_spotlight`, `kudos_my_stats`, `kudos_latest_gift_recipients`), because an anonymous Kudo must hide its sender and RLS cannot hide a column. Apply it by hand like the profiles migration (it adds a foreign key on `profiles.department` and briefly locks `profiles`: run off-peak), then run `supabase/verify/20261015100000_create_kudos_verify.sql`. It was applied to the real Supabase project on 2026-10-15 and the verify script passed 20/20; run it the same way in each new environment. Rollback: `supabase/rollbacks/20261015100000_create_kudos_down.sql`. Demo data (demo environments only, never production): `supabase/seed/20261015_kudos_demo_seed.sql`, removed by `kudos_demo_seed_cleanup.sql`. Open product question: whether hearts count for the sender or the recipient (currently the sender, one line in `kudos_my_stats`). Details: `docs/codebase-summary.md`.
+
+## Write Kudo (#12)
+
+The floating widget on `/`, `/awards-information` and `/sun-kudos` (`components/site-shell/widget-button.tsx`) opens a menu: "Thể lệ" (rules panel), "Viết KUDOS" (write modal) and a close button. The pill A.1 on `/sun-kudos` opens the same modal. Each of the three pages is wrapped in `KudosComposer` (`components/kudos-compose/`). On `/`, which is public, the widget reads the session in its own `<Suspense>` (`WidgetSessionGate`): a guest can read the rules, and "Viết KUDOS" links to `/login`. The editor (Tiptap v3, `@tiptap/*` pinned to 3.31.4) is loaded client-side only, on first open.
+
+Recipient and mentions (`components/kudos-compose/recipient-picker.tsx`, `kudo-mention-extension.ts`): "Người nhận" takes plain text (matches name or email) or "@name" (names only). No match shows "Không tìm thấy Sunner phù hợp"; text typed but not picked shows "Hãy chọn người nhận trong danh sách gợi ý". In the editor, "@" lists Sunners at once, names may contain spaces, and the list closes when an unmatched `@word` continues as plain text. "+ Image" disappears once 5 images are attached; typed editor text is weight 500 (Figma only specifies the placeholder). The modal follows the Figma frame `ihQ26W78P2`; only the required asterisk uses `Noto_Sans_JP` 700 (`app/[locale]/layout.tsx`, `preload: false`).
+
+Sending goes through the Server Action `createKudo` (`lib/kudos/create-kudo-action.ts`; helpers `search-sunners-action.ts` and `get-hashtag-options-action.ts` are read-only):
+
+- Input is validated with zod (`lib/validation/write-kudo.ts`): title 1-100 characters, content 1-5000, 1-5 distinct hashtags, up to 5 images, alias up to 50 (anonymous only), link targets limited to `http(s)` and `@[Name](uuid)` mentions. Content is stored as the Markdown subset `**b** _i_ ~~s~~ 1. > [t](https://…) @[Name](uuid)` (`lib/kudos/kudo-content-markdown.ts`).
+- Images (`lib/kudos/kudo-image-file.ts`): type taken from the magic bytes (JPEG, PNG, WebP), at most 5 MB each, and personal metadata is stripped before upload (JPEG keeps only the Orientation tag; PNG and WebP metadata chunks and anything after the image are dropped). Files go to the Storage bucket `kudo-images` as flat `{uuid}.{ext}` objects, so the public URL of an anonymous Kudo does not reveal the sender.
+- `next.config.ts` sets `experimental.serverActions.bodySizeLimit` and `experimental.proxyClientMaxBodySize` to `26mb` (5 images of 5 MB plus text in one request). Raise both together.
+- Errors are logged on the server; the client only gets a generic code.
+
+Apply `supabase/migrations/20261019110000_create_kudo_write.sql` by hand like the others (needs the profiles and kudos migrations first), then run `supabase/verify/20261019110000_create_kudo_write_verify.sql` (every row must be PASS). Rollback: `supabase/rollbacks/20261019110000_create_kudo_write_down.sql`. It adds the RPCs `create_kudo` (the only write path; the sender is always `auth.uid()`) and `kudos_search_sunners(p_query, p_limit, p_name_only)` (name or email match with exact email first, `p_name_only` = names only, a blank query lists up to 10 named Sunners, never returns email), the helper `kudos_unaccent`, and the bucket `kudo-images` with own-object INSERT/SELECT/DELETE policies. **Status: run on the real Supabase project on 2026-10-19, verify 16/16 PASS**, plus one real authenticated upload (`plans/261019-1022-write-kudos/reports/db-verify-result.md`); run it the same way in each new environment. The E2E tests use a fake Supabase that mirrors this SQL.
+
+Known limits: sending 5 images of 5 MB passed on local workerd only; the Cloudflare 128 MB isolate limit is untested on a deployed Worker (risk accepted by the owner). `create_kudo` does not validate link targets in `content` (only the Server Action does), which is safe today because the board renders plain text; any future Markdown renderer must sanitise link targets on read. The English strings in `messages/en/kudos-compose.ts` are our own translations awaiting organizer review (`plans/261019-1022-write-kudos/reports/en-localizations.md`). Details: `docs/codebase-summary.md`.
 
 ## Login (Google via Supabase)
 

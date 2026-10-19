@@ -2,6 +2,27 @@
 
 Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi tiết mã nằm ở `git log`.
 
+## 2026-10-19
+
+### Thêm: Viết Kudo, widget nổi và panel Thể lệ (tính năng #12)
+
+- Widget nổi (`components/site-shell/widget-button.tsx`) nay mở menu: A "Thể lệ", B "Viết KUDOS", C đóng (Esc hoặc bấm ngoài cũng đóng). Có trên `/`, `/awards-information`, `/sun-kudos`; mỗi trang bọc trong `KudosComposer` (`components/kudos-compose/`), provider giữ trạng thái hai lớp phủ. Trang chủ công khai nên widget đọc phiên trong `Suspense` (`WidgetSessionGate`): khách xem được Thể lệ, còn "Viết KUDOS" dẫn sang `/login`.
+- Panel Thể lệ (`kudos-rules-*.tsx`, sáu huy hiệu ở `public/images/kudos/rules/`) và modal Viết Kudo: người nhận (gõ chữ thường thì tìm theo tên hoặc email, "@tên" chỉ tìm theo tên, không phân biệt dấu; không thấy thì hiện "Không tìm thấy Sunner phù hợp", gõ mà chưa chọn thì báo "Hãy chọn người nhận trong danh sách gợi ý"), tiêu đề, nội dung giàu định dạng (Tiptap v3, nạp phía client bằng `next/dynamic`; in đậm, nghiêng, gạch, danh sách số, trích dẫn, liên kết, `@` nhắc người: liệt kê Sunner ngay khi gõ "@", tên có dấu cách, tự đóng khi chữ sau "@" không khớp ai mà vẫn viết tiếp), 1–5 hashtag, tối đa 5 ảnh, ẩn danh kèm bí danh tuỳ chọn. Nút A.1 trên `/sun-kudos` (trước đây `aria-disabled`) nay mở modal; ô tìm hồ sơ vẫn chỉ hiển thị. Gửi xong modal đóng và route làm mới; `all-kudos-section` thêm id Kudo đầu vào khoá feed để danh sách khởi động lại từ trang 1.
+- Server Actions (`lib/kudos/`): `createKudo`, `searchSunners`, `getHashtagOptions`. Input qua zod `lib/validation/write-kudo.ts` (zod cũng chỉ cho liên kết `http(s)` và mention `@[Tên](uuid)`); `kudo-content-markdown.ts` đổi JSON của editor thành Markdown rút gọn (`**b** _i_ ~~s~~ 1. > [t](https://…) @[Tên](uuid)`); `kudo-plain-text.ts` trả lại ký tự đã thoát khi hiện chữ thuần. Lỗi chỉ log phía server, client nhận mã chung.
+- Ảnh (`kudo-image-file.ts` và `strip-*-metadata.ts`, `exif-orientation.ts`): kiểm byte đầu (không tin tên file hay MIME client), ≤ 5 MB, ≤ 5 ảnh; JPEG chỉ giữ Orientation, PNG và WebP bỏ chunk metadata, phần đuôi sau ảnh bị cắt. Chưa xác thực phiên thì không đọc byte ảnh nào. Upload hoặc RPC lỗi thì ảnh vừa tải bị xoá.
+- Phía đọc: `lib/validation/kudos.ts` chỉ giữ ảnh có đường dẫn `/images/` hoặc cùng origin Supabase (CSDL không ghim host của URL ảnh nên không tin dữ liệu đã lưu).
+- `next.config.ts`: `experimental.serverActions.bodySizeLimit` và `experimental.proxyClientMaxBodySize` cùng `26mb` (5 ảnh × 5 MB + chữ trong một Server Action; mặc định 1 MB và 10 MB). Thư viện mới: `@tiptap/*` 3.31.4 (chỉ vào chunk client; Worker gzip đo ngày 2026-10-19 là 2220.10 KiB, giới hạn free 3072 KiB).
+- Supabase (chạy tay): `supabase/migrations/20261019110000_create_kudo_write.sql` (kèm `rollbacks/…_down.sql`, `verify/…_verify.sql`). Thêm RPC `create_kudo` (`SECURITY DEFINER`; người gửi luôn là `auth.uid()`; lỗi SQLSTATE `22023` kèm mã ngắn), RPC `kudos_search_sunners(p_query, p_limit, p_name_only)` (`unaccent`, tìm theo tên hoặc email với email khớp nguyên xếp đầu, `p_name_only` chỉ tìm theo tên, chuỗi trống trả tối đa 10 Sunner có tên, không trả email, loại người gọi), hàm bọc `kudos_unaccent`, bucket công khai `kudo-images` (5 MiB, jpeg/png/webp, tên đối tượng phẳng `{uuid}.{ext}` không chứa id người gửi để Kudo ẩn danh không lộ người viết) với policy INSERT, SELECT, DELETE trên đối tượng của chính mình (`storage.objects.owner_id`).
+- Giao diện modal đối chiếu lại với khung Figma `ihQ26W78P2` (`plans/261019-1022-write-kudos/reports/figma-fidelity-viet-kudo.md`): nạp `Noto_Sans_JP` 700 chỉ cho dấu `*` bắt buộc (`app/[locale]/layout.tsx`), chữ gõ trong editor giữ đậm 500, nút "+ Image" ẩn khi đủ 5 ảnh (quyết định của chủ dự án).
+- Test: unit `write-kudo-validation`, `create-kudo-action`, `kudo-lookup-actions`, `kudo-content-markdown`, `strip-jpeg-metadata`, `strip-jpeg-orientation`, `strip-png-metadata`, `strip-webp-metadata` (và `kudo-plain-text`, `kudos-validation` mở rộng); E2E `tests/e2e/write-kudo.spec.ts`, `kudos-quick-actions.spec.ts` (Supabase giả mở rộng bằng `support/write-kudo-fixtures.mjs`, phản chiếu SQL; `fake-supabase-server.mjs` thêm route Storage và `keepAliveTimeout` 30 giây).
+- Giới hạn đã biết:
+  - SQL đã chạy trên Supabase thật ngày 2026-10-19: migration + file verify 16/16 PASS, kèm một lần gửi Kudo có ảnh và một Kudo ẩn danh thật qua Google (`plans/261019-1022-write-kudos/reports/db-verify-result.md`). E2E vẫn chạy với Supabase giả.
+  - Ghi chú bảo mật chưa xử lý: `create_kudo` không kiểm đích liên kết trong `content` (việc kiểm chỉ ở zod của Server Action, nên gọi thẳng RPC bằng publishable key vẫn lưu được liên kết tuỳ ý). An toàn hiện nay vì bảng render chữ thuần; renderer Markdown nào thêm sau này phải lọc đích liên kết khi đọc.
+  - Chuỗi EN của `messages/en/kudos-compose.ts` do nhóm tự dịch, chờ BTC duyệt (`plans/261019-1022-write-kudos/reports/en-localizations.md`).
+  - Chưa làm: tim, ô tìm hồ sơ ở banner, trang chi tiết Kudo và trang hồ sơ (các tính năng sau).
+  - Gửi một Kudo 5 ảnh × ~4.9 MB đã chạy được trên workerd cục bộ (`opennextjs-cloudflare preview`, Supabase giả), nhưng workerd cục bộ không áp giới hạn 128 MB của isolate nên chưa chứng minh được bản triển khai thật nằm trong giới hạn; chỉ triển khai lên Cloudflare thật mới kiểm được. Chủ dự án chấp nhận rủi ro này và giữ 5 MB mỗi ảnh.
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`.
+
 ## 2026-10-15
 
 ### Thêm: màn Sun* Kudos, bảng Live (`/sun-kudos`, tính năng #11)
@@ -31,7 +52,7 @@ Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi ti�
 - Test: `tests/unit/locale.test.ts`, `resolve-locale-rewrite.test.ts`, `rewrite-with-session.test.ts`, `set-locale-action.test.ts`; `tests/e2e/language-switch.spec.ts`.
 - Giới hạn đã biết:
   - Thân trang 404 render ở client (`components/not-found/not-found-content.tsx` đọc segment `locale` bằng `useParams`) vì `not-found.tsx` không nhận `params`, nên với `cacheComponents` phần chữ theo ngôn ngữ chỉ có sau khi client chạy.
-  - Chưa kiểm `Cache-Control: private, no-cache` trên OpenNext/Cloudflare (Cloudflare chưa cài; header mới được kiểm ở bản chạy cục bộ). `Vary: Cookie` không dùng được vì Next ghi đè `Vary` của response trang.
+  - Chưa kiểm `Cache-Control: private, no-cache` trên OpenNext/Cloudflare (lúc đó Cloudflare chưa cài, nay đã có `wrangler.jsonc` và `open-next.config.ts`; header mới được kiểm ở bản chạy cục bộ, chưa kiểm trên Worker thật). `Vary: Cookie` không dùng được vì Next ghi đè `Vary` của response trang.
   - Đổi ngôn ngữ phải tải lại cả trang, không làm mới mềm.
   - Các chuỗi EN đánh dấu "not from Figma" (liệt kê ở `plans/261014-1115-multi-language-vi-en/reports/en-localizations.md`) chờ BTC duyệt; chuỗi lấy từ MoMorph cũng mới ở trạng thái `is_reviewed: false`.
 - Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`, đường dẫn `app/[locale]/countdown/page.tsx` trong spec F001 (`technical-spec.md`).
