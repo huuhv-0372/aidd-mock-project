@@ -6,11 +6,12 @@ import { KudosComposeTrigger } from "@/components/kudos/kudos-compose-trigger";
 import { KudosKvBanner } from "@/components/kudos/kudos-kv-banner";
 import { SpotlightSection } from "@/components/kudos/spotlight-section";
 import { SpotlightSkeleton } from "@/components/kudos/spotlight-skeleton";
+import { ComposerWidget } from "@/components/kudos-compose/composer-widget";
+import { KudosComposer } from "@/components/kudos-compose/kudos-composer";
 import { HeaderControlsPlaceholder } from "@/components/site-shell/header-controls-placeholder";
 import { HeaderSessionControls } from "@/components/site-shell/header-session-controls";
 import { SiteFooter } from "@/components/site-shell/site-footer";
 import { SiteHeader } from "@/components/site-shell/site-header";
-import { WidgetButton } from "@/components/site-shell/widget-button";
 import { getRouteDictionary } from "@/lib/i18n/get-dictionary";
 import { fetchKudosSpotlight, getKudosBoardData } from "@/lib/kudos/get-kudos-board-data";
 import { loadMoreKudos } from "@/lib/kudos/load-more-kudos-action";
@@ -38,45 +39,47 @@ export default async function SunKudosPage({ params, searchParams }: PageProps) 
   const board = await getKudosBoardData(await searchParams, client);
   const copy = dict.kudos;
   return (
-    <div className="relative isolate flex min-h-dvh flex-col bg-login-bg">
-      <SiteHeader
-        activeHref={SUN_KUDOS_PATH}
-        locale={locale}
-        copy={dict.shell}
-        controls={
-          <Suspense fallback={<HeaderControlsPlaceholder />}>
-            <HeaderSessionControls copy={dict.shell} />
+    <KudosComposer locale={locale} copy={dict.kudosCompose}>
+      <div className="relative isolate flex min-h-dvh flex-col bg-login-bg">
+        <SiteHeader
+          activeHref={SUN_KUDOS_PATH}
+          locale={locale}
+          copy={dict.shell}
+          controls={
+            <Suspense fallback={<HeaderControlsPlaceholder />}>
+              <HeaderSessionControls copy={dict.shell} />
+            </Suspense>
+          }
+        />
+        <main className="flex flex-1 flex-col gap-16 pb-20 lg:pb-[120px]">
+          <KudosKvBanner copy={copy.kv}>
+            <KudosComposeTrigger copy={copy.compose} />
+          </KudosKvBanner>
+          <HighlightKudosSection
+            kudos={board.highlight}
+            hashtags={board.hashtags ?? []}
+            departments={board.departments ?? []}
+            filters={board.filters}
+            locale={locale}
+            copy={copy.highlight}
+          />
+          <Suspense fallback={<SpotlightSkeleton />}>
+            <SpotlightSection spotlight={spotlight} copy={copy.spotlight} />
           </Suspense>
-        }
-      />
-      <main className="flex flex-1 flex-col gap-16 pb-20 lg:pb-[120px]">
-        <KudosKvBanner copy={copy.kv}>
-          <KudosComposeTrigger copy={copy.compose} />
-        </KudosKvBanner>
-        <HighlightKudosSection
-          kudos={board.highlight}
-          hashtags={board.hashtags ?? []}
-          departments={board.departments ?? []}
-          filters={board.filters}
-          locale={locale}
-          copy={copy.highlight}
-        />
-        <Suspense fallback={<SpotlightSkeleton />}>
-          <SpotlightSection spotlight={spotlight} copy={copy.spotlight} />
-        </Suspense>
-        <AllKudosSection
-          initialItems={board.feed?.items ?? null}
-          initialCursor={board.feed?.nextCursor ?? null}
-          filters={board.filters}
-          loadMore={loadMoreKudos}
-          stats={board.myStats}
-          gifts={board.gifts}
-          locale={locale}
-          copy={copy.allKudos}
-        />
-      </main>
-      <WidgetButton label={dict.shell.widgetLabel} />
-      <SiteFooter copy={dict.shell} />
-    </div>
+          <AllKudosSection
+            initialItems={board.feed?.items ?? null}
+            initialCursor={board.feed?.nextCursor ?? null}
+            filters={board.filters}
+            loadMore={loadMoreKudos}
+            stats={board.myStats}
+            gifts={board.gifts}
+            locale={locale}
+            copy={copy.allKudos}
+          />
+        </main>
+        <ComposerWidget label={dict.shell.widgetLabel} copy={dict.kudosCompose.widget} />
+        <SiteFooter copy={dict.shell} />
+      </div>
+    </KudosComposer>
   );
 }

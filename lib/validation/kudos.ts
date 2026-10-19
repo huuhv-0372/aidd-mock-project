@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getSupabaseEnv } from "@/lib/supabase/env";
 import type {
   Department,
   GiftRecipient,
@@ -41,6 +42,38 @@ export const departmentSchema = z.object({
   sort_order: z.number().int(),
 }) satisfies z.ZodType<Department>;
 
+/** Origin of the Supabase project (where Storage serves Kudo images), or null when the env is unusable. */
+function supabaseOrigin(): string | null {
+  try {
+    return new URL(getSupabaseEnv().url).origin;
+  } catch {
+    return null;
+  }
+}
+
+let loggedDroppedImage = false;
+
+/**
+ * Read-side allow-list for Kudo images: the DB cannot know the project URL, so any `images` text it returns is
+ * untrusted. Only internal `/images/...` paths and URLs on the Supabase origin survive; the rest never reach `<img>`.
+ */
+function keepAllowedKudoImages(urls: string[]): string[] {
+  const origin = supabaseOrigin();
+  const allowed = urls.filter((url) => {
+    if (url.startsWith("/images/")) return !url.includes("\\") && !url.includes("..");
+    try {
+      return origin !== null && new URL(url).origin === origin;
+    } catch {
+      return false;
+    }
+  });
+  if (allowed.length !== urls.length && !loggedDroppedImage) {
+    loggedDroppedImage = true;
+    console.error("[kudos] dropped Kudo image URLs outside the allowed hosts");
+  }
+  return allowed;
+}
+
 export const kudoRowSchema = z.object({
   id: pgUuid,
   created_at: timestamp,
@@ -54,7 +87,7 @@ export const kudoRowSchema = z.object({
   sender: kudoPersonSchema.nullable(),
   recipient: kudoPersonSchema,
   hashtags: z.array(hashtagSchema.pick({ slug: true, name_vi: true, name_en: true })),
-  images: z.array(z.string()),
+  images: z.array(z.string()).transform(keepAllowedKudoImages),
 }) satisfies z.ZodType<KudoRow>;
 
 export const spotlightSchema = z.object({

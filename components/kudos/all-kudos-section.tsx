@@ -27,8 +27,8 @@ const TITLE_ID = "all-kudos-title";
 /*
  * Figma C (2940:13475): header, then the feed (C.2, 680px) with the right column (D, 422px: personal stats and the
  * latest gift recipients) beside it from lg up, below it on smaller screens. Each block takes its own data and
- * shows its own error text when that data is `null`. The feed is keyed by the active filters, so a filter change
- * restarts it from the first page.
+ * shows its own error text when that data is `null`. The feed is keyed by the active filters and its first row, so a filter
+ * change or a new top Kudo restarts it from the first page.
  */
 export function AllKudosSection({
   initialItems,
@@ -49,7 +49,8 @@ export function AllKudosSection({
   locale: Locale;
   copy: AllKudosCopy;
 }) {
-  const feedKey = `${filters.hashtag ?? ""}|${filters.department ?? ""}`;
+  // The first row joins the key: after a Kudo is sent, router.refresh() brings a new top row and the feed restarts from it.
+  const feedKey = `${filters.hashtag ?? ""}|${filters.department ?? ""}|${initialItems?.[0]?.id ?? ""}`;
   return (
     // mm:2940:13475
     <section

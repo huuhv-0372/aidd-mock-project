@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Montserrat, Noto_Sans_JP } from "next/font/google";
 import localFont from "next/font/local";
 import { notFound } from "next/navigation";
 import { LocaleChangeReload } from "@/components/ui/locale-change-reload";
@@ -10,6 +10,14 @@ const montserrat = Montserrat({
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "700"],
   variable: "--next-font-montserrat",
+});
+
+/* Figma Viết Kudo (ihQ26W78P2) sets the required asterisk in Noto Sans JP 700. Only that glyph uses it: no preload. */
+const notoSansJp = Noto_Sans_JP({
+  subsets: ["latin"],
+  weight: "700",
+  variable: "--next-font-noto-sans-jp",
+  preload: false,
 });
 
 const digitalNumbers = localFont({
@@ -35,7 +43,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
   return (
     <html
       lang={locale}
-      className={`${montserrat.variable} ${digitalNumbers.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${notoSansJp.variable} ${digitalNumbers.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <LocaleChangeReload locale={locale} />

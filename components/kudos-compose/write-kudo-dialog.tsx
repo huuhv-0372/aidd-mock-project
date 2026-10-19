@@ -1,0 +1,58 @@
+"use client";
+
+import { useId, useRef } from "react";
+import { DIALOG_PANEL } from "./compose-field-styles";
+import { useModalDialog } from "./use-modal-dialog";
+import { WriteKudoForm } from "./write-kudo-form";
+import type { WriteKudoCopy } from "./write-kudo-copy";
+import type { WriteKudoActions, WriteKudoLocale } from "./write-kudo-types";
+
+export type WriteKudoDialogProps = {
+  open: boolean;
+  /** Hủy, Esc, backdrop click, or right after a successful send. The form is discarded. */
+  onClose: () => void;
+  /** A Kudo was created (called right before onClose). */
+  onSent: (id: string) => void;
+  locale: WriteKudoLocale;
+  copy: WriteKudoCopy;
+  /** Server actions of the Kudos feature, injected so this component never imports server code. */
+  actions: WriteKudoActions;
+  /** Tiptap JSON -> Markdown (lib/kudos/kudo-content-markdown.ts `toMarkdown`). */
+  serializeContent: (doc: unknown) => string;
+};
+
+/*
+ * Viết Kudo modal (Figma ihQ26W78P2): native <dialog> + showModal() (focus trap, Esc, inert page). The form inside is
+ * mounted only while open, so every open starts empty. Works with next/dynamic({ ssr: false }) (named + default export).
+ */
+export function WriteKudoDialog({ open, onClose, onSent, locale, copy, actions, serializeContent }: WriteKudoDialogProps) {
+  const ref = useModalDialog(open);
+  const titleId = useId();
+  const busyRef = useRef(false);
+  return (
+    <dialog
+      ref={ref}
+      aria-labelledby={open ? titleId : undefined}
+      // close / cancel bubble through the React tree: ignore the ones fired by the nested Add link dialog
+      onCancel={(event) => event.target === event.currentTarget && busyRef.current && event.preventDefault()}
+      onClose={(event) => event.target === event.currentTarget && open && onClose()}
+      onClick={(event) => event.target === event.currentTarget && !busyRef.current && onClose()}
+      className={DIALOG_PANEL}
+    >
+      {open && (
+        <WriteKudoForm
+          titleId={titleId}
+          copy={copy}
+          locale={locale}
+          actions={actions}
+          serializeContent={serializeContent}
+          onSent={onSent}
+          onClose={onClose}
+          busyRef={busyRef}
+        />
+      )}
+    </dialog>
+  );
+}
+
+export default WriteKudoDialog;

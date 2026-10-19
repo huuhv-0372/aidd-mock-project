@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useKudosComposer } from "@/components/kudos-compose/kudos-composer-provider";
 import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
 
 export type KudosComposeCopy = { placeholder: string; searchPlaceholder: string };
@@ -8,17 +11,18 @@ const PILL =
 
 /*
  * Figma "Button chuc nang" (2940:13448): the compose pill A.1 (738px) and the profile search pill (381px), 32px apart.
- * Both are display-only for now (#12 writes a Kudo, a later plan wires the search): aria-disabled, no handler,
- * same look as an enabled pill.
+ * A.1 opens the write modal (page-level KudosComposerProvider); the search pill is display-only for now (a later
+ * plan wires it): aria-disabled, no handler, same look as an enabled pill.
  */
 export function KudosComposeTrigger({ copy }: { copy: KudosComposeCopy }) {
+  const { openComposer } = useKudosComposer();
   return (
     // mm:2940:13448
     <div className="flex w-full flex-col gap-4 lg:flex-row lg:gap-8">
       {/* mm:2940:13449 */}
       <button
         type="button"
-        aria-disabled="true"
+        onClick={openComposer}
         data-testid="kudos-compose-trigger"
         className={`${PILL} lg:flex-[738_1_738px] ${FOCUS_RING}`}
       >

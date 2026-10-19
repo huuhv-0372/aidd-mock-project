@@ -26,17 +26,22 @@ const BADGE_IMAGE: Record<Exclude<Tier, "new">, string> = {
 const TOOLTIP =
   "pointer-events-none invisible absolute top-full z-50 mt-2 flex w-[min(304px,calc(100vw_-_4rem))] flex-col gap-[11px] rounded-2xl bg-kudos-panel p-4 text-left opacity-0 group-focus-within/tip:visible group-focus-within/tip:opacity-100 group-hover/tip:visible group-hover/tip:opacity-100 motion-safe:transition-opacity motion-safe:duration-150";
 
-/* Hero pill (Figma 109x19). The "new" tier has no exported artwork in MoMorph, so it is drawn in CSS. */
-function HeroBadge({ tier, label, large }: { tier: Tier; label: string; large?: boolean }) {
-  const size = large ? "h-9 w-[156px] text-base" : "h-[19px] w-[109px] text-[11px]";
+/* Hero pill sizes: card (Figma 109x19), Thể lệ panel (126x22) and the tooltip header (156x36). */
+const BADGE_SIZE = {
+  small: { box: "h-[19px] w-[109px] text-[11px]", width: 109, height: 19, sizes: "109px" },
+  medium: { box: "h-[22px] w-[126px] shrink-0 text-[13px] leading-[19px]", width: 126, height: 22, sizes: "126px" },
+  large: { box: "h-9 w-[156px] text-base", width: 109, height: 19, sizes: "156px" },
+} as const;
+
+/* Hero pill. The "new" tier has no exported artwork in MoMorph, so it is drawn in CSS. */
+export function HeroBadge({ tier, label, size = "small" }: { tier: Tier; label: string; size?: keyof typeof BADGE_SIZE }) {
+  const { box, width, height, sizes } = BADGE_SIZE[size];
   if (tier !== "new") {
-    return (
-      <Image src={BADGE_IMAGE[tier]} alt={label} width={109} height={19} sizes={large ? "156px" : "109px"} className={`${size} object-contain`} />
-    );
+    return <Image src={BADGE_IMAGE[tier]} alt={label} width={width} height={height} sizes={sizes} className={`${box} object-contain`} />;
   }
   return (
     <span
-      className={`${size} inline-flex items-center justify-center rounded-full border-[0.5px] border-login-accent bg-[#092432] font-bold text-white [text-shadow:0_0.4px_1.5px_#000]`}
+      className={`${box} inline-flex items-center justify-center rounded-full border-[0.5px] border-login-accent bg-[#092432] font-bold text-white [text-shadow:0_0.4px_1.5px_#000]`}
     >
       {label}
     </span>
@@ -51,7 +56,7 @@ function HeroTitle({ tier, tip, align }: { tier: Tier; tip: Tip; align: "start" 
         <HeroBadge tier={tier} label={tip.label} />
       </span>
       <span role="tooltip" id={tipId} className={`${TOOLTIP} ${align === "end" ? "right-0" : "left-0"}`}>
-        <HeroBadge tier={tier} label={tip.label} large />
+        <HeroBadge tier={tier} label={tip.label} size="large" />
         <span className="text-sm leading-5 font-bold tracking-[0.1px] text-white">{tip.headline}</span>
         <span className="text-sm leading-5 font-bold tracking-[0.1px] text-kudos-muted">{tip.body}</span>
       </span>
