@@ -5,7 +5,7 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
 import { AUTHED } from "./support/authed-session";
 import { SEL, TXT, formatKudoTime, openKudos } from "./support/kudos-contract";
-import { EMPTY_USER_ID, KUDOS, SPOTLIGHT_RECIPIENT_COUNT, SYSTEM_KUDOS_TOTAL, viewerStats } from "./support/kudos-fixtures.mjs";
+import { EMPTY_USER_ID, KUDOS, PEOPLE, SPOTLIGHT_RECIPIENT_COUNT, SYSTEM_KUDOS_TOTAL, viewerStats } from "./support/kudos-fixtures.mjs";
 
 const feedCards = (page: Page) => page.getByTestId(SEL.allKudos).getByTestId(SEL.kudoCard);
 // Scoped to the feed: the same kudo can also appear in Highlight, so an unscoped id matches two cards.
@@ -70,6 +70,20 @@ test.describe("Sun* Kudos: card links, hearts and sharing", () => {
     for (const href of await profileLinks.evaluateAll((els) => els.map((el) => el.getAttribute("href")))) {
       expect(href).toMatch(PROFILE_HREF);
     }
+  });
+
+  test("ID-8 an anonymous kudo shows its alias, never the sender's name or profile link", async ({ page }) => {
+    const anon = KUDOS.find((k) => k.is_anonymous);
+    if (!anon?.anonymous_name) throw new Error("fixture needs an anonymous kudo with an alias");
+    const card = cardById(page, anon.id);
+    const sender = card.getByTestId("kudo-sender");
+    await expect(sender).toHaveText(anon.anonymous_name);
+    expect(await sender.evaluate((el) => el.tagName)).toBe("SPAN");
+    await expect(card).not.toContainText(PEOPLE[anon.sender_key as keyof typeof PEOPLE][0]);
+    // Every profile link on the card (avatar + name) belongs to the recipient.
+    const recipientHref = await card.getByTestId("kudo-recipient").getAttribute("href");
+    const hrefs = await card.locator('a[href^="/profile/"]').evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+    expect(new Set(hrefs)).toEqual(new Set([recipientHref]));
   });
 
   test("ID-9 hearts show the count, liked and own state from the data (display only, no toggle)", async ({ page }) => {

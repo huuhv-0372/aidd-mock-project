@@ -23,7 +23,7 @@ const GIFTS = [
   ["1 tai nghe Bluetooth", "1 Bluetooth headphones"],
 ];
 
-// key -> [full_name, department code (from the migration's department list)]. Gift recipients are p01..p10.
+// key -> [full_name, department code (from the migration's department list)]. Gift recipients are p01..p20.
 export const PEOPLE = {
   p01: ["Huỳnh Dương Xuân Nhật", "CEVC1"], p02: ["Nguyễn Thị Minh Anh", "CEVC1"],
   p03: ["Trần Quốc Bảo", "CEVC2"], p04: ["Lê Hoàng Long", "CEVC2"],
@@ -94,14 +94,19 @@ const ROWS = [
 ];
 
 const BASE_MS = Date.parse("2026-10-14T10:00:00+07:00");
-const kudoId = (i) => `c1000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`;
-const personId = (key) => `2a000000-0000-4000-8000-0000000000${key.slice(1)}`; // key "pNN" only
+// Not RFC 4122 (version/variant nibbles 0), like the seed's md5(label)::uuid ids that Postgres accepts.
+const kudoId = (i) => `c1000000-0000-0000-0000-${String(i + 1).padStart(12, "0")}`;
+const personId = (key) => `2a000000-0000-0000-0000-0000000000${key.slice(1)}`; // key "pNN" only
 const hashtagFor = (slug) => HASHTAGS.find((h) => h.slug === slug);
+// Kudo 10 shares kudo 9's created_at: the first feed page (10) ends on the tie, so paging needs the id tie-break.
+const TIED_WITH = { 10: 9 };
+// Hearts given on an x2 day (special_heart_days): each counts 1 in heart_count but 2 in hearts_awarded.
+const X2_HEARTS = { 0: 3 };
 
-/** Fixture graph, built once. Newest first; created_at strictly decreasing (3h apart). */
+/** Fixture graph, built once. Newest first, 3h apart except the tie above. */
 export const KUDOS = ROWS.map(([sender, recipient, title, tags, heart_count, liked, anon], i) => ({
   id: kudoId(i),
-  created_at: new Date(BASE_MS - i * 3 * 3600_000).toISOString(),
+  created_at: new Date(BASE_MS - (TIED_WITH[i] ?? i) * 3 * 3600_000).toISOString(),
   title: TITLES[title],
   content: CONTENTS[i % CONTENTS.length],
   sender_key: sender,
@@ -110,6 +115,7 @@ export const KUDOS = ROWS.map(([sender, recipient, title, tags, heart_count, lik
   hashtags: tags.map(hashtagFor).sort((a, b) => a.sort_order - b.sort_order),
   images: i % 9 === 0 ? [`/images/kudos/demo/kudo-photo-0${(i % 5) + 1}.jpg`] : [],
   heart_count,
+  hearts_awarded: heart_count + (X2_HEARTS[i] ?? 0),
   liked_by_viewer: liked,
   is_anonymous: anon,
   anonymous_name: anon ? "Đồng đội ẩn danh" : null,
@@ -135,7 +141,7 @@ export function viewerStats() {
   return {
     received: KUDOS.filter((k) => k.recipient_key === "viewer").length,
     sent: sent.length,
-    hearts_received: sent.reduce((sum, k) => sum + k.heart_count, 0),
+    hearts_received: sent.reduce((sum, k) => sum + k.hearts_awarded, 0),
     boxes_opened: 4,
     boxes_unopened: 2,
   };
@@ -164,48 +170,59 @@ const matches = (k, { p_hashtag, p_department }) =>
   (!p_hashtag || k.hashtags.some((h) => h.slug === p_hashtag))
   && (!p_department || PEOPLE[k.recipient_key][1] === p_department);
 
+// The RPCs' order: created_at desc, id desc (lowercase hex ids compare like Postgres uuids).
+const newestFirst = (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at) || b.id.localeCompare(a.id);
+// SQL: least(greatest(coalesce(p_limit, default), 1), 20).
+const clampLimit = (limit, fallback) => Math.min(Math.max(limit == null ? fallback : Number(limit) || 1, 1), 20);
+
 function feedPage({ p_hashtag, p_department, p_cursor_created_at, p_cursor_id, p_limit }, sub) {
-  const limit = Math.min(Math.max(Number(p_limit) || 10, 1), 20);
-  const cursorMs = p_cursor_created_at ? Date.parse(p_cursor_created_at) : null;
+  // Like the SQL, the cursor applies only when both halves are present.
+  const cursorMs = p_cursor_created_at && p_cursor_id ? Date.parse(p_cursor_created_at) : null;
   return KUDOS.filter((k) => matches(k, { p_hashtag, p_department }))
     .filter((k) => {
       if (cursorMs === null) return true;
       const ms = Date.parse(k.created_at);
       return ms < cursorMs || (ms === cursorMs && k.id < p_cursor_id);
     })
-    .slice(0, limit)
+    .sort(newestFirst)
+    .slice(0, clampLimit(p_limit, 10))
     .map((k) => rowFor(k, sub));
 }
 
 function highlight({ p_hashtag, p_department }, sub) {
   return KUDOS.filter((k) => matches(k, { p_hashtag, p_department }))
-    .sort((a, b) => b.heart_count - a.heart_count || Date.parse(b.created_at) - Date.parse(a.created_at))
+    .sort((a, b) => b.heart_count - a.heart_count || newestFirst(a, b))
     .slice(0, 5)
     .map((k) => rowFor(k, sub));
 }
 
 function spotlight(sub) {
+  const newest = [...KUDOS].sort(newestFirst);
   const byRecipient = new Map();
-  for (const k of KUDOS) {
+  for (const k of newest) {
     const g = byRecipient.get(k.recipient_key);
     if (g) g.kudos_count += 1;
     else byRecipient.set(k.recipient_key, { kudos_count: 1, last: k });
   }
+  const recipients = [...byRecipient].map(([key, g]) => ({
+    id: personOf(key, sub).id,
+    full_name: PEOPLE[key][0],
+    kudos_count: g.kudos_count,
+    last_received_at: g.last.created_at,
+    last_kudo_id: g.last.id,
+  }));
+  // SQL: kudos_count desc, last_received_at desc, recipient_id.
+  recipients.sort((a, b) => b.kudos_count - a.kudos_count
+    || Date.parse(b.last_received_at) - Date.parse(a.last_received_at) || a.id.localeCompare(b.id));
   return {
     total: SYSTEM_KUDOS_TOTAL,
-    recipients: [...byRecipient].map(([key, g]) => ({
-      id: personOf(key, sub).id,
-      full_name: PEOPLE[key][0],
-      kudos_count: g.kudos_count,
-      last_received_at: g.last.created_at,
-      last_kudo_id: g.last.id,
-    })),
-    recent: KUDOS.slice(0, 5).map((k) => ({ recipient_name: PEOPLE[k.recipient_key][0], created_at: k.created_at })),
+    recipients,
+    recent: newest.slice(0, 5).map((k) => ({ recipient_name: PEOPLE[k.recipient_key][0], created_at: k.created_at })),
   };
 }
 
 function latestGiftRecipients(limit, sub) {
-  return Array.from({ length: Math.min(Number(limit) || 10, 10) }, (_, i) => {
+  return Array.from({ length: clampLimit(limit, 10) }, (_, i) => {
     const [vi, en] = GIFTS[i % GIFTS.length];
     return {
       recipient: personOf(`p${String(i + 1).padStart(2, "0")}`, sub),

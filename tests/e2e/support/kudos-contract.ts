@@ -2,7 +2,7 @@ import { expect, type APIRequestContext, type Page } from "@playwright/test";
 
 // Sun* Kudos Live board (MoMorph MaZUn5xHXZ, route /sun-kudos). Selector + expectation contract shared by
 // sun-kudos.spec.ts and sun-kudos-feed.spec.ts and by phases 02-07 (they must match these exactly).
-// Fixture data: kudos-fixtures.mjs (mirrors plans/261015-1010-sun-kudos-live-board/database-design.md).
+// Fixture data: kudos-fixtures.mjs (mirrors supabase/migrations/20261015100000_create_kudos.sql).
 
 export const KUDOS_PATH = "/sun-kudos";
 export const KUDOS_FAKE = process.env.E2E_FAKE_SUPABASE_URL || "http://127.0.0.1:54398";

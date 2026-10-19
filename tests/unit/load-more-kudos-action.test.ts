@@ -3,7 +3,7 @@ import { loadMoreKudos } from "@/lib/kudos/load-more-kudos-action";
 import { kudosRpc } from "@/tests/e2e/support/kudos-fixtures.mjs";
 
 const SUB = "6f1c1c3e-3b0f-4a53-9a55-2f3d2a1f9b11";
-const CURSOR = { created_at: "2026-10-14T03:00:00.000Z", id: "c1000000-0000-4000-8000-000000000003" };
+const CURSOR = { created_at: "2026-10-14T03:00:00.000Z", id: "c1000000-0000-0000-0000-000000000003" };
 
 const mocks = vi.hoisted(() => ({ createClient: vi.fn(), rpc: vi.fn() }));
 vi.mock("@/lib/supabase/server", () => ({ createSupabaseServerClient: mocks.createClient }));
