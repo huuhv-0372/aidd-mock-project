@@ -36,7 +36,7 @@ const card = {
       "Sunner đã nhận được 50 Kudos và trở thành hình mẫu của sự công nhận, sẻ chia và lan tỏa tinh thần Sun*.",
     ] as [string, string, string], // one tip per star tier (10 / 20 / 50 Kudos)
   },
-  hearts: { label: "{count} lượt thả tim" },
+  hearts: { label: "{count} lượt thả tim", error: /* not from Figma */ "Không thả tim được, hãy thử lại." },
   copyLink: { label: "Copy Link", toast: "Link copied — ready to share!" },
 };
 

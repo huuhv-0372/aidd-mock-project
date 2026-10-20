@@ -39,7 +39,10 @@ const card = {
       /* not from Figma */ "This Sunner has received 50 Kudos and has become a role model of recognition, sharing and the Sun* spirit.",
     ] as [string, string, string],
   },
-  hearts: { label: /* not from Figma */ "{count} likes" },
+  hearts: {
+    label: /* not from Figma */ "{count} likes",
+    error: /* not from Figma */ "Couldn't update the heart. Please try again.",
+  },
   copyLink: { label: "Copy Link", toast: "Link copied — ready to share!" },
 };
 

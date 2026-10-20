@@ -23,7 +23,7 @@ const DIVIDER = "h-px w-full bg-login-accent";
 
 /*
  * Highlight card (Figma component 335:9620, 528px): sender to recipient, time, danh hieu, content clamped to
- * 3 lines, hashtags on one line, hearts + Copy Link + View details. A server component: only the copy button is client.
+ * 3 lines, hashtags on one line, hearts + Copy Link + View details. Only the heart and the copy button are client leaves.
  */
 export function KudoHighlightCard({
   kudo,
@@ -83,7 +83,7 @@ export function KudoHighlightCard({
       <div className={DIVIDER} />
       {/* mm:I2940:13465;335:9461 */}
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-        <KudoHearts count={kudo.heart_count} liked={kudo.liked_by_me} own={kudo.is_mine} locale={locale} copy={copy.hearts} />
+        <KudoHearts kudoId={kudo.id} count={kudo.heart_count} liked={kudo.liked_by_me} own={kudo.is_mine} locale={locale} copy={copy.hearts} />
         {/* mm:I2940:13465;335:9672 */}
         <div className="flex flex-wrap items-center gap-2">
           <CopyKudoLinkButton kudoId={kudo.id} copy={copy.copyLink} />

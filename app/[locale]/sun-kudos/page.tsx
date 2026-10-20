@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AllKudosSection } from "@/components/kudos/all-kudos-section";
+import { KudoHeartsProvider } from "@/components/kudos/kudo-hearts-store";
 import { HighlightKudosSection } from "@/components/kudos/highlight-kudos-section";
 import { KudosComposeTrigger } from "@/components/kudos/kudos-compose-trigger";
 import { KudosKvBanner } from "@/components/kudos/kudos-kv-banner";
@@ -16,6 +17,7 @@ import { getRouteDictionary } from "@/lib/i18n/get-dictionary";
 import { fetchKudosSpotlight, getKudosBoardData } from "@/lib/kudos/get-kudos-board-data";
 import { loadMoreKudos } from "@/lib/kudos/load-more-kudos-action";
 import type { RawSearchParams } from "@/lib/kudos/parse-kudos-filters";
+import { setKudoHeart } from "@/lib/kudos/set-kudo-heart-action";
 import { SUN_KUDOS_PATH } from "@/lib/navigation/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -51,32 +53,35 @@ export default async function SunKudosPage({ params, searchParams }: PageProps) 
             </Suspense>
           }
         />
-        <main className="flex flex-1 flex-col gap-16 pb-20 lg:pb-[120px]">
-          <KudosKvBanner copy={copy.kv}>
-            <KudosComposeTrigger copy={copy.compose} />
-          </KudosKvBanner>
-          <HighlightKudosSection
-            kudos={board.highlight}
-            hashtags={board.hashtags ?? []}
-            departments={board.departments ?? []}
-            filters={board.filters}
-            locale={locale}
-            copy={copy.highlight}
-          />
-          <Suspense fallback={<SpotlightSkeleton />}>
-            <SpotlightSection spotlight={spotlight} copy={copy.spotlight} />
-          </Suspense>
-          <AllKudosSection
-            initialItems={board.feed?.items ?? null}
-            initialCursor={board.feed?.nextCursor ?? null}
-            filters={board.filters}
-            loadMore={loadMoreKudos}
-            stats={board.myStats}
-            gifts={board.gifts}
-            locale={locale}
-            copy={copy.allKudos}
-          />
-        </main>
+        {/* One heart store for Highlight + All Kudos: a Kudo shown in both changes in both at once. */}
+        <KudoHeartsProvider setHeart={setKudoHeart}>
+          <main className="flex flex-1 flex-col gap-16 pb-20 lg:pb-[120px]">
+            <KudosKvBanner copy={copy.kv}>
+              <KudosComposeTrigger copy={copy.compose} />
+            </KudosKvBanner>
+            <HighlightKudosSection
+              kudos={board.highlight}
+              hashtags={board.hashtags ?? []}
+              departments={board.departments ?? []}
+              filters={board.filters}
+              locale={locale}
+              copy={copy.highlight}
+            />
+            <Suspense fallback={<SpotlightSkeleton />}>
+              <SpotlightSection spotlight={spotlight} copy={copy.spotlight} />
+            </Suspense>
+            <AllKudosSection
+              initialItems={board.feed?.items ?? null}
+              initialCursor={board.feed?.nextCursor ?? null}
+              filters={board.filters}
+              loadMore={loadMoreKudos}
+              stats={board.myStats}
+              gifts={board.gifts}
+              locale={locale}
+              copy={copy.allKudos}
+            />
+          </main>
+        </KudoHeartsProvider>
         <ComposerWidget label={dict.shell.widgetLabel} copy={dict.kudosCompose.widget} />
         <SiteFooter copy={dict.shell} />
       </div>

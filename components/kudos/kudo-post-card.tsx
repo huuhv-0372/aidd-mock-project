@@ -87,7 +87,7 @@ export function KudoPostCard({
       <div className={DIVIDER} />
       {/* mm:I3127:21871;256:5194 */}
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-        <KudoHearts count={kudo.heart_count} liked={kudo.liked_by_me} own={kudo.is_mine} locale={locale} copy={copy.hearts} />
+        <KudoHearts kudoId={kudo.id} count={kudo.heart_count} liked={kudo.liked_by_me} own={kudo.is_mine} locale={locale} copy={copy.hearts} />
         <CopyKudoLinkButton kudoId={kudo.id} copy={copy.copyLink} />
       </div>
     </article>
