@@ -6,6 +6,7 @@ import { createServer } from "node:http";
 import { generateKeyPairSync, sign, verify, randomUUID } from "node:crypto";
 import { kudosCatalog, kudosRpc } from "./kudos-fixtures.mjs";
 import { handleStorage, hashtagsFailing, holdHashtagCatalog, kudoControl, mergeCreatedKudos, writeKudoRpc } from "./write-kudo-fixtures.mjs";
+import { applyKudoHearts, kudoHeartControl, setKudoHeartRpc } from "./kudo-hearts-fake.mjs";
 
 const PORT = Number(process.env.E2E_FAKE_SUPABASE_PORT || 54398);
 const HOST = "127.0.0.1";
@@ -97,11 +98,15 @@ async function handleRest(req, res, url) {
   if (req.method === "POST" && name.startsWith("rpc/")) {
     const fn = name.slice("rpc/".length);
     const body = await readJson(req);
+    if (fn === "set_kudo_heart") { // Like Kudos (#13): sets the viewer's heart on a Kudo (kudo-hearts-fake.mjs)
+      const heart = await setKudoHeartRpc(body, sub);
+      return send(res, heart.status, heart.body);
+    }
     const written = await writeKudoRpc(fn, body, sub); // create_kudo, kudos_search_sunners (write-kudo-fixtures.mjs)
     if (written) return send(res, written.status, written.body);
     const result = kudosRpc(fn, body, sub);
     if (result === undefined) return send(res, 404, { code: "PGRST202", message: `no function ${name}` });
-    return send(res, 200, mergeCreatedKudos(fn, body, sub, result));
+    return send(res, 200, applyKudoHearts(fn, sub, mergeCreatedKudos(fn, body, sub, result)));
   }
   if (req.method === "GET") {
     // per-caller injected delay / outage of the hashtag catalog (kudoControl "/__kudo-delay-hashtags", "/__kudo-fail-hashtags")
@@ -127,6 +132,8 @@ const server = createServer((req, res) => {
     });
     return;
   }
+  const heart = kudoHeartControl(url.pathname, url.searchParams); // before kudoControl, which answers any /__kudo-* path
+  if (heart !== undefined) return send(res, 200, heart);
   const control = kudoControl(url.pathname, url.searchParams);
   if (control !== undefined) return send(res, 200, control);
   if (url.pathname.startsWith("/storage/v1/")) {

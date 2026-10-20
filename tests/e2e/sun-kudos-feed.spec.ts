@@ -86,14 +86,22 @@ test.describe("Sun* Kudos: card links, hearts and sharing", () => {
     expect(new Set(hrefs)).toEqual(new Set([recipientHref]));
   });
 
-  test("ID-9 hearts show the count, liked and own state from the data (display only, no toggle)", async ({ page }) => {
+  test("ID-9 hearts are toggle buttons with aria-pressed, liked and own state from the data", async ({ page }) => {
     const own = cardById(page, KUDOS[0].id).getByTestId("kudo-hearts");
+    await expect(own, "own Kudo: the heart is a disabled button").toBeDisabled();
+    await expect(own).toHaveRole("button");
     await expect(own).toHaveAttribute("data-own", "true");
+    await expect(own).toHaveAttribute("aria-pressed", "false");
     await expect(own).toHaveAttribute("aria-label", `${KUDOS[0].heart_count} lượt thả tim`);
     const liked = cardById(page, KUDOS[1].id).getByTestId("kudo-hearts");
+    await expect(liked, "liked Kudo: an enabled button").toBeEnabled();
+    await expect(liked).toHaveRole("button");
+    await expect(liked).toHaveAttribute("aria-pressed", "true");
     await expect(liked).toHaveAttribute("data-liked", "true");
     await expect(liked).toHaveAttribute("aria-label", `${KUDOS[1].heart_count} lượt thả tim`);
     const plain = cardById(page, KUDOS[2].id).getByTestId("kudo-hearts");
+    await expect(plain).toBeEnabled();
+    await expect(plain).toHaveAttribute("aria-pressed", "false");
     await expect(plain).toHaveAttribute("data-liked", "false");
     await expect(plain).toHaveAttribute("data-own", "false");
   });

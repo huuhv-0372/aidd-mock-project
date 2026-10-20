@@ -45,6 +45,9 @@ export const TXT = {
   ],
 } as const;
 
+// Like Kudos (#13): the heart RPC (sets the state, not a toggle) and the rollback toast (VI, not from Figma). Helpers: kudo-hearts-contract.ts.
+export const KUDO_HEART = { rpc: "set_kudo_heart", errorToast: "Không thả tim được, hãy thử lại." } as const;
+
 /** Mirrors the rendered "HH:mm - MM/DD/YYYY" label, always Vietnam time (UTC+7) regardless of the runner TZ. */
 export function formatKudoTime(iso: string): string {
   const d = new Date(new Date(iso).getTime() + 7 * 60 * 60 * 1000);
