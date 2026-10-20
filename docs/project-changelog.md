@@ -4,6 +4,20 @@ Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi ti�
 
 ## 2026-10-20
 
+### Thêm: thả tim cho Kudo (tính năng #13)
+
+- Trái tim trên thẻ Kudo (Highlight và All Kudos) nay bấm được: `components/kudos/kudo-hearts.tsx` là nút `aria-pressed`; Kudo của chính mình thì `disabled`, đang chờ kết quả thì `aria-disabled`. `KudoHeartsProvider` (`kudo-hearts-store.tsx`, bọc `main` trong `app/[locale]/sun-kudos/page.tsx`) giữ trạng thái theo id Kudo nên một Kudo hiện ở cả hai khối đổi cùng lúc. Bấm là lật tim và số ngay (lạc quan), khoá nút tới khi máy chủ trả lời; máy chủ từ chối hoặc lỗi thì hoàn lại giá trị cũ và hiện toast.
+- `components/ui/status-toast.tsx` (`useStatusToast`): toast dùng chung, `Copy Link` chuyển sang dùng nó. Khoá chữ mới `hearts.error` (VI và EN, chuỗi không lấy từ Figma).
+- Server Action `setKudoHeart` (`lib/kudos/set-kudo-heart-action.ts`): validate `{ kudoId, liked }` bằng zod (`setKudoHeartInputSchema`, `kudoHeartStateSchema` trong `lib/validation/kudos.ts`), gọi RPC, chỉ tin kết quả của CSDL; lỗi chỉ log, client nhận `own` hoặc `generic`.
+- Supabase (chạy tay): `supabase/migrations/20261020150000_create_kudo_heart_rpc.sql` (kèm `rollbacks/…_down.sql`, `verify/…_verify.sql` H1–H6). Thêm RPC `set_kudo_heart(p_kudo_id, p_liked)` trả `(liked, heart_count)`: **đặt** trạng thái chứ không đảo, `SECURITY DEFINER`, chỉ `authenticated`, đường ghi duy nhất vào `kudo_hearts`; lỗi SQLSTATE `22023` với `forbidden`, `not_found`, `own_kudo`. Trigger x1/x2 của migration `20261015100000` giữ nguyên: ngày x2 cấu hình bằng SQL ở `special_heart_days` (chưa có giao diện quản trị), `hearts_awarded` được lưu nên bỏ tim lấy lại đúng 1 hoặc 2.
+- Quy tắc nghiệp vụ: tim cộng cho người **gửi** Kudo (`kudos_my_stats.hearts_received`); số trên thẻ là số lượt thả (`heart_count`), không phải số tim được tặng. Câu hỏi mở 2026-10-15 (tim thuộc người gửi hay người nhận) đã được chủ dự án chốt ngày 2026-10-19: người gửi.
+- Test: unit `set-kudo-heart-action`; E2E `tests/e2e/kudo-hearts.spec.ts` (Supabase giả mở rộng bằng `support/kudo-hearts-fake.mjs`, `kudo-hearts-contract.ts`; `fake-supabase-server.mjs` thêm route `set_kudo_heart`); `sun-kudos-feed.spec.ts` và `kudos-contract.ts` cập nhật theo nút tim mới.
+- Giới hạn đã biết:
+  - SQL đã chạy trên Supabase thật ngày 2026-10-20: migration + file verify 7/7 PASS, kèm một lần thả tim thật qua Google (`plans/261020-1429-like-kudos/reports/db-verify-result.md`). E2E vẫn chạy với Supabase giả.
+  - Chuỗi EN `hearts.error` do nhóm tự dịch, chờ BTC duyệt.
+  - Chưa làm: ô tìm hồ sơ ở banner, trang chi tiết Kudo và trang hồ sơ.
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`, `docs/project-changelog.md`.
+
 ### Sửa: vòng rà soát Viết Kudo (bảo mật, độ ổn định E2E, rollback ảnh)
 
 Mức độ: cao cho ReDoS trước đăng nhập (parse zod chạy trước kiểm phiên nên ai cũng gọi tới được), trung bình cho phần còn lại. Ảnh hưởng: một request nội dung dài có thể ngốn CPU trước khi kiểm phiên; ảnh có thể bị xoá khi Kudo đã tạo; Esc đóng cả modal ngoài ý muốn.
