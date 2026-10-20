@@ -99,10 +99,11 @@ export function KudoRichEditor({ copy, searchSunners, error, onContentChange, on
         <KudoEditorToolbar editor={editor} copy={copy.toolbar} onInsertLink={() => setLink(true)} />
         {/* mm:I520:11647;520:9886 */}
         <div
-          className={`h-[200px] cursor-text overflow-y-auto rounded-b-lg border border-t-0 bg-white focus-within:ring-1 motion-safe:transition-colors motion-safe:duration-200 ${error ? "border-[#cf1322] focus-within:ring-[#cf1322]" : "border-home-border focus-within:border-login-bg focus-within:ring-login-bg"}`}
+          // 200px (Figma); on short screens it gives back what the screen lacks, down to 96px (see write-kudo-form.tsx)
+          className={`h-(--editor-h) cursor-text [--editor-h:200px] short:[--editor-h:clamp(96px,calc(100dvh_-_690px),200px)] overflow-y-auto rounded-b-lg border border-t-0 bg-white focus-within:ring-1 motion-safe:transition-colors motion-safe:duration-200 ${error ? "border-[#cf1322] focus-within:ring-[#cf1322]" : "border-home-border focus-within:border-login-bg focus-within:ring-login-bg"}`}
           onClick={() => editor?.commands.focus()}
         >
-          <EditorContent editor={editor} className="min-h-full [&>div]:min-h-[198px]" />
+          <EditorContent editor={editor} className="min-h-full [&>div]:min-h-[calc(var(--editor-h)_-_2px)]" />
         </div>
       </div>
       <MentionSuggestionList

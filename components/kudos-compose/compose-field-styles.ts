@@ -29,9 +29,13 @@ export const BUTTON_SECONDARY =
 export const BUTTON_PRIMARY =
   "flex min-h-[60px] min-w-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-login-accent p-4 text-[22px] leading-7 font-bold text-login-bg hover:bg-[#fff3c4] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-login-accent motion-safe:transition-colors motion-safe:duration-200";
 
-/** Native <dialog> panel: cream card, 24px radius, dimmed #00101A backdrop (Figma Mask 520:11646). */
+/**
+ * Native <dialog> panel: cream card, 24px radius, dimmed #00101A backdrop (Figma Mask 520:11646). The panel itself is
+ * capped at the screen height and clips to its rounded border; only its child scrolls (`open:flex` lets that child shrink).
+ * The 12px vertical padding keeps the scrollbar off the rounded corners.
+ */
 export const DIALOG_PANEL =
-  "m-auto w-[min(752px,calc(100vw_-_1rem))] max-w-none overflow-visible outline-none rounded-3xl border-0 bg-kudos-card p-0 text-login-bg backdrop:bg-login-bg/80";
+  "m-auto max-h-[calc(100dvh_-_2rem)] w-[min(752px,calc(100vw_-_1rem))] max-w-none overflow-hidden outline-none rounded-3xl border-0 bg-kudos-card px-0 py-3 text-login-bg backdrop:bg-login-bg/80 open:flex open:flex-col";
 
 /**
  * Round red remove "x" (hashtag chip, image thumbnail). The <button> is the 44px touch target; the 20px Figma circle is the

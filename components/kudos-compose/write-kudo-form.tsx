@@ -26,7 +26,9 @@ type Props = {
 };
 
 /*
- * Body of the Viết Kudo modal (Figma ihQ26W78P2, mm:520:11647): 752px cream card, 40px padding, 32px between blocks.
+ * Body of the Viết Kudo modal (Figma ihQ26W78P2, mm:520:11647): 752px cream card, 40px padding (12px panel + 28px here),
+ * 32px between blocks. On screens under 1040px high (`short:`) the padding drops to 24px, the gaps to 20/16px and the
+ * title to one 24px line, so the form fits a 900px-high screen; this element is the only part that scrolls.
  * It is mounted only while the dialog is open, so closing (Hủy / Esc / backdrop) throws the whole form state away.
  */
 export function WriteKudoForm({ titleId, copy, locale, actions, serializeContent, onSent, onClose, busyRef }: Props) {
@@ -38,9 +40,9 @@ export function WriteKudoForm({ titleId, copy, locale, actions, serializeContent
   }, [busyRef, form.sending]);
 
   return (
-    <div className="flex max-h-[calc(100dvh_-_1rem)] flex-col gap-8 overflow-y-auto rounded-3xl p-5 font-montserrat sm:p-10">
+    <div className="flex min-h-0 flex-col gap-8 overflow-y-auto px-5 py-2 font-montserrat [scrollbar-width:thin] sm:px-10 sm:py-7 short:gap-5 short:py-3">
       {/* mm:I520:11647;520:9870 */}
-      <h2 id={titleId} className="text-center text-2xl leading-8 font-bold sm:text-[32px] sm:leading-10">
+      <h2 id={titleId} className="text-center text-2xl leading-8 font-bold sm:text-[32px] sm:leading-10 short:text-2xl short:leading-8">
         {copy.title}
       </h2>
       <RecipientPicker
@@ -54,7 +56,7 @@ export function WriteKudoForm({ titleId, copy, locale, actions, serializeContent
       />
       <KudoTitleField copy={copy} value={form.title} onChange={form.setTitle} onBlur={() => touch("title")} error={errors.title} />
       {/* mm:I520:11647;520:9874 */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 short:gap-4">
         <KudoRichEditor
           copy={copy}
           searchSunners={actions.searchSunners}
