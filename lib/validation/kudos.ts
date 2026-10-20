@@ -144,3 +144,9 @@ export const loadMoreKudosInputSchema = kudosFiltersSchema.extend({
 });
 
 export type LoadMoreKudosInput = z.infer<typeof loadMoreKudosInputSchema>;
+
+/** Untrusted input of the heart Server Action: the desired state, never a count or an award (the database owns both). */
+export const setKudoHeartInputSchema = z.object({ kudoId: pgUuid, liked: z.boolean() }).strict();
+
+/** One row answered by `set_kudo_heart`: the caller's real state and the Kudo's count after the triggers. */
+export const kudoHeartStateSchema = z.object({ liked: z.boolean(), heart_count: count });
