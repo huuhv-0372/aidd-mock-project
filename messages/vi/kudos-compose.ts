@@ -91,6 +91,8 @@ export const kudosCompose: KudosComposeMessages = {
       max: "Tối đa 5",
       listLabel: "Danh sách hashtag" /* not from Figma */,
       remove: "Xóa hashtag" /* not from Figma */,
+      loadFailed: "Không tải được danh sách hashtag" /* not from Figma */,
+      retry: "Thử lại" /* not from Figma */,
     },
     image: { label: "Image", add: "+ Image", max: "Tối đa 5", remove: "Xóa ảnh" },
     anonymous: { label: "Gửi lời cám ơn và ghi nhận ẩn danh", aliasLabel: "Tên ẩn danh" },
@@ -99,6 +101,8 @@ export const kudosCompose: KudosComposeMessages = {
       imageFormat: "Định dạng file không hợp lệ" /* not from Figma */,
       imageSize: "Ảnh tối đa 5 MB" /* not from Figma */,
       sendFailed: "Không gửi được lời cám ơn, vui lòng thử lại." /* not from Figma */,
+      contentTooLong: "Nội dung tối đa 5000 ký tự" /* not from Figma */,
+      invalid: "Giá trị không hợp lệ, vui lòng kiểm tra lại" /* not from Figma */,
     },
     addLink: {
       title: "Thêm đường dẫn",

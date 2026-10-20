@@ -81,8 +81,9 @@ async function uploadImages(client: ServerClient, images: ReadyImage[]): Promise
  * Sends a Kudo: validates the form, verifies the session, checks the real image bytes one image at a time (personal
  * metadata stripped), uploads the images as flat identity-free objects, then calls `create_kudo` (sender = session
  * user, enforced again in SQL). No image byte is read before the session is verified; nothing is uploaded and no RPC
- * runs unless every field and image passed. A failed RPC removes the images just uploaded. Failures are logged in
- * full and only a generic code reaches the client.
+ * runs unless every field and image passed. The images just uploaded are removed only when the Kudo cannot exist: a
+ * failure before the RPC is sent, or an RPC error the database answered with a code. Failures are logged in full and
+ * only a generic code reaches the client.
  */
 export async function createKudo(formData: FormData): Promise<CreateKudoResult> {
   const parsed = writeKudoSchema.safeParse(readForm(formData));
@@ -94,6 +95,7 @@ export async function createKudo(formData: FormData): Promise<CreateKudoResult> 
 
   let client: ServerClient | undefined;
   let uploaded: string[] = [];
+  let rpcSent = false;
   try {
     const supabase = await createSupabaseServerClient();
     client = supabase;
@@ -117,25 +119,31 @@ export async function createKudo(formData: FormData): Promise<CreateKudoResult> 
     const stored = await uploadImages(supabase, images);
     if (!stored) return SERVER_ERROR;
     uploaded = stored;
+    const imageUrls = stored.map((path) => supabase.storage.from(KUDO_IMAGE_BUCKET).getPublicUrl(path).data.publicUrl);
 
+    // From here the transaction may commit even if we never hear back, so the images can only go on a definitive "no".
+    rpcSent = true;
     const { data, error } = await supabase.rpc("create_kudo", {
       p_recipient_id: input.recipientId,
       p_title: input.title,
       p_content: input.content,
       p_hashtag_slugs: input.hashtags,
-      p_image_urls: stored.map((path) => supabase.storage.from(KUDO_IMAGE_BUCKET).getPublicUrl(path).data.publicUrl),
+      p_image_urls: imageUrls,
       p_is_anonymous: input.isAnonymous,
       p_anonymous_name: input.anonymousName,
     });
     if (!error && typeof data !== "string") {
-      // The Kudo may exist, so its images must stay: only a rejected RPC rolls the uploads back.
+      // The Kudo may exist, so its images must stay.
       console.error("[kudos] create_kudo returned an unexpected result", data);
       return SERVER_ERROR;
     }
     if (error) {
       console.error("[kudos] create_kudo failed", error);
-      await removeUploaded(supabase, uploaded);
-      const field = error?.code === "22023" ? RPC_FIELD_BY_CODE[error.message] : undefined;
+      // Only a coded answer (SQLSTATE / PGRST) proves the database refused the Kudo. supabase-js reports a network
+      // failure or timeout as an error without a code: the outcome is unknown, so the images stay.
+      if (error.code) await removeUploaded(supabase, uploaded);
+      const field =
+        error.code === "22023" && Object.hasOwn(RPC_FIELD_BY_CODE, error.message) ? RPC_FIELD_BY_CODE[error.message] : undefined;
       return field
         ? { ok: false, error: "validation", fields: { [field]: "invalid" } }
         : SERVER_ERROR;
@@ -143,8 +151,9 @@ export async function createKudo(formData: FormData): Promise<CreateKudoResult> 
     return { ok: true, id: data as string };
   } catch (err) {
     console.error("[kudos] create unexpected failure", err);
-    // `client` is unset when it could not even be created, in which case nothing was uploaded.
-    if (client) await removeUploaded(client, uploaded);
+    // Before the RPC was sent no Kudo can reference the uploads, so they go. After it, the Kudo may exist: keep them.
+    // (`client` is unset when it could not even be created, in which case nothing was uploaded.)
+    if (client && !rpcSent) await removeUploaded(client, uploaded);
     return SERVER_ERROR;
   }
 }

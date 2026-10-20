@@ -4,12 +4,11 @@
 // app really sent (RPC bodies, Storage uploads/deletes) per signed-in user; tests read it with kudoLog().
 // Decisions (clarifications.md): Gửi is DISABLED until Người nhận + Danh hiệu + nội dung + >=1 Hashtag are set, so the
 // "required" errors (ID-7/11/14/50-52) appear on blur; hashtags come only from the 13 catalog tags; success closes the modal.
-// Expected RED now: the pill A.1 does nothing (aria-disabled, no handler), so each case fails on "Viết Kudo dialog visible".
 // Deferred (reason): ID-56 (contradicts the disabled Gửi decision), ID-1 (covered in kudos-quick-actions.spec.ts guest case),
 // hover/visual states -> phase 06. Free-form tags (ID-34 "TeamWork") are N/A: only catalog tags exist.
 import { test, expect, type Locator, type Page } from "@playwright/test";
 import {
-  ADD_LINK, REQUIRED_MSG, SEL, TOOLBAR, WRITE, addLinkDialog, delayCreateRpc, dialogHeading, errorId, failCreateRpc,
+  ADD_LINK, REQUIRED_MSG, SEL, TOOLBAR, WRITE, addLinkDialog, delayCreateRpc, delaySearchRpc, dialogHeading, errorId, failCreateRpc,
   fillKudo, kudoLog, openAuthed, openWidgetMenu, openWriteModal, pickHashtags, recipientBox, rpcCalls, sendButton, VALID_KUDO, widgetMenu,
   writeDialog, type KudoForm,
 } from "./support/kudos-contract";
@@ -25,6 +24,7 @@ const chipsOf = (page: Page) => writeDialog(page).getByTestId(WRITE.hashtagChip)
 const thumbsOf = (page: Page) => writeDialog(page).getByTestId(WRITE.imageThumb);
 const addImageBtn = (page: Page) => writeDialog(page).getByRole("button", { name: "+ Image" });
 const errorOf = (page: Page, field: string) => writeDialog(page).getByTestId(errorId(field));
+const noResult = (page: Page) => writeDialog(page).getByRole("status").filter({ hasText: NO_RESULT_MSG });
 const top = (l: Locator) => l.evaluate((el) => el.getBoundingClientRect().top);
 
 // Small real files built in-test: correct magic bytes (jpg FF D8 FF, png 89 50 4E 47, webp RIFF..WEBP) or wrong ones.
@@ -44,6 +44,10 @@ const photos = (n: number) => Array.from({ length: n }, () => {
 });
 const attach = (page: Page, files: ReturnType<typeof file>[]) => writeDialog(page).getByTestId(WRITE.imageInput).setInputFiles(files);
 const blurTo = (page: Page) => dialogHeading(page).click(); // click on plain text moves focus out of any field
+/** The answer (headers) of the Sunner-search server action whose arguments contain `query`; start it BEFORE the action that triggers it. */
+const searchAnswered = (page: Page, query: string) => page.waitForResponse((r) => r.request().method() === "POST" && (r.request().postData() ?? "").includes(query));
+/** Lets the client apply an answer that just arrived, so "nothing appeared" is judged after the app had its chance to show it. */
+const flushUi = (page: Page) => page.evaluate(() => new Promise<void>((done) => setTimeout(done, 150)));
 
 const createCalls = async (request: Parameters<typeof kudoLog>[0], sub: string) => rpcCalls(await kudoLog(request, sub), "create_kudo");
 const sunnerSearches = async (request: Parameters<typeof kudoLog>[0], sub: string) => rpcCalls(await kudoLog(request, sub), "kudos_search_sunners");
@@ -123,10 +127,12 @@ test.describe("Viết Kudo: Người nhận", () => {
     for (const text of await options(page).allTextContents()) expect(fold(text)).toContain("an");
   });
 
-  test("ID-9 '@ # $' gives no suggestions and no crash", async ({ page, request }) => {
+  test("ID-9 '@ # $' is searched by name ('# $') and matches nobody: no suggestions, no crash", async ({ page, request }) => {
     await recipientBox(page).fill("@ # $");
-    await expect.poll(async () => (await sunnerSearches(request, sub)).length).toBeGreaterThan(0);
+    await expect(noResult(page)).toBeVisible(); // the answer arrived and was handled: only now is "no options" meaningful
     await expect(options(page)).toHaveCount(0);
+    await expect(writeDialog(page).getByRole("listbox")).toHaveCount(0);
+    expect((await sunnerSearches(request, sub)).at(-1)).toMatchObject({ p_query: "# $", p_name_only: true });
     await expect(writeDialog(page)).toBeVisible();
   });
 
@@ -137,12 +143,17 @@ test.describe("Viết Kudo: Người nhận", () => {
     expect(queries.at(-1)).toBe("Nguyễn");
   });
 
-  test("results cap at 10 and never include the signed-in user", async ({ page, request }) => {
+  // The fake puts the caller ("E2E User", e2e@...) in the searchable domain and drops it like the SQL (`p.id <> v_uid`), so a
+  // missing exclusion in what the app sends or shows fails here. The SQL verify against a real database remains the real proof.
+  test("results cap at 10; the signed-in user is never suggested, not even by name or email", async ({ page, request }) => {
     await recipientBox(page).fill("tester"); // fixture has 12 "Sunner Tester NN"
     await expect(options(page)).toHaveCount(10);
-    await recipientBox(page).fill("e2e"); // only the caller matches "E2E User"
-    await expect.poll(async () => (await sunnerSearches(request, sub)).some((b) => b.p_query === "e2e")).toBe(true);
-    await expect(options(page)).toHaveCount(0);
+    for (const query of ["e2e", "e2e@sun-asterisk.com"]) { // name and email of the caller: nobody else matches
+      await recipientBox(page).fill(query);
+      await expect(noResult(page)).toBeVisible(); // answered, and the answer had nobody to show
+      await expect(options(page)).toHaveCount(0);
+      expect((await sunnerSearches(request, sub)).at(-1)?.p_query).toBe(query);
+    }
   });
 
   test("ID-26 choosing a suggestion fills the field and closes the list", async ({ page }) => {
@@ -164,7 +175,6 @@ test.describe("Viết Kudo: Người nhận", () => {
   // Search by name AND email (live-test bug: a pasted colleague email found nothing, Gửi stayed disabled, and the field said
   // "empty" although it had text). The fake mirrors the SQL: email substring match, exact email first, never returns email.
   const AN_EMAIL = sunnerEmail("Nguyễn Văn An");
-  const noResult = (page: Page) => writeDialog(page).getByRole("status").filter({ hasText: NO_RESULT_MSG });
 
   for (const [label, query] of [["full email", AN_EMAIL], ["email local part", AN_EMAIL.split("@")[0]]] as const) {
     test(`typing a Sunner's ${label} suggests that Sunner; picking it enables Người nhận and Gửi`, async ({ page, request }) => {
@@ -260,15 +270,38 @@ test.describe("Viết Kudo: Người nhận", () => {
     await expect(errorOf(page, "recipient")).toHaveCount(0);
   });
 
-  test("leaving the field before the search answers: no list or no-match row pops up afterwards", async ({ page, request }) => {
+  // Two deterministic cases (no race between a click and the 150 ms debounce): the first freezes time so the debounce cannot elapse
+  // before the blur, the second holds the search answer back at the fake so the call is provably in flight when focus leaves.
+  test("leaving the field inside the debounce cancels the search: no request, no list, no no-match row", async ({ page, request }) => {
+    await page.clock.install();
+    await page.clock.pauseAt(new Date(Date.now() + 1_000)); // frozen: a debounce timer set now cannot fire until we run the clock
     for (const query of ["Nguyễn Văn An", "zzzqqq-not-a-sunner"]) {
       await recipientBox(page).fill(query);
-      await blurTo(page); // within the 150 ms debounce: the pending search must be dropped, not shown later
-      await page.waitForTimeout(800);
+      await blurTo(page);
+      await page.clock.runFor(1_000); // far past the 150 ms debounce: it would fire here unless the blur cancelled it
+    }
+    await page.clock.resume();
+    await expect(writeDialog(page).getByRole("listbox")).toHaveCount(0);
+    await expect(noResult(page)).toHaveCount(0);
+    // Positive proof of "never sent": the next real search is the first (and only) one the server ever saw.
+    await recipientBox(page).fill("Trần Văn An");
+    await expect(options(page).first()).toBeVisible();
+    expect((await sunnerSearches(request, sub)).map((b) => b.p_query)).toEqual(["Trần Văn An"]);
+  });
+
+  test("leaving the field while the search is in flight drops the late answer: no list, no no-match row", async ({ page, request }) => {
+    await delaySearchRpc(request, sub, 2_000);
+    for (const query of ["Nguyễn Văn An", "zzzqqq-not-a-sunner"]) {
+      const sent = (await sunnerSearches(request, sub)).length;
+      const answered = searchAnswered(page, query);
+      await recipientBox(page).fill(query);
+      await expect.poll(async () => (await sunnerSearches(request, sub)).length).toBe(sent + 1); // logged by the fake: in flight now
+      await blurTo(page); // well inside the 2 s the fake holds the answer
+      await answered; // the browser aborts the body of a dropped answer (ERR_ABORTED), so wait for the response, not its end
+      await flushUi(page);
       await expect(writeDialog(page).getByRole("listbox")).toHaveCount(0);
       await expect(noResult(page)).toHaveCount(0);
     }
-    expect(await sunnerSearches(request, sub)).toHaveLength(0);
   });
 
   test("typing then clearing the field, or only spaces, still reads 'Không được để trống' on blur", async ({ page }) => {
@@ -380,15 +413,21 @@ test.describe("Viết Kudo: @ + tên in the content", () => {
   test("an unmatched '@word' followed by more text closes the no-match row instead of following the caret", async ({ page, request }) => {
     await editorOf(page).pressSequentially("Cảm ơn @team");
     await expect(noMention(page)).toBeVisible();
+    const answered = searchAnswered(page, "team đã"); // typed inside one debounce: a single search, answered empty → the suggestion exits
     await editorOf(page).pressSequentially(" đã");
-    await page.waitForTimeout(800); // the "team đã" search answers empty → the suggestion must really exit
-    const searchesAfterExit = (await sunnerSearches(request, sub)).length;
+    await answered;
+    await flushUi(page);
     await editorOf(page).pressSequentially(" hỗ trợ dự án");
-    await page.waitForTimeout(800);
-    expect((await sunnerSearches(request, sub)).length).toBe(searchesAfterExit); // no more searches once exited
     await expect(noMention(page)).toHaveCount(0);
     await expect(writeDialog(page).getByRole("listbox")).toHaveCount(0);
     await expect(editorOf(page)).toHaveText("Cảm ơn @team đã hỗ trợ dự án");
+    // A later, unrelated search (recipient field) is a marker in the ordered log: a search triggered by the extra words
+    // would sit before it. No sleeping, no "nothing happened within N ms".
+    await recipientBox(page).fill("Trần Văn An");
+    await expect(writeDialog(page).getByRole("option", { name: "Trần Văn An" })).toBeVisible();
+    const queries = (await sunnerSearches(request, sub)).map((b) => String(b.p_query));
+    expect(queries.at(-1)).toBe("Trần Văn An");
+    expect(queries.filter((q) => q.includes("hỗ"))).toEqual([]); // no search carried the words typed after the exit
   });
 
   test("Esc closes an open suggestion list without inserting a mention or closing the modal", async ({ page }) => {
@@ -437,10 +476,9 @@ test.describe("Viết Kudo: Hashtag", () => {
     await expect(chipsOf(page)).toContainText("Aim High");
   });
 
-  test("ID-16, ID-17, ID-53 five tags fit; at 5 'Tối đa 5' shows and the other rows are disabled; removing one frees them", async ({ page }) => {
+  test("ID-16, ID-17, ID-53 five tags fit; at 5 the other rows are disabled; removing one frees them", async ({ page }) => {
     await pickHashtags(page, FIVE);
     await expect(chipsOf(page)).toHaveCount(5);
-    await expect(writeDialog(page).getByText(/Tối đa 5/).first()).toBeVisible();
     const dropdown = writeDialog(page).getByTestId(WRITE.hashtagDropdown);
     await writeDialog(page).getByRole("button", { name: "+ Hashtag" }).click();
     const sixth = dropdown.getByRole("option", { name: "Aim High" });
@@ -603,7 +641,7 @@ test.describe("Viết Kudo: Hủy, Gửi", () => {
     expect((await kudoLog(request, sub)).uploads).toHaveLength(0);
   });
 
-  test("ID-46 two tags + two images: shows loading, blocks a double send, uploads real files as flat identity-free {uuid}.{ext} objects, sends their URLs", async ({ page, request }) => {
+  test("ID-46 two tags + two images: shows loading, blocks a double send, uploads real files as flat identity-free {uuid}.{ext} objects, sends their URLs; the board card shows both", async ({ page, request }) => {
     const sub = await openWriteModal(page, request);
     await delayCreateRpc(request, sub, 800);
     await fillKudo(page, { tags: ["Cống hiến", "Giỏi chuyên môn"] });
@@ -629,6 +667,14 @@ test.describe("Viết Kudo: Hủy, Gửi", () => {
     expect(urls[0]).toMatch(/\/storage\/v1\/object\/public\/kudo-images\/[0-9a-f-]{36}\.jpg$/);
     expect(urls[1]).toMatch(/\/storage\/v1\/object\/public\/kudo-images\/[0-9a-f-]{36}\.png$/);
     for (const url of urls) expect(url).not.toContain(sub); // the public URL must not reveal the sender
+    // Read side: the new top card renders both uploaded files. The origin allow-list (lib/validation/kudos.ts) drops a URL
+    // outside the Supabase origin, so a broken filter leaves fewer or other images here. next/image is unoptimized: src is the URL.
+    const images = page.getByTestId(SEL.allKudos).getByTestId(SEL.kudoCard).first().getByTestId("kudo-image");
+    await expect(images).toHaveCount(2);
+    for (const [index, url] of urls.entries()) {
+      const name = url.split("/").pop()!;
+      await expect(images.nth(index).locator("img")).toHaveAttribute("src", new RegExp(name.replace(".", "\\.") + "$"));
+    }
   });
 
   test("ID-27, ID-13 content goes to the RPC as Markdown: **bold** and @[Tên](id)", async ({ page, request }) => {

@@ -25,16 +25,21 @@ export function kudoPlainText(markdown: string): string {
   );
 }
 
+/**
+ * Runs on untrusted text (validator, every card), so each pattern is linear: no inner part can match its own
+ * delimiter, so a match attempt stops at the next delimiter instead of rescanning the line from every opener.
+ * Labels hold no `[`/`]` and targets no `(`/`)` (the serializer escapes brackets and percent-encodes parentheses).
+ */
 function stripLine(line: string): string {
   return line
     .replace(/^\s{0,3}(?:#{1,6}\s+|>\s?|[-*+]\s+|\d+[.)]\s+)/, "")
-    .replace(/@\[([^\]]*)\]\([^)]*\)/g, "@$1")
-    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/(\*\*|__)(.+?)\1/g, "$2")
-    .replace(/~~(.+?)~~/g, "$1")
-    .replace(/\*(\S(?:.*?\S)?)\*/g, "$1")
-    .replace(/(^|\W)_(\S(?:.*?\S)?)_(?=\W|$)/g, "$1$2")
+    .replace(/@\[([^[\]]*)\]\([^()]*\)/g, "@$1")
+    .replace(/!\[([^[\]]*)\]\([^()]*\)/g, "$1")
+    .replace(/\[([^[\]]*)\]\([^()]*\)/g, "$1")
+    .replace(/(\*\*|__)((?:(?!\1).)+)\1/g, "$2")
+    .replace(/~~((?:(?!~~).)+)~~/g, "$1")
+    .replace(/\*([^*\s](?:[^*]*[^*\s])?)\*/g, "$1")
+    .replace(/(^|\W)_([^_\s](?:[^_]*[^_\s])?)_(?=\W|$)/g, "$1$2")
     .replace(/`([^`]*)`/g, "$1")
     .trim();
 }

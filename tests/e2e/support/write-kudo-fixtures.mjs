@@ -2,6 +2,9 @@
 // Storage bucket "kudo-images", and per-caller control/log endpoints. It mirrors the SQL rules of phase 02
 // (supabase/migrations/20261019110000_create_kudo_write.sql) one to one, in the same check order, with PostgREST-shaped
 // errors (HTTP 400, code 22023, message = short code). Lesson #11: a lenient fake hides real SQL leaks, so keep it strict.
+// The fake is a CONTRACT double, not proof of the SQL: the migration owns the real guarantees (caller excluded, RLS, ownership)
+// and the SQL verify against a real database is what proves them. The fake only makes a UI that forgets to filter or mis-sends
+// fail here the way it would against that SQL.
 // Isolation: created kudos, uploads and logs are keyed by the caller's JWT sub, so a test never shows up in another
 // test's feed (other specs count the 28 base kudos). Ids are NOT RFC 4122 v4 (zod z.guid lesson).
 import { HASHTAGS, KUDOS, PEOPLE } from "./kudos-fixtures.mjs";
@@ -35,12 +38,13 @@ export const sunnerIdByName = (name) => SUNNERS.find((s) => s.full_name === name
 // Searchable like profiles.email, but kept out of the SUNNERS objects: those are spread into feed JSON, which never carries email.
 const EMAILS = new Map(SUNNERS.map((s) => [s.id, sunnerEmail(s.full_name)]));
 const SELF = { full_name: "E2E User", avatar_url: null, department: "CEVC1" }; // the signed-in caller (id = JWT sub)
+const SELF_EMAIL = "e2e@sun-asterisk.com"; // same as EMAIL in fake-supabase-server.mjs (the caller's profile email)
 
 const CREATED = []; // { id, created_at, sender_sub, recipient, title, content, hashtags, images, anon, alias }
 const states = new Map();
 const objects = new Map(); // flat "<uuid>.<ext>" -> { owner, bytes, mime }; owner = the upload's JWT sub (storage.objects.owner_id)
 const stateOf = (sub) => {
-  if (!states.has(sub)) states.set(sub, { rpc: [], uploads: [], deletes: [], failRpc: false, delayMs: 0 });
+  if (!states.has(sub)) states.set(sub, { rpc: [], uploads: [], deletes: [], failRpc: false, refuseOnce: null, delayMs: 0, searchDelayMs: 0, failHashtags: false, hashtagDelayMs: 0 });
   return states.get(sub);
 };
 const pgError = (message, status = 400, code = "22023") => ({ status, body: { code, details: null, hint: null, message } });
@@ -63,11 +67,15 @@ function searchSunners({ p_query, p_limit, p_name_only }, sub) {
   const q = fold(String(p_query ?? "").trim());
   const nameOnly = p_name_only === true;
   const limit = Math.min(Math.max(Number(p_limit ?? 10) || 1, 1), 10);
+  // Like profiles: the caller is a searchable row too ("E2E User", e2e@...) and the SQL drops it with `p.id <> v_uid`.
+  // Keeping it in the domain makes "never the signed-in user" a rule this fake enforces, not an accident of the data.
+  const emailOf = (s) => (s.id === sub ? SELF_EMAIL : EMAILS.get(s.id));
+  const domain = [...SUNNERS, { id: sub, ...SELF }].filter((s) => s.id !== sub);
   // SQL: blank query -> Sunners that have a name, by full_name then id. Otherwise name (accent-insensitive) OR, unless
   // p_name_only ("@ + tên"), email substring; order = exact email first (never under p_name_only), then full_name, then id.
-  const exact = (s) => !nameOnly && EMAILS.get(s.id) === q;
-  const hit = (s) => (q ? fold(s.full_name).includes(q) || (!nameOnly && EMAILS.get(s.id).includes(q)) : Boolean(s.full_name?.trim()));
-  return SUNNERS.filter(hit)
+  const exact = (s) => !nameOnly && emailOf(s) === q;
+  const hit = (s) => (q ? fold(s.full_name).includes(q) || (!nameOnly && emailOf(s).includes(q)) : Boolean(s.full_name?.trim()));
+  return domain.filter(hit)
     .sort((a, b) => Number(exact(b)) - Number(exact(a)) || a.full_name.localeCompare(b.full_name, "vi") || a.id.localeCompare(b.id))
     .slice(0, limit)
     .map(({ id, full_name, avatar_url, department }) => ({ id, full_name, avatar_url, department })); // never email
@@ -101,6 +109,11 @@ async function createKudo(p, sub) {
   if (state.delayMs) await sleep(state.delayMs);
   const code = validate(p, sub);
   if (code) return pgError(code);
+  if (state.refuseOnce) { // the DB refuses a field the client had accepted, once (/__kudo-refuse-once?code=invalid_hashtags)
+    const refused = state.refuseOnce;
+    state.refuseOnce = null;
+    return pgError(refused);
+  }
   if (state.failRpc) return pgError("fake: injected failure boom-secret-detail", 500, "XX000");
   const id = `c2000000-0000-0000-0000-${String(CREATED.length + 1).padStart(12, "0")}`;
   const alias = p.p_is_anonymous ? String(p.p_anonymous_name ?? "").trim() || null : null;
@@ -116,8 +129,10 @@ async function createKudo(p, sub) {
 /** POST /rest/v1/rpc/<fn> for the write RPCs; undefined = not mine. Every call is logged per caller. */
 export async function writeKudoRpc(name, body, sub) {
   if (name !== "create_kudo" && name !== "kudos_search_sunners") return undefined;
-  stateOf(sub || "anonymous").rpc.push({ name, body });
+  const state = stateOf(sub || "anonymous");
+  state.rpc.push({ name, body }); // logged on arrival: a test can see a call in flight while its answer is still held back
   if (name === "create_kudo") return createKudo(body, sub);
+  if (state.searchDelayMs) await sleep(state.searchDelayMs);
   return { status: 200, body: searchSunners(body, sub) };
 }
 
@@ -138,13 +153,28 @@ export function mergeCreatedKudos(name, body, sub, rows) {
   return [...mine.map((k) => rowOf(k, sub)), ...rows].slice(0, Math.min(Math.max(Number(body.p_limit ?? 10) || 1, 1), 20));
 }
 
-/** Test-only control endpoints (GET, keyed by ?sub=): /__kudo-log, /__kudo-fail-rpc, /__kudo-delay?ms=. */
+/** True while this caller's hashtag catalog read must answer 500 (the server action getHashtagOptions reads it). */
+export const hashtagsFailing = (sub) => Boolean(sub) && stateOf(sub).failHashtags;
+
+/** Resolves after this caller's /__kudo-delay-hashtags delay (at once when none is set): await it before answering the catalog read. */
+export const holdHashtagCatalog = (sub) => (sub && stateOf(sub).hashtagDelayMs ? sleep(stateOf(sub).hashtagDelayMs) : undefined);
+
+/**
+ * Test-only control endpoints (GET, keyed by ?sub=): /__kudo-log, /__kudo-fail-rpc, /__kudo-delay?ms= (create_kudo),
+ * /__kudo-delay-search?ms= (kudos_search_sunners), /__kudo-fail-hashtags?on=1|0 (hashtags catalog GET answers 500),
+ * /__kudo-delay-hashtags?ms= (the hashtags catalog GET is held back by ms before it answers, failing or not),
+ * /__kudo-refuse-once?code= (the next create_kudo that passes validation answers 400 / 22023 / <code>, e.g. invalid_hashtags).
+ */
 export function kudoControl(pathname, params) {
   if (!pathname.startsWith("/__kudo-")) return undefined;
   const sub = params.get("sub") || "anonymous";
   const state = stateOf(sub);
   if (pathname === "/__kudo-fail-rpc") state.failRpc = true;
   else if (pathname === "/__kudo-delay") state.delayMs = Number(params.get("ms") || 0);
+  else if (pathname === "/__kudo-delay-search") state.searchDelayMs = Number(params.get("ms") || 0);
+  else if (pathname === "/__kudo-delay-hashtags") state.hashtagDelayMs = Number(params.get("ms") || 0);
+  else if (pathname === "/__kudo-fail-hashtags") state.failHashtags = params.get("on") !== "0";
+  else if (pathname === "/__kudo-refuse-once") state.refuseOnce = params.get("code");
   else if (pathname === "/__kudo-log") {
     const own = [...objects].filter(([, o]) => o.owner === sub).map(([path]) => path);
     return { rpc: state.rpc, uploads: state.uploads, deletes: state.deletes, objects: own };

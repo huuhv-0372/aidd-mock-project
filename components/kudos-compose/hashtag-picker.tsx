@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { useDismissable } from "@/components/site-shell/use-dismissable";
 import { CheckCircleIcon, CloseTinyIcon, PlusIcon } from "./compose-icons";
 import { FieldLabel } from "./compose-field-label";
+import { HashtagLoadError } from "./hashtag-load-error";
 import { ERROR_FLOAT, FOCUS, REMOVE_BUTTON, REMOVE_DOT } from "./compose-field-styles";
 import type { WriteKudoCopy } from "./write-kudo-copy";
 import { KUDO_LIMITS, type HashtagOption, type WriteKudoLocale } from "./write-kudo-types";
@@ -12,6 +13,10 @@ type Props = {
   copy: WriteKudoCopy;
   locale: WriteKudoLocale;
   options: HashtagOption[];
+  /** The catalog could not be loaded: the dropdown explains it and offers a retry instead of the rows. */
+  loadFailed: boolean;
+  /** Reloads the catalog; resolves to whether it loaded, or null when a newer reload made this answer moot. */
+  onRetry: () => Promise<boolean | null>;
   /** Picked catalog slugs, in pick order. */
   selected: string[];
   onChange: (slugs: string[]) => void;
@@ -32,10 +37,12 @@ const CHIP =
  * multi-select listbox that stays open on pick and closes on an outside click; at 5 tags the unpicked rows turn
  * aria-disabled. Tags only come from the catalog (no free text), shown as "#name".
  */
-export function HashtagPicker({ copy, locale, options, selected, onChange, onClosed, error }: Props) {
+export function HashtagPicker({ copy, locale, options, loadFailed, onRetry, selected, onChange, onClosed, error }: Props) {
   const [open, setOpen] = useState(false);
+  const [refocus, setRefocus] = useState<{ onRows: boolean } | null>(null); // a fresh object per settled retry, so the effect below re-runs
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const retryRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const listId = useId();
   const full = selected.length >= KUDO_LIMITS.hashtagsMax;
@@ -59,6 +66,19 @@ export function HashtagPicker({ copy, locale, options, selected, onChange, onClo
     setOpen(true);
     requestAnimationFrame(() => rows()[0]?.focus());
   }
+
+  // The panel is replaced while the catalog reloads (the focused Retry button unmounts), so focus is handed back once it settles:
+  // to the first row on success, to the new Retry button on failure. Done in an effect, i.e. after the answer is rendered.
+  async function retry() {
+    const loaded = await onRetry();
+    if (loaded !== null) setRefocus({ onRows: loaded });
+  }
+  useEffect(() => {
+    if (!refocus) return;
+    const active = document.activeElement;
+    if (active && active !== document.body && !rootRef.current?.contains(active)) return; // the user has moved on: keep their focus
+    (refocus.onRows ? listRef.current?.querySelector<HTMLButtonElement>('[role="option"]') : retryRef.current)?.focus();
+  }, [refocus]);
 
   function toggleTag(slug: string) {
     if (selected.includes(slug)) onChange(selected.filter((item) => item !== slug));
@@ -126,7 +146,8 @@ export function HashtagPicker({ copy, locale, options, selected, onChange, onClo
                 <span className="text-[11px] leading-4 font-bold tracking-[0.5px] text-kudos-muted">{copy.hashtag.max}</span>
               </span>
             </button>
-            {open && (
+            {open && loadFailed && <HashtagLoadError id={listId} copy={copy.hashtag} onRetry={retry} retryRef={retryRef} onKeyDown={onListKeyDown} />}
+            {open && !loadFailed && (
               <div
                 ref={listRef}
                 id={listId}

@@ -1,7 +1,6 @@
 // Viết Kudos (#12) entry points: Widget quick-action menu (Homepage ID-54, FAB Sv7DFwBw1h: A Thể lệ, B Viết KUDOS, C ✕),
 // Thể lệ panel (b1Filzi9i6) and pill A.1 on /sun-kudos. Selector contract: support/kudos-contract.ts (WIDGET, RULES, WRITE).
 // Signed-in cases run on AUTHED (3103, fake Supabase) at "/", "/awards-information", "/sun-kudos"; guest cases on PAST (3101).
-// Expected RED now: the widget is a bare button with no menu, so every case fails on its first menu/dialog assertion.
 // Deferred (reason): TC_THELE_GUI_002/004 (button styling, hover) -> phase 06 visual comparison; TC_THELE_GUI_003 and
 // TC_THELE_FUN_005 (disabled footer button) -> N/A, the panel has no disabled state (clarifications.md);
 // ID-56 of Viết Kudo is not here either (see write-kudo.spec.ts).

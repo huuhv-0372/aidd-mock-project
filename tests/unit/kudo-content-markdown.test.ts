@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { kudoEditorJsonToMarkdown, type KudoEditorNode } from "@/lib/kudos/kudo-content-markdown";
+import { kudoPlainText } from "@/lib/kudos/kudo-plain-text";
 
 const ID = "2a000000-0000-0000-0000-000000000101";
 const text = (value: string, ...marks: KudoEditorNode["marks"] & object): KudoEditorNode => ({
@@ -58,6 +59,26 @@ describe("kudoEditorJsonToMarkdown", () => {
     expect(md(p(text("a"), { type: "hardBreak" }, text("b")), p(text("c")))).toBe("a\nb\nc");
   });
 
+  // Shift+Enter inside bold keeps the mark on the hard break: every line must close and reopen its delimiters.
+  it.each([
+    ["bold", { type: "bold" }, "**a**\n**b**"],
+    ["italic", { type: "italic" }, "_a_\n_b_"],
+    ["strike", { type: "strike" }, "~~a~~\n~~b~~"],
+    ["link", link("https://a.com"), "[a](https://a.com/)\n[b](https://a.com/)"],
+  ])("closes and reopens %s around a hard break", (_name, mark, expected) => {
+    const markdown = md(p(text("a", mark), { type: "hardBreak", marks: [mark] }, text("b", mark)));
+    expect(markdown).toBe(expected);
+    expect(kudoPlainText(markdown)).toBe("a\nb");
+  });
+
+  it("keeps nested marks balanced on both sides of a hard break", () => {
+    const bold = { type: "bold" };
+    const italic = { type: "italic" };
+    const markdown = md(p(text("a", bold, italic), { type: "hardBreak", marks: [bold] }, text("b ", bold), text("c")));
+    expect(markdown).toBe("**_a_**\n**b** c");
+    expect(kudoPlainText(markdown)).toBe("a\nb c");
+  });
+
   it("drops leading and trailing blank paragraphs but keeps inner ones", () => {
     expect(md(p(), p(text("a")), p(), p(text("b")), p())).toBe("a\n\nb");
   });
@@ -81,6 +102,29 @@ describe("kudoEditorJsonToMarkdown", () => {
 
   it("leaves accented text and ordinary punctuation alone", () => {
     expect(md(p(text("Cảm ơn bạn đã hỗ trợ team! (rất nhiều).")))).toBe("Cảm ơn bạn đã hỗ trợ team! (rất nhiều).");
+  });
+
+  it("trims leading blank lines and trailing whitespace, nothing else", () => {
+    expect(md(p(), p(), p(text("x  ")), p(), p(text(" ")))).toBe("x");
+    expect(md(p(text(" a  b ")))).toBe(" a  b");
+  });
+
+  // The serializer runs on every keystroke: a long whitespace run in the middle of a line must not cost quadratic time.
+  it("serialises a 20,000-space run between two words in linear time", () => {
+    const run = `a${" ".repeat(20_000)}b`;
+    const started = performance.now();
+    const out = md(p(text(run)));
+    expect(performance.now() - started).toBeLessThan(50);
+    expect(out).toBe(run);
+  });
+
+  // wrap() trims the run around a mark's text: a regex for that is quadratic on a whitespace run inside the mark.
+  it("serialises a 20,000-space run inside a bold span in linear time", () => {
+    const run = `a${" ".repeat(20_000)}b`;
+    const started = performance.now();
+    const out = md(p(text(run, { type: "bold" })));
+    expect(performance.now() - started).toBeLessThan(50);
+    expect(out).toBe(`**${run}**`);
   });
 
   it("degrades unknown nodes and malformed input without throwing", () => {

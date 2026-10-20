@@ -70,6 +70,36 @@ describe("writeKudoSchema", () => {
     expect(parse({ content: "Thanks \\[not a link\\](javascript:x)" }).success).toBe(true);
   });
 
+  it("guards link targets the validator already refuses or allows", () => {
+    expect(parse({ content: "[x](javascript:void//http://a.com)" }).success).toBe(false);
+    expect(parse({ content: `[An](${RECIPIENT})` }).success).toBe(false); // a profile id needs the @ of a mention
+    expect(parse({ content: "![x](javascript:alert(1))" }).success).toBe(false);
+    expect(parse({ content: "[x](//evil.com)" }).success).toBe(false);
+    expect(parse({ content: "[x](mailto:a@b.c)" }).success).toBe(false);
+    // "@" typed right before a link serialises to `@[label](https://...)`: an http(s) target is allowed after "@" too.
+    expect(parse({ content: "@[An](https://x.com)" }).success).toBe(true);
+  });
+
+  it("rejects 20,000 chars of unclosed brackets as content in under 50 ms (length check stops the refines)", () => {
+    const started = performance.now();
+    const result = parse({ content: "[".repeat(20_000) });
+    expect(performance.now() - started).toBeLessThan(50);
+    expect(!result.success && fieldErrorsFromIssues(result.error.issues)).toEqual({ content: "invalid" });
+    // The refines never ran: an oversized unsafe link yields only the length issue.
+    const oversized = parse({ content: "[x](javascript:a) ".repeat(300) });
+    const contentIssues = oversized.success ? [] : oversized.error.issues.filter((issue) => issue.path[0] === "content");
+    expect(contentIssues.map((issue) => issue.code)).toEqual(["too_big"]);
+  });
+
+  it.each(["[".repeat(5000), "[](".repeat(1667).slice(0, 5000), "@[".repeat(2500), "[](".repeat(1666) + ")"])(
+    "checks 5000 chars of adversarial brackets in under 50 ms (case %#)",
+    (content) => {
+      const started = performance.now();
+      parse({ content });
+      expect(performance.now() - started).toBeLessThan(50);
+    },
+  );
+
   it("rejects a bad recipient id but accepts a non-v4 Postgres uuid", () => {
     expect(parse({ recipientId: "nope" }).success).toBe(false);
     expect(parse({ recipientId: "2a000000-0000-0000-0000-000000000101" }).success).toBe(true);
@@ -90,6 +120,9 @@ describe("writeKudoSchema", () => {
     expect(parse({ images: [img(), img(), img(), img(), img(), img()] }).success).toBe(false);
     expect(parse({ images: ["not a file"] }).success).toBe(false);
     expect(parse({ images: [file([], "e.jpg", "image/jpeg")] }).success).toBe(false);
+    const atCap = new Uint8Array(KUDO_IMAGE_MAX_BYTES);
+    atCap.set(JPG);
+    expect(parse({ images: [file(atCap, "cap.jpg", "image/jpeg")] }).success).toBe(true);
     const big = file(new Uint8Array(KUDO_IMAGE_MAX_BYTES + 1), "big.jpg", "image/jpeg");
     const result = parse({ images: [big] });
     expect(result.success).toBe(false);

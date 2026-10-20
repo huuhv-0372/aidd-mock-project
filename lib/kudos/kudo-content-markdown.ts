@@ -31,11 +31,20 @@ function safeHref(raw: unknown): string | null {
   }
 }
 
-/** Delimiters must hug the text: `** a **` is not bold, so surrounding whitespace moves outside. */
+/**
+ * Delimiters must hug the text: `** a **` is not bold, so surrounding whitespace moves outside.
+ * Sliced by trimStart/trimEnd offsets, not a /^(\s*)(.*?)(\s*)$/ regex: that is quadratic on a long whitespace run
+ * inside the span, and this runs on every editor update.
+ */
 function wrap(inner: string, open: string, close: string): string {
-  const [, lead = "", core = "", trail = ""] = /^(\s*)([\s\S]*?)(\s*)$/.exec(inner) ?? [];
-  return core ? `${lead}${open}${core}${close}${trail}` : inner;
+  const start = inner.length - inner.trimStart().length;
+  const end = inner.trimEnd().length;
+  const core = inner.slice(start, end);
+  return core ? `${inner.slice(0, start)}${open}${core}${close}${inner.slice(end)}` : inner;
 }
+
+/** A mark kept across a hard break (Shift+Enter in bold) closes before `\n` and reopens after: spans never cross lines. */
+const perLine = (inner: string, mark: (line: string) => string) => inner.split("\n").map(mark).join("\n");
 
 const hasMark = (node: KudoEditorNode, type: string) => node.marks?.find((m) => m.type === type);
 
@@ -73,10 +82,10 @@ function renderInline(nodes: KudoEditorNode[], level = 0): string {
     if (!first) out += inner;
     else if (type === "link") {
       const href = safeHref(first.attrs?.href);
-      out += href ? `[${inner}](${href})` : inner;
+      out += href ? perLine(inner, (line) => (line.trim() ? `[${line}](${href})` : line)) : inner;
     } else {
       const delimiter = { bold: "**", italic: "_", strike: "~~" }[type];
-      out += wrap(inner, delimiter, delimiter);
+      out += perLine(inner, (line) => wrap(line, delimiter, delimiter));
     }
   }
   return out;
@@ -109,5 +118,6 @@ function renderBlock(node: KudoEditorNode): string[] {
 /** Never throws on malformed JSON: unknown shapes yield an empty string, which the server rejects as empty content. */
 export function kudoEditorJsonToMarkdown(doc: KudoEditorNode): string {
   const lines = renderBlocks(doc?.content);
-  return lines.join("\n").replace(/^\n+|\s+$/g, "");
+  // trimEnd, not /\s+$/: that regex is quadratic on a long whitespace run mid-text, and this runs on every keystroke.
+  return lines.join("\n").replace(/^\n+/, "").trimEnd();
 }

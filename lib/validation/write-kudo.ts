@@ -30,12 +30,20 @@ export const hashtagOptionSchema = hashtagSchema.pick({ slug: true, name_vi: tru
 export type HashtagOption = z.infer<typeof hashtagOptionSchema>;
 
 const HTTP_URL = /^https?:\/\/\S+$/i;
-// `[label](target)` with an optional leading `@` (mention). Labels may hold escaped brackets (`\]`).
-const MARKDOWN_LINK = /(@?)\[(?:\\.|[^\]\\])*\]\(([^)]*)\)/g;
+// `[label](target)` with an optional leading `@` (mention). Labels may hold escaped brackets (`\]`) but no bare `[`:
+// a match then starts at the innermost `[`, so an unclosed `[[[…` costs linear time, and `[a[b](t)` still checks `t`.
+// The target keeps `[^)]*` (not `[^()]*`): `[x](javascript:alert(1))` must still be found and refused.
+const MARKDOWN_LINK = /(@?)\[(?:\\.|[^[\]\\])*\]\(([^)]*)\)/g;
 
-/** Every link target is http(s); every `@[Name](target)` mention points at a profile id. Blocks `javascript:` & co. */
+/**
+ * Every link target is http(s); every `@[Name](target)` with a non-http target must point at a profile id.
+ * Blocks `javascript:` & co. (`@` typed right before a link legitimately serialises to `@[label](https://…)`.)
+ */
 function hasOnlySafeLinks(markdown: string): boolean {
-  for (const [, mention, target] of markdown.matchAll(MARKDOWN_LINK)) {
+  // Every link ends with `)`, so text after the last one holds none. Cutting it off keeps the scan linear: each
+  // `](` then reaches a `)` and matches, instead of rescanning to the end for every opener of `[](` `[](` ….
+  const scanned = markdown.slice(0, markdown.lastIndexOf(")") + 1);
+  for (const [, mention, target] of scanned.matchAll(MARKDOWN_LINK)) {
     if (HTTP_URL.test(target)) continue;
     if (!(mention && pgUuid.safeParse(target).success)) return false;
   }
@@ -45,7 +53,9 @@ function hasOnlySafeLinks(markdown: string): boolean {
 const content = z
   .string()
   .trim()
-  .max(KUDO_CONTENT_MAX)
+  // `abort`: zod 4 still runs later refines after a failed check; an oversized body must never reach them
+  // (this parse runs before the session check, so it is reachable without signing in).
+  .max(KUDO_CONTENT_MAX, { abort: true })
   .refine((markdown) => kudoPlainText(markdown).length > 0)
   .refine(hasOnlySafeLinks);
 

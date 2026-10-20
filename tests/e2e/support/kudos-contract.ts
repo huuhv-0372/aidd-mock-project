@@ -178,7 +178,17 @@ export async function kudoLog(request: APIRequestContext, sub: string): Promise<
 export const rpcCalls = (log: KudoLog, name: string) => log.rpc.filter((c) => c.name === name).map((c) => c.body);
 /** The next create_kudo for this sub fails with a server error (after validation passed), carrying a secret marker. */
 export const failCreateRpc = (request: APIRequestContext, sub: string) => request.get(`${KUDOS_FAKE}/__kudo-fail-rpc?sub=${sub}`);
+/** The next create_kudo for this sub that passes the fake's own validation is refused by the DB: 400, errcode 22023, message `code`. */
+export const refuseCreateRpcOnce = (request: APIRequestContext, sub: string, code: string) => request.get(`${KUDOS_FAKE}/__kudo-refuse-once?sub=${sub}&code=${code}`);
 export const delayCreateRpc = (request: APIRequestContext, sub: string, ms: number) => request.get(`${KUDOS_FAKE}/__kudo-delay?sub=${sub}&ms=${ms}`);
+
+/** Holds back every kudos_search_sunners answer by `ms`; the call is logged on arrival, so "in flight" is observable. */
+export const delaySearchRpc = (request: APIRequestContext, sub: string, ms: number) => request.get(`${KUDOS_FAKE}/__kudo-delay-search?sub=${sub}&ms=${ms}`);
+/** While on, the hashtag catalog read of this sub answers 500 (the "+ Hashtag" dropdown then shows an error and a retry). */
+export const failHashtagCatalog = (request: APIRequestContext, sub: string, on: boolean) => request.get(`${KUDOS_FAKE}/__kudo-fail-hashtags?sub=${sub}&on=${on ? 1 : 0}`);
+
+/** Holds back every hashtag catalog read of this sub by `ms` before it answers (0 = no delay); a pending reload is then observable. */
+export const delayHashtagCatalog = (request: APIRequestContext, sub: string, ms: number) => request.get(`${KUDOS_FAKE}/__kudo-delay-hashtags?sub=${sub}&ms=${ms}`);
 
 /** Opens /sun-kudos signed in at a viewport; the content assertions belong to the spec, not this helper. */
 export async function openKudos(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {

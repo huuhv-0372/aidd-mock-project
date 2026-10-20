@@ -25,6 +25,8 @@ export type RecipientChoice = { id: string; name: string };
 export const KUDO_LIMITS = {
   titleMax: 100,
   aliasMax: 50,
+  /** Characters of the serialized Markdown, as the server counts them (KUDO_CONTENT_MAX in lib/validation/write-kudo.ts, which a client file must not import: it drags zod in). */
+  contentMax: 5000,
   hashtagsMax: 5,
   imagesMax: 5,
   imageBytesMax: 5 * 1024 * 1024,

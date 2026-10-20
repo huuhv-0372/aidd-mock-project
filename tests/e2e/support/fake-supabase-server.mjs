@@ -5,7 +5,7 @@
 import { createServer } from "node:http";
 import { generateKeyPairSync, sign, verify, randomUUID } from "node:crypto";
 import { kudosCatalog, kudosRpc } from "./kudos-fixtures.mjs";
-import { handleStorage, kudoControl, mergeCreatedKudos, writeKudoRpc } from "./write-kudo-fixtures.mjs";
+import { handleStorage, hashtagsFailing, holdHashtagCatalog, kudoControl, mergeCreatedKudos, writeKudoRpc } from "./write-kudo-fixtures.mjs";
 
 const PORT = Number(process.env.E2E_FAKE_SUPABASE_PORT || 54398);
 const HOST = "127.0.0.1";
@@ -104,6 +104,13 @@ async function handleRest(req, res, url) {
     return send(res, 200, mergeCreatedKudos(fn, body, sub, result));
   }
   if (req.method === "GET") {
+    // per-caller injected delay / outage of the hashtag catalog (kudoControl "/__kudo-delay-hashtags", "/__kudo-fail-hashtags")
+    if (name.startsWith("hashtags")) {
+      await holdHashtagCatalog(sub);
+      if (hashtagsFailing(sub)) {
+        return send(res, 500, { code: "XX000", details: null, hint: null, message: "fake: injected hashtag catalog failure" });
+      }
+    }
     const rows = kudosCatalog(name);
     if (rows !== undefined) return send(res, 200, rows);
   }

@@ -18,8 +18,8 @@ type Props = {
   copy: WriteKudoCopy;
   searchSunners: WriteKudoActions["searchSunners"];
   error: string | null;
-  /** True while the document has any visible text (a mention counts). */
-  onHasContentChange: (hasContent: boolean) => void;
+  /** The document changed: the form reads whether it has visible text (a mention counts) and how long its Markdown is. */
+  onContentChange: (editor: Editor) => void;
   /** Leaving the editor (not for the Add link detour): the form decides whether to show the required error. */
   onBlur: () => void;
   /** Hands the form the live editor so submit can read editor.getJSON(). */
@@ -43,7 +43,7 @@ function editorAttributes(label: string, describedBy: string, error: string | nu
  * (Add link dialog) and "@" mentions. The toolbar, the "@" list and the Add link dialog all live inside this block so
  * they stay inside the modal's top layer.
  */
-export function KudoRichEditor({ copy, searchSunners, error, onHasContentChange, onBlur, onEditorReady }: Props) {
+export function KudoRichEditor({ copy, searchSunners, error, onContentChange, onBlur, onEditorReady }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const linkOpenRef = useRef(false);
   const [linkOpen, setLinkOpen] = useState(false);
@@ -69,7 +69,7 @@ export function KudoRichEditor({ copy, searchSunners, error, onHasContentChange,
       createMentionExtension({ searchSunners, onPopup: mention.onPopup, onKey: mention.onKey }),
     ],
     editorProps: { attributes: editorAttributes(copy.editor.label, hintId, null) },
-    onUpdate: ({ editor: current }) => onHasContentChange(current.getText().trim().length > 0),
+    onUpdate: ({ editor: current }) => onContentChange(current),
     onBlur: () => {
       if (!linkOpenRef.current) onBlur();
     },

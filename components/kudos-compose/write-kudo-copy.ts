@@ -17,10 +17,10 @@ export type WriteKudoCopy = {
   kudoTitle: { label: string; placeholder: string; hint: string };
   toolbar: { bold: string; italic: string; strike: string; orderedList: string; link: string; quote: string; standards: string };
   editor: { label: string; placeholder: string; mentionHint: string; mentionListLabel: string };
-  hashtag: { label: string; add: string; max: string; listLabel: string; remove: string };
+  hashtag: { label: string; add: string; max: string; listLabel: string; remove: string; loadFailed: string; retry: string };
   image: { label: string; add: string; max: string; remove: string };
   anonymous: { label: string; aliasLabel: string };
   actions: { cancel: string; send: string };
-  errors: { imageFormat: string; imageSize: string; sendFailed: string };
+  errors: { imageFormat: string; imageSize: string; sendFailed: string; contentTooLong: string; invalid: string };
   addLink: AddLinkCopy;
 };

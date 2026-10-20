@@ -59,16 +59,18 @@ export function WriteKudoForm({ titleId, copy, locale, actions, serializeContent
           copy={copy}
           searchSunners={actions.searchSunners}
           error={errors.content}
-          onHasContentChange={form.setHasContent}
+          onContentChange={form.onContentChange}
           onBlur={() => touch("content")}
           onEditorReady={form.onEditorReady}
         />
         <HashtagPicker
           copy={copy}
           locale={locale}
-          options={form.hashtagOptions}
-          selected={form.hashtags}
-          onChange={form.setHashtags}
+          options={form.hashtags.options}
+          loadFailed={form.hashtags.failed}
+          onRetry={form.hashtags.retry}
+          selected={form.hashtagSlugs}
+          onChange={form.setHashtagSlugs}
           onClosed={() => touch("hashtags")}
           error={errors.hashtags}
         />

@@ -79,6 +79,8 @@ export const kudosCompose: Dictionary["kudosCompose"] = {
       max: /* not from Figma */ "Max 5",
       listLabel: /* not from Figma */ "Hashtag list",
       remove: /* not from Figma */ "Remove hashtag",
+      loadFailed: /* not from Figma */ "Couldn't load hashtags",
+      retry: /* not from Figma */ "Retry",
     },
     image: { label: "Image", add: /* not from Figma */ "+ Image", max: /* not from Figma */ "Max 5", remove: /* not from Figma */ "Remove image" },
     anonymous: { label: "Send thanks and recognition anonymously", aliasLabel: /* not from Figma */ "Anonymous name" },
@@ -87,6 +89,8 @@ export const kudosCompose: Dictionary["kudosCompose"] = {
       imageFormat: /* not from Figma */ "Invalid file format",
       imageSize: /* not from Figma */ "Image must be 5 MB or smaller",
       sendFailed: /* not from Figma */ "Couldn't send your Kudos, please try again.",
+      contentTooLong: /* not from Figma */ "Content can be at most 5000 characters",
+      invalid: /* not from Figma */ "Invalid value, please check and try again",
     },
     addLink: {
       // Spec CSV wording ("Add link" / "Text" / "Link"); the Figma EN localizations read "Add path" / "Content" / "URL".

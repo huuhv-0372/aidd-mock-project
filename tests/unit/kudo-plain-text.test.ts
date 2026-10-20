@@ -62,6 +62,19 @@ describe("kudoPlainText", () => {
     expect(kudoPlainText(kudoEditorJsonToMarkdown(doc))).toBe("2*3 và [z] đậm_@Lê [Sun*]");
   });
 
+  // Cards render every stored Kudo and the validator runs this on every submitted text: no input may cost
+  // super-linear time. Each pattern opens a delimiter that never closes. 20,000 chars (4x the content cap) so a
+  // quadratic regex cannot hide under the budget: at 5000 chars the old patterns still took 10-64 ms.
+  it.each(["[", "@[", "*a ", "_a ", "**a ", "~~a ", "`", "[a](", "[](", "![", "__a "])(
+    "strips 20,000 chars of %j in under 50 ms",
+    (pattern) => {
+      const input = pattern.repeat(Math.ceil(20_000 / pattern.length)).slice(0, 20_000);
+      const started = performance.now();
+      kudoPlainText(input);
+      expect(performance.now() - started).toBeLessThan(50);
+    },
+  );
+
   it("returns an empty string for empty input", () => {
     expect(kudoPlainText("")).toBe("");
   });
