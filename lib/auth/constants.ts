@@ -1,4 +1,4 @@
-import { HOME_PATH } from "@/lib/navigation/routes";
+import { HOME_PATH, STANDARDS_PATH } from "@/lib/navigation/routes";
 import { login as viLogin } from "@/messages/vi/login";
 
 export const LOGIN_PATH = "/login";
@@ -15,5 +15,12 @@ export const ALLOWED_EMAIL_DOMAIN = "sun-asterisk.com";
  * Exact paths an anonymous visitor may open; every other path redirects to /login (default-deny).
  * Add new public routes here. /countdown stays public: the pre-launch gate sends everyone there.
  * The homepage is public per spec (guests see public content; the header shows a login link).
+ * The community standards page is public per owner decision 2026-10-21 (guests reach it from the homepage footer).
  */
-export const PUBLIC_PATHS: readonly string[] = [HOME_PATH, LOGIN_PATH, CALLBACK_PATH, "/countdown"];
+export const PUBLIC_PATHS: readonly string[] = [
+  HOME_PATH,
+  LOGIN_PATH,
+  CALLBACK_PATH,
+  "/countdown",
+  STANDARDS_PATH,
+];
