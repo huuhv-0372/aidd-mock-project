@@ -4,6 +4,30 @@ Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi ti�
 
 ## 2026-10-21
 
+### Thêm: trang Xem Kudo (`/sun-kudos/<id>`)
+
+- Route mới `app/[locale]/sun-kudos/[id]/page.tsx` (Figma 520:18779): một Kudo đầy đủ trong khung 680px, header dùng chung, không footer và không widget Viết KUDOS. Chỉ người đã đăng nhập (không vào `PUBLIC_PATHS`). `id` sai dạng (`kudoIdSchema`, `z.guid()`, kiểm trước mọi truy vấn) hoặc không có Kudo thì `notFound()`: HTTP 404 thật. Đọc lỗi thì hiện một dòng chung trong khung, chi tiết chỉ ở log máy chủ.
+- Mã: `components/kudos/kudo-detail-layout.tsx`, `kudo-detail-card.tsx`, `kudo-detail-close-button.tsx`; `lib/kudos/get-kudo-detail.ts` (`getKudoDetail`: `ok`, `not_found` hoặc `error`, không throw). Chữ ở khoá mới `kudos.detail` (`messages/{vi,en}/kudos.ts`; khối `postCard` tách ra để `allKudos.card` và `detail.card` dùng chung). Tiêu đề tab và thông báo lỗi, cùng chữ EN "Close", là chuỗi nhóm tự dịch (`not from Figma`).
+- Nội dung hiện đủ định dạng: `components/kudos/kudo-rich-content.tsx` + `lib/kudos/kudo-content-blocks.ts` đọc Markdown rút gọn đã lưu (đậm, nghiêng, gạch, danh sách đánh số, trích dẫn, liên kết, `@Tên` hiện in đậm). Chạy qua React, không `dangerouslySetInnerHTML`; chỉ liên kết `http(s)` thành `<a>` (tab mới, `rel="noopener noreferrer"`), đích khác chỉ hiện nhãn; không backtrack trên văn bản không tin cậy. Hạn chế: một đoạn bắt đầu bằng `2025. ` hay `>` hiện thành danh sách hoặc trích dẫn vì bộ serialize không thoát dấu đầu dòng.
+- Lối vào: nội dung thẻ All Kudos nay là `<Link>` tới trang này (`kudo-post-card.tsx`); "Xem chi tiết" của Highlight, Spotlight Board và link Copy Link đã trỏ sẵn tới `kudoDetailHref`, trước đây rơi vào 404. `kudo-hashtag-list` thêm prop `wrap`, `kudo-image-gallery` thêm prop `plain` (chỉ dùng ở trang này); `kudo-person` sửa padding của link tên.
+- Nút "Đóng": quay lại chỉ khi mục liền trước trong Navigation API là trang cùng site và không phải `/login`, không thì về `/sun-kudos` (không có API thì dùng `document.referrer` cùng site kèm `history.length > 1`).
+- Supabase (chạy tay): `supabase/migrations/20261021120000_create_kudo_detail_rpc.sql` (kèm `rollbacks/…_down.sql`, `verify/…_verify.sql`). Thêm RPC `kudo_detail(p_id uuid)` trả `setof kudo_row` qua `kudos_rows`, nên cùng quy tắc ẩn danh với bảng: `SECURITY DEFINER`, kiểm quy tắc tài khoản trước tiên, chỉ `authenticated`; tài khoản bị từ chối và `id` không có đều trả 0 dòng (không lộ Kudo có tồn tại). Đã chạy trên Supabase thật ngày 2026-10-21, verify 6/6 PASS.
+- Test: E2E `tests/e2e/kudo-detail.spec.ts` (+ `support/kudo-detail-contract.ts`; `kudos-fixtures.mjs` thêm `DETAIL_KUDO` và route `kudo_detail`; `kudo-hearts-fake.mjs` phủ trạng thái tim cho cả `kudo_detail`); unit `get-kudo-detail`, `kudo-content-blocks`, `kudo-rich-content`.
+- Giới hạn đã biết:
+  - SQL chưa ghi nhận đã chạy trên Supabase thật; E2E dùng Supabase giả nên không bắt được lỗi SQL. Chạy migration rồi file verify (mọi dòng PASS) trước khi coi là xong.
+  - Ghi chú bảo mật liên kết nội dung: `create_kudo` vẫn không kiểm đích liên kết; trang này lọc khi đọc nên rủi ro được chặn ở lúc hiển thị, chưa chặn lúc ghi.
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`, `docs/features/F001_CountdownPrelaunchGate/functional-spec.md` và `technical-spec.md` (một dòng edge case mỗi file), `docs/project-changelog.md`.
+
+### Thêm (bảo mật): quay lại đúng Kudo sau đăng nhập, `next` theo danh sách cho phép
+
+- Trước đây `/` là đích duy nhất sau đăng nhập, không có tham số `next` nên không có open redirect. Nay khách mở `/sun-kudos/<guid>` được đưa sang `/login?next=/sun-kudos/<guid>` và quay lại đúng Kudo sau khi đăng nhập; người đã đăng nhập mở `/login?next=…` hợp lệ thì về thẳng đó.
+- Danh sách cho phép, không phải bộ lọc: `lib/auth/post-login-next.ts` (`parsePostLoginNext`) chỉ nhận đúng `/sun-kudos/<guid>` (không query, hash, dấu `/` cuối, mã hoá hay khoảng trắng; tối đa 64 ký tự), trả dạng chữ thường; mọi thứ khác (URL ngoài site, `//host`, mảng) là `null` và về `/`. Kiểm lại ở proxy, trang login, Server Action và callback. `next` chỉ làm trường ẩn của form, không bao giờ in ra trang.
+- Đích qua vòng Google bằng cookie `saa_post_login_next` (`httpOnly`, `SameSite=Lax`, `Secure` ở production, 600 giây), không gắn vào `redirectTo`. `signInWithGoogle` nay nhận `FormData` và ghi hoặc xoá cookie; `app/auth/callback/route.ts` kiểm lại cookie, chuyển tới đó, và xoá cookie trên mọi lối thoát (kể cả lỗi), nên đích không sống lâu hơn lần đăng nhập đó.
+- `resolveAuthRedirect(pathname, isAuthenticated, next = null)` nay trả `string | null` (trước là `"/" | "/login" | null`); `proxy.ts` truyền `?next`; `POST_LOGIN_PATH` vẫn là `/`.
+- Phạm vi: chạm xác thực và mở một điểm nhận đích từ client. Hệ quả: không có đường nào để redirect rời site hay tới đường dẫn khác ngoài `/sun-kudos/<guid>`; thất bại ghi cookie chỉ mất chuyến quay lại.
+- Test: unit `post-login-next`, `sign-in-with-google-next`, `auth-callback-next`, `resolve-auth-redirect` (thêm nhóm ca `next`); E2E trong `kudo-detail.spec.ts` (khách về `/login?next=…`, `next` ngoài site không redirect).
+- Tài liệu cập nhật: `docs/codebase-summary.md` (mục Đăng nhập Google), `docs/system/permissions.md`, `README.md`.
+
 ### Đổi: trang 404 theo Figma; thêm: trang 403 và `forbidden()`
 
 - Trang 404 dựng lại theo Figma 1378:5063: nền `error-bg.webp` phủ màu `#00101A`, tiêu đề, ảnh robot 702x545, mô tả, không header/footer. Nút "Về trang chủ" / "Back to home" không có trong Figma, giữ theo yêu cầu. Tiêu đề VI "Không tìm thấy trang" hiển thị IN HOA bằng CSS để khớp "NOT FOUND"; tiêu đề EN nay là "NOT FOUND" (trước là "Page not found"; tiêu đề tab EN vẫn "Page not found | SAA 2025").

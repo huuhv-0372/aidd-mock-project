@@ -86,7 +86,7 @@ Cổng chờ trước giờ mở SAA 2025 gồm hai phần nhỏ. Một quy tắ
 | A1 | Trước giờ, request tới `_next/static`, `_next/image`, `images/`, `favicon.ico`, `robots.txt`, `sitemap.xml` | Không qua gate; nếu không loại, trang đếm ngược mất CSS/ảnh |
 | A1 | Trước giờ, người dùng đã đăng nhập hoặc phiên hết hạn | Vẫn về `/countdown`; gate chạy trước kiểm tra phiên nên không có redirect sang login vì phiên |
 | A1 · A2 | Sau giờ, mở `/countdown` | 307 sang `/login` (DEC-002); `/login` là màn Login đã làm (ngoài phạm vi F001); `proxy.ts` chuyển người đã đăng nhập từ `/login` sang `/` sau gate |
-| A1 | Sau giờ (hoặc mốc thiếu/sai), người chưa đăng nhập mở đường dẫn không nằm trong `PUBLIC_PATHS` (`/` nằm trong danh sách nên vẫn mở được) | Gate cho đi tiếp; bước kiểm phiên sau gate (`resolveAuthRedirect`, ngoài phạm vi F001) 307 sang `/login` với đường dẫn ngoài danh sách |
+| A1 | Sau giờ (hoặc mốc thiếu/sai), người chưa đăng nhập mở đường dẫn không nằm trong `PUBLIC_PATHS` (`/` nằm trong danh sách nên vẫn mở được) | Gate cho đi tiếp; bước kiểm phiên sau gate (`resolveAuthRedirect`, ngoài phạm vi F001) 307 sang `/login` với đường dẫn ngoài danh sách (riêng `/sun-kudos/<guid>` kèm `?next=`, xem `docs/codebase-summary.md` mục Đăng nhập Google) |
 | A3 | Còn lại < 1 ngày | Days `00`, Hours/Minutes tiếp tục giảm |
 | A3 | Giá trị âm, Hours ≥ 24, Minutes ≥ 60 (đầu vào hàm định dạng) | Hiển thị `00` |
 | A3 | Days > 99 | Kẹp ở `99` |
