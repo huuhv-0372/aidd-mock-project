@@ -2,6 +2,17 @@
 
 Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi tiết mã nằm ở `git log`.
 
+## 2026-10-21
+
+### Thêm: trang Tiêu chuẩn chung (`/tieu-chuan-chung`)
+
+- Trang mới `app/[locale]/tieu-chuan-chung/page.tsx` (Figma web 1161:8944) với hai khối `components/standards/`: `standards-hero` (key visual) và `standards-content` (`<h1>` ẩn thị giác, `<ol>` 10 tiêu chuẩn cộng đồng, `<ul>` 2 mục bảo mật, dòng liên hệ BTC). Chữ ở `messages/vi/standards.ts` và `messages/en/standards.ts` (khoá `standards` đã vào `Dictionary`). Chữ EN ngoài hai tiêu đề lấy từ Figma là bản nhóm tự dịch (danh sách ở `plans/261021-community-standards/reports/en-localizations.md`).
+- **Công khai** theo quyết định của chủ dự án 2026-10-21: `PUBLIC_PATHS` (`lib/auth/constants.ts`) nay gồm `/`, `/login`, `/auth/callback`, `/countdown`, `/tieu-chuan-chung`. Khớp đúng đường dẫn nên `/tieu-chuan-chung/x` vẫn về `/login`. Trang dùng header, footer chung, không có widget nổi Viết KUDOS.
+- `SiteFooter` nhận thêm `activeHref` tuỳ chọn: link footer của trang hiện tại có `aria-current="page"` và kiểu "đang chọn" (trùng kiểu hover). Thêm `xl:gap-x-0` để dòng bản quyền không xuống hàng ở 1440.
+- Hai link trước đây rơi vào 404 nay mở trang này: "Tiêu chuẩn chung" ở footer và "Tiêu chuẩn cộng đồng" trên thanh công cụ Viết Kudo (mở tab mới, modal giữ nguyên).
+- Test: `tests/e2e/standards.spec.ts` (khách và người đã đăng nhập, nội dung VI/EN, `aria-current`, hai điểm vào, mobile 375); `tests/unit/resolve-auth-redirect.test.ts` thêm ca `/tieu-chuan-chung` (công khai, kể cả dấu `/` cuối) và `/tieu-chuan-chung/x` (chặn).
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`, `docs/features/F001_CountdownPrelaunchGate/functional-spec.md` (một dòng edge case), `docs/project-changelog.md`.
+
 ## 2026-10-20
 
 ### Thêm: thả tim cho Kudo (tính năng #13)
