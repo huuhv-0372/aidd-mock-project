@@ -4,6 +4,17 @@ Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi ti�
 
 ## 2026-10-21
 
+### Đổi: trang 404 theo Figma; thêm: trang 403 và `forbidden()`
+
+- Trang 404 dựng lại theo Figma 1378:5063: nền `error-bg.webp` phủ màu `#00101A`, tiêu đề, ảnh robot 702x545, mô tả, không header/footer. Nút "Về trang chủ" / "Back to home" không có trong Figma, giữ theo yêu cầu. Tiêu đề VI "Không tìm thấy trang" hiển thị IN HOA bằng CSS để khớp "NOT FOUND"; tiêu đề EN nay là "NOT FOUND" (trước là "Page not found"; tiêu đề tab EN vẫn "Page not found | SAA 2025").
+- Trang 403 "Truy cập bị từ chối" / "Access Denied" mới (Figma 2182:9291), cùng khung với 404. `next.config.ts` bật `experimental.authInterrupts` (còn là thử nghiệm ở Next 16) nên route nào cũng gọi được `forbidden()` từ `next/navigation` để hiện `app/[locale]/forbidden.tsx`; gọi trước khi response bắt đầu stream, nếu không status vẫn 200. Route `/403` (`app/[locale]/403/page.tsx`) gọi `forbidden()` để xem trước và trả HTTP 403. Hiện chưa có route nghiệp vụ nào gọi `forbidden()`.
+- **Công khai** theo quyết định của chủ dự án 2026-10-21: `/403` vào `PUBLIC_PATHS` (`lib/auth/constants.ts`, hằng `FORBIDDEN_PATH` ở `lib/navigation/routes.ts`) vì trang không chứa dữ liệu. Khớp đúng đường dẫn nên `/403/x` vẫn về `/login`.
+- Khách mở đường dẫn không tồn tại vẫn bị đưa sang `/login` (default-deny), không thấy 404: cố ý, để khách không dò được đường dẫn nào có thật. Trang 404 (HTTP 404) chỉ hiện cho người đã đăng nhập.
+- Mã: khung chung `components/errors/` (`error-screen.tsx`, `use-error-copy.ts`, `access-denied-content.tsx`); `components/not-found/not-found-content.tsx` dùng lại khung đó. Chữ: `messages/{vi,en}/not-found.ts` và khoá mới `forbidden` (`messages/{vi,en}/forbidden.ts`, đã vào `Dictionary`). Ảnh: `public/images/errors/`.
+- Test: `tests/e2e/error-pages.spec.ts` mới (404 cho người đã đăng nhập, khách bị đưa sang `/login`, `/403` trả HTTP 403 cho khách và người đã đăng nhập, VI/EN, nút về trang chủ, nền, mobile 375); `language-switch-authed.spec.ts` đổi tiêu đề EN kỳ vọng thành "NOT FOUND"; `resolve-auth-redirect.test.ts` thêm `/403` (công khai, kể cả dấu `/` cuối) và `/403/x` (chặn); `routes.test.ts` thêm `FORBIDDEN_PATH`.
+- Giới hạn đã biết: chữ EN của trang 404 và tiêu đề EN của 403 lấy từ Figma; mô tả EN của 403 (Figma chép nhầm câu của 404) và toàn bộ chữ VI là bản nhóm tự dịch. Thân trang lỗi render ở client.
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`, `docs/features/F001_CountdownPrelaunchGate/functional-spec.md` (một dòng edge case), `docs/project-changelog.md`.
+
 ### Thêm: trang Tiêu chuẩn chung (`/tieu-chuan-chung`)
 
 - Trang mới `app/[locale]/tieu-chuan-chung/page.tsx` (Figma web 1161:8944) với hai khối `components/standards/`: `standards-hero` (key visual) và `standards-content` (`<h1>` ẩn thị giác, `<ol>` 10 tiêu chuẩn cộng đồng, `<ul>` 2 mục bảo mật, dòng liên hệ BTC). Chữ ở `messages/vi/standards.ts` và `messages/en/standards.ts` (khoá `standards` đã vào `Dictionary`). Chữ EN ngoài hai tiêu đề lấy từ Figma là bản nhóm tự dịch (danh sách ở `plans/261021-community-standards/reports/en-localizations.md`).

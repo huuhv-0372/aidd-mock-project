@@ -158,7 +158,7 @@ lang: vi
 | Trước giờ mở, người dùng đã đăng nhập hoặc phiên hết hạn | Vẫn bị đưa về trang đếm ngược, không có chuyển hướng riêng vì phiên | None — chỉ thấy trang đếm ngược |
 | Trước giờ mở, địa chỉ không tồn tại | Đưa về trang đếm ngược | None — chỉ thấy trang đếm ngược |
 | Sau giờ mở, người dùng đã đăng nhập mở màn Login | Được đưa sang trang chủ `/` (do `proxy.ts` sau cổng, ngoài phạm vi F001) | None — silent handling |
-| Sau giờ mở, người chưa đăng nhập mở đường dẫn ngoài `/`, `/login`, `/auth/callback`, `/countdown`, `/tieu-chuan-chung` (trang chủ `/` và trang Tiêu chuẩn chung công khai nên vẫn mở được) | Cổng cho qua, nhưng bước kiểm phiên sau cổng (ngoài phạm vi F001) đưa sang `/login` | None — silent handling |
+| Sau giờ mở, người chưa đăng nhập mở đường dẫn ngoài `/`, `/login`, `/auth/callback`, `/countdown`, `/tieu-chuan-chung`, `/403` (trang chủ `/`, trang Tiêu chuẩn chung và trang 403 công khai nên vẫn mở được) | Cổng cho qua, nhưng bước kiểm phiên sau cổng (ngoài phạm vi F001) đưa sang `/login` | None — silent handling |
 
 ## 10. Edge Behaviours to Verify
 
