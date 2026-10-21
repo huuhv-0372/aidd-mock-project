@@ -21,7 +21,7 @@ export function awardHref(slug: AwardSlug): string {
   return `${AWARDS_INFORMATION_PATH}#${slug}`;
 }
 
-/** Kudo detail page (route not built yet: resolves to 404 until the detail plan lands). */
+/** Kudo detail page (`app/[locale]/sun-kudos/[id]`, View Kudo). */
 export function kudoDetailHref(id: string): string {
   return `${SUN_KUDOS_PATH}/${encodeURIComponent(id)}`;
 }

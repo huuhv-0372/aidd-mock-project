@@ -40,6 +40,17 @@ const card = {
   copyLink: { label: "Copy Link", toast: "Link copied — ready to share!" },
 };
 
+/* Feed card copy (All Kudos); the detail page (Figma 520:18779) shows the same card plus its "Đóng" button. */
+const postCard = {
+  ...card,
+  gallery: {
+    openImage: "Xem ảnh {index}/{total}", // not from Figma
+    imageAlt: "Ảnh đính kèm", // not from Figma
+    closeImage: "Đóng ảnh", // not from Figma
+  },
+};
+const close = "Đóng"; // 520:18779
+
 export const kudos = {
   metaTitle: "Sun* Kudos | SAA 2025",
   kv: {
@@ -93,14 +104,7 @@ export const kudos = {
       error: "Không tải thêm được Kudos.", // not from Figma
       retry: "Thử lại", // not from Figma
     },
-    card: {
-      ...card,
-      gallery: {
-        openImage: "Xem ảnh {index}/{total}", // not from Figma
-        imageAlt: "Ảnh đính kèm", // not from Figma
-        closeImage: "Đóng ảnh", // not from Figma
-      },
-    },
+    card: postCard,
     stats: {
       labels: [
         "Số Kudos bạn nhận được:",
@@ -119,5 +123,11 @@ export const kudos = {
       listLabel: "Danh sách Sunner nhận quà", // not from Figma
       error: "Không tải được danh sách nhận quà.", // not from Figma
     },
+  },
+  detail: {
+    metaTitle: /* not from Figma */ "Chi tiết Kudo | SAA 2025",
+    close,
+    loadError: /* not from Figma */ "Không tải được Kudo. Vui lòng thử lại sau.",
+    card: { ...postCard, close },
   },
 };

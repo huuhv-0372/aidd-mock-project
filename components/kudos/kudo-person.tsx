@@ -132,7 +132,7 @@ export function KudoPersonInfo({
           <Link
             href={profileHref(person.id)}
             data-testid={testId}
-            className={`-my-2.5 inline-flex min-h-11 max-w-full items-center rounded text-center text-base leading-6 font-bold tracking-[0.15px] break-words text-login-bg hover:underline ${FOCUS_RING}`}
+            className={`-my-2.5 inline-flex max-w-full items-center py-2.5 rounded text-center text-base leading-6 font-bold tracking-[0.15px] break-words text-login-bg hover:underline ${FOCUS_RING}`}
           >
             <span className="min-w-0 sm:truncate">{name}</span>
           </Link>

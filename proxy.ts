@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { POST_LOGIN_NEXT_PARAM } from "@/lib/auth/post-login-next";
 import { resolveAuthRedirect } from "@/lib/auth/resolve-auth-redirect";
 import { resolveGateRedirect } from "@/lib/countdown/resolve-gate-redirect";
 import { getEventStartAt, isEventLaunched } from "@/lib/event/get-event-start-at";
@@ -19,7 +20,8 @@ export async function proxy(request: NextRequest) {
   if (target) return NextResponse.redirect(new URL(target, request.url), 307);
 
   const { response, isAuthenticated } = await updateSession(request);
-  const authTarget = resolveAuthRedirect(pathname, isAuthenticated);
+  const next = request.nextUrl.searchParams.get(POST_LOGIN_NEXT_PARAM);
+  const authTarget = resolveAuthRedirect(pathname, isAuthenticated, next);
   if (authTarget) return redirectWithSession(response, new URL(authTarget, request.url));
 
   // Gate and auth decide on the public path; only then serve it from the hidden app/[locale] tree.

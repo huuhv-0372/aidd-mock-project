@@ -20,6 +20,9 @@ const timestamp = z.string().min(1);
 // Postgres `uuid` accepts any 8-4-4-4-12 hex (e.g. md5(label)::uuid seed ids), so match that, not RFC 4122.
 const pgUuid = z.guid();
 
+/** A Kudo id from the URL (`/sun-kudos/{id}`): checked before any query, so a malformed one is a 404 with no round trip. */
+export const kudoIdSchema = pgUuid;
+
 export const kudoPersonSchema = z.object({
   id: pgUuid,
   full_name: z.string().nullable(),
