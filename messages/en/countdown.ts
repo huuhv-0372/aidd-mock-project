@@ -1,6 +1,6 @@
 import type { Dictionary } from "../vi";
 
 export const countdown: Dictionary["countdown"] = {
-  metaTitle: "SAA 2025 — The event will start after",
+  metaTitle: "The event will start after | SAA 2025",
   title: "The event will start after",
 };

@@ -41,7 +41,7 @@ const card = {
 };
 
 export const kudos = {
-  metaTitle: "Sun* Kudos",
+  metaTitle: "Sun* Kudos | SAA 2025",
   kv: {
     title: "Hệ thống ghi nhận và cảm ơn", // 2940:13439
     logoAlt: "KUDOS",

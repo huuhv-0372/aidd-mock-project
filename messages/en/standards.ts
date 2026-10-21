@@ -6,7 +6,7 @@ import type { Dictionary } from "../vi";
  * plans/261021-community-standards/reports/en-localizations.md).
  */
 export const standards: Dictionary["standards"] = {
-  metaTitle: "General standards",
+  metaTitle: "General standards | SAA 2025",
   pageTitle: "General standards",
   community: {
     heading: "Community Standards",

@@ -1,6 +1,6 @@
 /* Trang "Tiêu chuẩn chung" (Figma web 1161:8944). VI copy is verbatim from the 1440 export; the page title is the iOS frame title (xms7csmDhD). */
 export const standards = {
-  metaTitle: "Tiêu chuẩn chung",
+  metaTitle: "Tiêu chuẩn chung | SAA 2025",
   pageTitle: "Tiêu chuẩn chung",
   community: {
     heading: "Tiêu chuẩn cộng đồng",

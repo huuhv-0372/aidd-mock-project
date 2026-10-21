@@ -1,4 +1,4 @@
 export const countdown = {
-  metaTitle: "SAA 2025 — Sự kiện sẽ bắt đầu sau",
+  metaTitle: "Sự kiện sẽ bắt đầu sau | SAA 2025",
   title: "Sự kiện sẽ bắt đầu sau",
 };

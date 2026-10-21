@@ -47,7 +47,7 @@ const card = {
 };
 
 export const kudos: Dictionary["kudos"] = {
-  metaTitle: "Sun* Kudos",
+  metaTitle: "Sun* Kudos | SAA 2025",
   kv: {
     title: "The system records and thanks",
     logoAlt: "KUDOS",

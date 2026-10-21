@@ -2,7 +2,7 @@ import type { Dictionary } from "../vi";
 import { rootFurther } from "./root-further";
 
 export const home: Dictionary["home"] = {
-  metaTitle: "SAA 2025",
+  metaTitle: "Home | SAA 2025",
   cta: { awards: "ABOUT AWARDS", kudos: "ABOUT KUDOS" },
   eventInfo: {
     time: { label: "Time:", value: "26/12/2025" },

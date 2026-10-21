@@ -31,7 +31,7 @@ const awardCards: Record<AwardSlug, AwardCardCopy> = {
 };
 
 export const home = {
-  metaTitle: "SAA 2025",
+  metaTitle: "Trang chủ | SAA 2025",
   cta: { awards: "ABOUT AWARDS", kudos: "ABOUT KUDOS" },
   /* mm:2167:9053 — values are Figma's placeholder event info. */
   eventInfo: {
