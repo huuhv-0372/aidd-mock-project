@@ -7,6 +7,7 @@ import { generateKeyPairSync, sign, verify, randomUUID } from "node:crypto";
 import { kudosCatalog, kudosRpc } from "./kudos-fixtures.mjs";
 import { handleStorage, hashtagsFailing, holdHashtagCatalog, kudoControl, mergeCreatedKudos, writeKudoRpc } from "./write-kudo-fixtures.mjs";
 import { applyKudoHearts, kudoHeartControl, setKudoHeartRpc } from "./kudo-hearts-fake.mjs";
+import { profileRpc } from "./profile-fixtures.mjs";
 
 const PORT = Number(process.env.E2E_FAKE_SUPABASE_PORT || 54398);
 const HOST = "127.0.0.1";
@@ -104,6 +105,8 @@ async function handleRest(req, res, url) {
     }
     const written = await writeKudoRpc(fn, body, sub); // create_kudo, kudos_search_sunners (write-kudo-fixtures.mjs)
     if (written) return send(res, written.status, written.body);
+    const profiled = profileRpc(fn, body, sub); // profile_card, kudos_profile_feed (profile-fixtures.mjs), before the board's RPCs
+    if (profiled !== undefined) return send(res, 200, applyKudoHearts(fn, sub, profiled));
     const result = kudosRpc(fn, body, sub);
     if (result === undefined) return send(res, 404, { code: "PGRST202", message: `no function ${name}` });
     return send(res, 200, applyKudoHearts(fn, sub, mergeCreatedKudos(fn, body, sub, result)));

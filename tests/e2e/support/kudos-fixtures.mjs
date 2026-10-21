@@ -96,7 +96,7 @@ const ROWS = [
 const BASE_MS = Date.parse("2026-10-14T10:00:00+07:00");
 // Not RFC 4122 (version/variant nibbles 0), like the seed's md5(label)::uuid ids that Postgres accepts.
 const kudoId = (i) => `c1000000-0000-0000-0000-${String(i + 1).padStart(12, "0")}`;
-const personId = (key) => `2a000000-0000-0000-0000-0000000000${key.slice(1)}`; // key "pNN" only
+export const personId = (key) => `2a000000-0000-0000-0000-0000000000${key.slice(1)}`; // key "pNN" only
 const hashtagFor = (slug) => HASHTAGS.find((h) => h.slug === slug);
 // Kudo 10 shares kudo 9's created_at: the first feed page (10) ends on the tie, so paging needs the id tie-break.
 const TIED_WITH = { 10: 9 };
@@ -162,7 +162,7 @@ export const DETAIL_KUDO = {
 };
 
 /** Person JSON (kudos_person_json). Counts are over the sample kudos; anonymous senders are not named. */
-function personOf(key, sub) {
+export function personOf(key, sub) {
   const received = KUDOS.filter((k) => k.recipient_key === key);
   const senders = new Set(KUDOS.filter((k) => !k.is_anonymous && k.recipient_key === key).map((k) => k.sender_key));
   return {
@@ -188,7 +188,7 @@ export function viewerStats() {
 }
 
 /** Kudo row in the KudoRow shape. Anonymous kudos expose sender = null. */
-function rowFor(k, sub) {
+export function rowFor(k, sub) {
   return {
     id: k.id,
     created_at: k.created_at,
@@ -211,9 +211,9 @@ const matches = (k, { p_hashtag, p_department }) =>
   && (!p_department || PEOPLE[k.recipient_key][1] === p_department);
 
 // The RPCs' order: created_at desc, id desc (lowercase hex ids compare like Postgres uuids).
-const newestFirst = (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at) || b.id.localeCompare(a.id);
+export const newestFirst = (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at) || b.id.localeCompare(a.id);
 // SQL: least(greatest(coalesce(p_limit, default), 1), 20).
-const clampLimit = (limit, fallback) => Math.min(Math.max(limit == null ? fallback : Number(limit) || 1, 1), 20);
+export const clampLimit = (limit, fallback) => Math.min(Math.max(limit == null ? fallback : Number(limit) || 1, 1), 20);
 
 function feedPage({ p_hashtag, p_department, p_cursor_created_at, p_cursor_id, p_limit }, sub) {
   // Like the SQL, the cursor applies only when both halves are present.
