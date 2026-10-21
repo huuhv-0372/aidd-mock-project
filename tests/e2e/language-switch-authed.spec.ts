@@ -66,7 +66,7 @@ test.describe("Language switch: signed-in user", () => {
 
     const response = await page.goto(`${AUTHED}/no-such-page`);
     expect(response?.status()).toBe(404);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Page not found");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("NOT FOUND"); // Figma 1378:5063 (EN)
     await expect(page.getByRole("link", { name: "Back to home" })).toHaveAttribute("href", "/");
     await expect(page).toHaveTitle("Page not found | SAA 2025");
     await expectHtmlLang(page, "en");

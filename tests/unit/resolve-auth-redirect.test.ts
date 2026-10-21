@@ -3,7 +3,7 @@ import { resolveAuthRedirect } from "@/lib/auth/resolve-auth-redirect";
 
 describe("resolveAuthRedirect", () => {
   // Default-deny: anonymous visitors only reach the exact public paths.
-  it.each(["/x", "/awards-information", "/login/x", "/loginx", "/does-not-exist", "/tieu-chuan-chung/x"])(
+  it.each(["/x", "/awards-information", "/login/x", "/loginx", "/does-not-exist", "/tieu-chuan-chung/x", "/403/x"])(
     "sends an anonymous user on %s to /login",
     (path) => {
       expect(resolveAuthRedirect(path, false)).toBe("/login");
@@ -22,6 +22,8 @@ describe("resolveAuthRedirect", () => {
     "/countdown/",
     "/tieu-chuan-chung",
     "/tieu-chuan-chung/",
+    "/403",
+    "/403/",
   ])(
     "lets an anonymous user stay on public path %s",
     (path) => {

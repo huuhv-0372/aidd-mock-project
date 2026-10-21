@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   AWARD_SLUGS,
   AWARDS_INFORMATION_PATH,
+  FORBIDDEN_PATH,
   HOME_PATH,
   PROFILE_PATH,
   STANDARDS_PATH,
@@ -13,7 +14,7 @@ import {
 
 describe("navigation routes", () => {
   it("defines absolute app paths", () => {
-    for (const path of [HOME_PATH, AWARDS_INFORMATION_PATH, SUN_KUDOS_PATH, STANDARDS_PATH, PROFILE_PATH]) {
+    for (const path of [HOME_PATH, AWARDS_INFORMATION_PATH, SUN_KUDOS_PATH, STANDARDS_PATH, PROFILE_PATH, FORBIDDEN_PATH]) {
       expect(path.startsWith("/")).toBe(true);
     }
   });

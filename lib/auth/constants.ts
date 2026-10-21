@@ -1,4 +1,4 @@
-import { HOME_PATH, STANDARDS_PATH } from "@/lib/navigation/routes";
+import { FORBIDDEN_PATH, HOME_PATH, STANDARDS_PATH } from "@/lib/navigation/routes";
 import { login as viLogin } from "@/messages/vi/login";
 
 export const LOGIN_PATH = "/login";
@@ -16,6 +16,7 @@ export const ALLOWED_EMAIL_DOMAIN = "sun-asterisk.com";
  * Add new public routes here. /countdown stays public: the pre-launch gate sends everyone there.
  * The homepage is public per spec (guests see public content; the header shows a login link).
  * The community standards page is public per owner decision 2026-10-21 (guests reach it from the homepage footer).
+ * /403 is public per owner decision 2026-10-21: an error page that carries no data (it only calls forbidden()).
  */
 export const PUBLIC_PATHS: readonly string[] = [
   HOME_PATH,
@@ -23,4 +24,5 @@ export const PUBLIC_PATHS: readonly string[] = [
   CALLBACK_PATH,
   "/countdown",
   STANDARDS_PATH,
+  FORBIDDEN_PATH,
 ];

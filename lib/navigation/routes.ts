@@ -4,6 +4,7 @@ export const AWARDS_INFORMATION_PATH = "/awards-information";
 export const SUN_KUDOS_PATH = "/sun-kudos";
 export const STANDARDS_PATH = "/tieu-chuan-chung";
 export const PROFILE_PATH = "/profile";
+export const FORBIDDEN_PATH = "/403";
 
 export const AWARD_SLUGS = [
   "top-talent",

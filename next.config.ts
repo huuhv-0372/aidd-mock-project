@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     agentFeedback: true,
+    // Enables forbidden() and forbidden.tsx (HTTP 403 page); still experimental in Next 16.
+    authInterrupts: true,
     // Viết Kudo posts up to 5 images x 5 MB plus text in one Server Action (default 1 MB). Both
     // limits must rise together: with proxy.ts present Next buffers the body up to
     // proxyClientMaxBodySize (default 10 MB) and silently truncates the rest.
