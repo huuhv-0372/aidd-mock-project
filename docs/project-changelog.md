@@ -4,6 +4,12 @@ Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi ti�
 
 ## 2026-10-22
 
+### Sửa: dropdown Người nhận thiếu avatar/phòng ban, avatar Kudo ẩn danh (issue #17)
+
+- Sửa (nhẹ, lệch UI): mỗi dòng gợi ý ở ô Người nhận của modal Viết Kudo trước chỉ có tên. Nay có avatar tròn 40px viền trắng (ô xám khi Sunner chưa có ảnh), tên đậm màu trắng, phòng ban màu xám ở dòng dưới (không có phòng ban thì không có dòng đó). Chọn một dòng vẫn chỉ điền tên. Dữ liệu đã có sẵn từ RPC `kudos_search_sunners`, không đổi DB. Mã: `components/kudos-compose/recipient-option-content.tsx` (mới), `recipient-picker.tsx`. Frame `QIMJNgFb8K` chưa có ảnh MoMorph, đo theo ảnh chủ dự án gửi; tên căn trái thay vì căn giữa như ảnh.
+- Sửa (nhẹ, lệch UI): người gửi ẩn danh trên thẻ Kudo (board, Highlight, Xem Kudo, Hồ sơ) trước hiện vòng tròn xám trống. Nay hiện icon ẩn danh `public/images/kudos/anonymous-avatar.png` (64×64, chủ dự án gửi). Ảnh chỉ phụ thuộc việc người gửi bị ẩn (`person === null`), không đọc dữ liệu người gửi. Mã: `components/kudos/kudo-person.tsx`.
+- Test: E2E `write-kudo.spec.ts` thêm ca avatar + tên + phòng ban, các ca so tên dòng gợi ý chuyển sang đọc `recipient-option-name`; `kudo-detail-hardening.spec.ts` kiểm icon ẩn danh. Cả 7 assertion mới hoặc sửa đều fail trên code cũ.
+
 ### Thêm: trang Hồ sơ (`/profile` của mình, `/profile/<id>` của người khác)
 
 - Hai route mới `app/[locale]/profile/page.tsx` (Figma 362:5037) và `app/[locale]/profile/[id]/page.tsx` (Figma 362:5097), cùng một `ProfileView` (`components/profile/`). Chỉ người đã đăng nhập (không vào `PUBLIC_PATHS`): khách về `/login` không kèm `next`. `/profile/<id của mình>` (mọi kiểu chữ) về `/profile`; `id` sai dạng (`profileIdSchema`, `z.guid()`, kiểm trước mọi truy vấn), không có hồ sơ, hoặc người gọi không có dòng hồ sơ thì HTTP 404; đọc lỗi thì một dòng chung trong khung. Tiêu đề tab "Hồ sơ của tôi | SAA 2025" / "My profile | SAA 2025" và "{tên} | SAA 2025". Header và footer đều đánh dấu "Sun* Kudos" đang chọn, không có widget Viết KUDOS. Tên người trên thẻ Kudo và danh sách người nhận quà (đã trỏ tới `profileHref`) nay mở trang này thay vì 404.
