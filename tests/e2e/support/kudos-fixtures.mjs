@@ -121,6 +121,72 @@ export const KUDOS = ROWS.map(([sender, recipient, title, tags, heart_count, lik
   anonymous_name: anon ? "Đồng đội ẩn danh" : null,
 }));
 
+// View Kudo (kudo_detail). Served ONLY by kudo_detail, never by the feed/Highlight, so board counts stay put. Its content is
+// stored Markdown-lite exactly as kudo-content-markdown.ts writes it (escaped \* and \[, @[Name](uuid), http(s) links), plus a
+// raw javascript: link a crafted row could hold: the renderer must show it as text, never as an anchor.
+export const DETAIL_KUDO_ID = "c1000000-0000-0000-0000-0000000000d1";
+export const DETAIL_END_SENTENCE = "Câu cuối cùng này phải hiện đủ, không bị cắt dòng.";
+const DETAIL_CONTENT = [
+  "Cảm ơn **bạn** rất nhiều vì đã _luôn_ hỗ trợ ~~việc gấp~~ cả team trong quý này.",
+  "",
+  "Những việc bạn đã làm:",
+  "1. Review code cho cả nhóm",
+  "2. Onboard các bạn mới",
+  "3. Chuẩn bị tài liệu bàn giao",
+  "> Một đồng đội giỏi là người biết chia sẻ.",
+  "Tìm hiểu thêm tại [tài liệu nội bộ](https://example.com/x) nhé.",
+  `Cảm ơn @[Nguyễn Thị Minh Anh](${personId("p02")}) đã đồng hành cùng mình.`,
+  "Dấu sao \\*nguyên văn\\* không phải chữ nghiêng.",
+  "Liên kết giả [mở ngay](javascript:alert(1)) không được phép bấm.",
+  "Buổi họp tuần này, bạn chủ động nhận phần việc khó nhất và hoàn thành trước hạn.",
+  "Nhờ bạn, khách hàng nhận được bản demo sớm hơn dự kiến hai ngày.",
+  "Cảm ơn bạn đã luôn lắng nghe ý kiến của đồng đội và góp ý thẳng thắn, đúng lúc.",
+  "Chúng mình mong sẽ còn nhiều dự án được cùng bạn làm như vậy.",
+  DETAIL_END_SENTENCE,
+].join("\n");
+
+export const DETAIL_KUDO = {
+  id: DETAIL_KUDO_ID,
+  created_at: new Date(BASE_MS - 40 * 3600_000).toISOString(),
+  title: "NGÔI SAO SÁNG TẠO",
+  content: DETAIL_CONTENT,
+  sender_key: "p04",
+  recipient_key: "p07",
+  hashtags: [hashtagFor("dedicated"), hashtagFor("professional")].sort((a, b) => a.sort_order - b.sort_order),
+  images: ["/images/kudos/demo/kudo-photo-01.jpg", "/images/kudos/demo/kudo-photo-02.jpg", "/images/kudos/demo/kudo-photo-03.jpg"],
+  heart_count: 3,
+  hearts_awarded: 3,
+  liked_by_viewer: false,
+  is_anonymous: false,
+  anonymous_name: null,
+};
+
+/** Id of a sample person by key ("pNN"), for specs that look for a sender's id in the page. */
+export const personIdFor = personId;
+
+// View Kudo hardening (kudo_detail-only, like DETAIL_KUDO). Stored content a crafted row could hold: link targets with no
+// parentheses so the renderer's link pattern matches them, in every scheme that must never become an anchor, plus raw HTML.
+export const XSS_KUDO_ID = "c1000000-0000-0000-0000-0000000000d2";
+export const XSS_LINE_LABELS = { a: "Liên kết a thứ nhất.", b: "Liên kết b thứ hai.", c: "Liên kết c thứ ba.", d: "Liên kết d thứ tư." };
+export const XSS_RAW_IMG = '<img src=x onerror="window.__xss=1">';
+export const XSS_RAW_SCRIPT = "<script>window.__xss=1</script>";
+export const XSS_KUDO = {
+  ...DETAIL_KUDO,
+  id: XSS_KUDO_ID,
+  title: "KUDO THỬ XSS",
+  content: [
+    "Liên kết [a](javascript:alert%281%29) thứ nhất.",
+    "Liên kết [b](JaVaScRiPt:x) thứ hai.",
+    "Liên kết [c](data:text/html,x) thứ ba.",
+    "Liên kết [d](vbscript:x) thứ tư.",
+    XSS_RAW_IMG,
+    XSS_RAW_SCRIPT,
+    "Dòng cuối an toàn.",
+  ].join("\n"),
+  images: [],
+  hashtags: [],
+};
+
 /** Person JSON (kudos_person_json). Counts are over the sample kudos; anonymous senders are not named. */
 function personOf(key, sub) {
   const received = KUDOS.filter((k) => k.recipient_key === key);
@@ -257,7 +323,25 @@ const EMPTY_FOR_ANONYMOUS = {
  * POST /rest/v1/rpc/<name>. Returns the JSON body (table/setof -> array, jsonb -> object) or undefined for
  * an unknown function.
  */
+// Postgres `uuid` input: 8-4-4-4-12 hex, any case. Anything else is an error, not "no row".
+const PG_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** PostgREST refusal of kudo_detail for a p_id that is not uuid-shaped (400, 22P02), or undefined when the id parses. */
+export function kudoDetailRefusal(p_id) {
+  if (typeof p_id === "string" && PG_UUID.test(p_id)) return undefined;
+  return { status: 400, body: { code: "22P02", details: null, hint: null, message: `invalid input syntax for type uuid: "${p_id}"` } };
+}
+
+/** kudo_detail(p_id): one Kudo in the KudoRow shape, or [] for a guest, an allowed caller with no data, or an unknown id. Ids compare like Postgres uuids (case-insensitive). */
+function kudoDetail(p_id, sub) {
+  if (!sub || sub === EMPTY_USER_ID || typeof p_id !== "string") return [];
+  const wanted = p_id.toLowerCase();
+  const k = [...KUDOS, DETAIL_KUDO, XSS_KUDO].find((row) => row.id === wanted);
+  return k ? [rowFor(k, sub)] : [];
+}
+
 export function kudosRpc(name, body, sub) {
+  if (name === "kudo_detail") return kudoDetail(body.p_id, sub);
   if (!(name in EMPTY_FOR_ALLOWED)) return undefined;
   if (!sub) return structuredClone(EMPTY_FOR_ANONYMOUS[name]);
   if (sub === EMPTY_USER_ID) return structuredClone(EMPTY_FOR_ALLOWED[name]);

@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useId } from "react";
-import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
 import { heroTier, starCount, type HeroTier } from "@/lib/kudos/hero-title";
 import type { KudoPerson as KudoPersonData } from "@/lib/kudos/kudo-types";
 import { profileHref } from "@/lib/navigation/routes";
+import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 
 type Tier = Exclude<HeroTier, "none">;
 type Tip = { label: string; headline: string; body: string };
@@ -52,7 +52,7 @@ function HeroTitle({ tier, tip, align }: { tier: Tier; tip: Tip; align: "start" 
   const tipId = useId();
   return (
     <span className="group/tip relative inline-flex">
-      <span tabIndex={0} aria-describedby={tipId} className={`inline-flex rounded-full ${FOCUS_RING}`}>
+      <span tabIndex={0} aria-describedby={tipId} className={`inline-flex rounded-full ${KUDO_CARD_FOCUS_RING}`}>
         <HeroBadge tier={tier} label={tip.label} />
       </span>
       <span role="tooltip" id={tipId} className={`${TOOLTIP} ${align === "end" ? "right-0" : "left-0"}`}>
@@ -68,7 +68,7 @@ function Stars({ count, tip, align }: { count: 1 | 2 | 3; tip: string; align: "s
   const tipId = useId();
   return (
     <span className="group/tip relative inline-flex">
-      <span tabIndex={0} aria-describedby={tipId} className={`inline-flex gap-0.5 rounded ${FOCUS_RING}`}>
+      <span tabIndex={0} aria-describedby={tipId} className={`inline-flex gap-0.5 rounded ${KUDO_CARD_FOCUS_RING}`}>
         {Array.from({ length: count }, (_, i) => (
           <svg key={i} width="14" height="14" viewBox="0 0 24 24" aria-hidden className="text-login-accent">
             <path fill="currentColor" d="m12 2 2.9 6.9 7.5.6-5.7 4.9 1.7 7.3L12 17.8 5.6 21.7l1.7-7.3L1.6 9.5l7.5-.6z" />
@@ -132,7 +132,7 @@ export function KudoPersonInfo({
           <Link
             href={profileHref(person.id)}
             data-testid={testId}
-            className={`-my-2.5 inline-flex min-h-11 max-w-full items-center rounded text-center text-base leading-6 font-bold tracking-[0.15px] break-words text-login-bg hover:underline ${FOCUS_RING}`}
+            className={`-my-2.5 inline-flex max-w-full items-center py-2.5 rounded text-center text-base leading-6 font-bold tracking-[0.15px] break-words text-login-bg hover:underline ${KUDO_CARD_FOCUS_RING}`}
           >
             <span className="min-w-0 sm:truncate">{name}</span>
           </Link>

@@ -1,6 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   ALLOWED_EMAIL_DOMAIN,
@@ -9,6 +9,13 @@ import {
   LOGIN_ERROR_VALUE,
   LOGIN_PATH,
 } from "@/lib/auth/constants";
+import {
+  POST_LOGIN_NEXT_COOKIE,
+  POST_LOGIN_NEXT_MAX_AGE,
+  POST_LOGIN_NEXT_PARAM,
+  parsePostLoginNext,
+  postLoginNextCookieOptions,
+} from "@/lib/auth/post-login-next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseRequestOrigin } from "@/lib/validation/request-origin";
 
@@ -25,6 +32,7 @@ async function getGoogleAuthorizeUrl(): Promise<string | null> {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
+      // Constant callback (no `next` here): the post-login target travels in a cookie instead.
       redirectTo: `${origin}${CALLBACK_PATH}`,
       // UX hint only (pre-filters Google's account chooser); enforcement is in callback + DB.
       queryParams: { hd: ALLOWED_EMAIL_DOMAIN },
@@ -37,11 +45,29 @@ async function getGoogleAuthorizeUrl(): Promise<string | null> {
   return data.url;
 }
 
-/** Server action for `<form action={signInWithGoogle}>`; form data is ignored. */
-export async function signInWithGoogle(): Promise<never> {
+/**
+ * Keeps an allow-listed `next` for the callback, or clears a stale one. A failed write only costs
+ * the return trip (the callback falls back to the post-login page), so it is logged, not fatal.
+ */
+async function rememberPostLoginNext(value: FormDataEntryValue | null): Promise<void> {
+  const next = parsePostLoginNext(value);
+  try {
+    (await cookies()).set(
+      POST_LOGIN_NEXT_COOKIE,
+      next ?? "",
+      postLoginNextCookieOptions(next ? POST_LOGIN_NEXT_MAX_AGE : 0),
+    );
+  } catch (err) {
+    console.error("[sign-in-with-google] could not write the post-login cookie", err);
+  }
+}
+
+/** Server action for `<form action={signInWithGoogle}>`; reads only the optional `next` field. */
+export async function signInWithGoogle(formData: FormData): Promise<never> {
   let url: string | null = null;
   try {
     url = await getGoogleAuthorizeUrl();
+    if (url) await rememberPostLoginNext(formData.get(POST_LOGIN_NEXT_PARAM));
   } catch (err) {
     console.error("[sign-in-with-google] unexpected failure", err);
   }

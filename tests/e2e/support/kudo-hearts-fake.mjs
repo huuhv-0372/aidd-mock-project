@@ -41,10 +41,10 @@ export async function setKudoHeartRpc(body, sub) {
   return { status: 200, body: [viewOf(k, state)] };
 }
 
-/** Feed and Highlight rows carry this caller's heart state (liked_by_me, heart_count). Other RPCs pass through. */
+/** Feed, Highlight and the View Kudo detail carry this caller's heart state (liked_by_me, heart_count). Other RPCs pass through. */
 export function applyKudoHearts(name, sub, rows) {
   const state = sub ? states.get(sub) : undefined;
-  if (!state || !Array.isArray(rows) || (name !== "kudos_feed" && name !== "kudos_highlight")) return rows;
+  if (!state || !Array.isArray(rows) || !["kudos_feed", "kudos_highlight", "kudo_detail"].includes(name)) return rows;
   return rows.map((row) => {
     const k = fixtureOf(row.id);
     if (!k) return row; // kudos created in the write flow carry no heart state in this fake

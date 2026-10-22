@@ -19,6 +19,13 @@ const MARK_ORDER = ["link", "bold", "italic", "strike"] as const;
 
 const escapeText = (text: string) => text.replace(/[\\`*_~[\]]/g, "\\$&");
 
+/**
+ * A line the reader (kudo-content-blocks.ts) would take as structure when it starts with `N. ` (its LIST_MARKER) or
+ * `>`: escape that marker so typed text stays text. Applied to every emitted text line, which covers hard breaks and
+ * item/quote content (the reader re-reads those after stripping their own marker).
+ */
+const escapeLineStart = (line: string) => line.replace(/^(\d{1,9})\.(?= |$)/, "$1\\.").replace(/^>/, "\\>");
+
 /** Only http(s) survive; `(` and `)` are percent-encoded so they cannot end the link early (URL already encodes spaces). */
 function safeHref(raw: unknown): string | null {
   if (typeof raw !== "string") return null;
@@ -104,11 +111,14 @@ function renderBlock(node: KudoEditorNode): string[] {
         return [`${start + index}. ${first}`, ...rest.map((line) => (line ? INDENT + line : line))];
       });
     }
-    case "blockquote":
-      return renderBlocks(node.content).map((line) => (line ? `> ${line}` : ">"));
+    case "blockquote": {
+      const lines = renderBlocks(node.content);
+      // A quote with nothing in it would be written as a bare `>`, which the reader shows as a stray marker: write none.
+      return lines.some(Boolean) ? lines.map((line) => (line ? `> ${line}` : ">")) : [];
+    }
     case "paragraph":
     case "heading":
-      return renderInline(node.content ?? []).split("\n");
+      return renderInline(node.content ?? []).split("\n").map(escapeLineStart);
     default:
       // Nodes this editor never produces (lists, code, rules...) degrade to their text instead of failing the send.
       return node.content ? renderBlocks(node.content) : [];

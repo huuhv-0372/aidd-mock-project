@@ -46,6 +46,17 @@ const card = {
   copyLink: { label: "Copy Link", toast: "Link copied — ready to share!" },
 };
 
+/* Feed card copy (All Kudos); the detail page (Figma 520:18779) shows the same card plus its Close button. */
+const postCard = {
+  ...card,
+  gallery: {
+    openImage: /* not from Figma */ "View image {index}/{total}",
+    imageAlt: /* not from Figma */ "Attached image",
+    closeImage: /* not from Figma */ "Close image",
+  },
+};
+const close = /* not from Figma */ "Close";
+
 export const kudos: Dictionary["kudos"] = {
   metaTitle: "Sun* Kudos | SAA 2025",
   kv: {
@@ -99,14 +110,7 @@ export const kudos: Dictionary["kudos"] = {
       error: /* not from Figma */ "Could not load more Kudos.",
       retry: /* not from Figma */ "Retry",
     },
-    card: {
-      ...card,
-      gallery: {
-        openImage: /* not from Figma */ "View image {index}/{total}",
-        imageAlt: /* not from Figma */ "Attached image",
-        closeImage: /* not from Figma */ "Close image",
-      },
-    },
+    card: postCard,
     stats: {
       labels: [
         "Number of Kudos you received:",
@@ -125,5 +129,11 @@ export const kudos: Dictionary["kudos"] = {
       listLabel: /* not from Figma */ "Latest Sunner gift recipients",
       error: /* not from Figma */ "Could not load the gift recipients.",
     },
+  },
+  detail: {
+    metaTitle: /* not from Figma */ "Kudo details | SAA 2025",
+    close,
+    loadError: /* not from Figma */ "Couldn't load this Kudo. Please try again later.",
+    card: { ...postCard, close },
   },
 };

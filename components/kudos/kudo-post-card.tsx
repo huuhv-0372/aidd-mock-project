@@ -1,9 +1,12 @@
+import Link from "next/link";
 import type { Locale } from "@/lib/i18n/locales";
 import { formatKudoTime } from "@/lib/kudos/format-kudo-time";
 import type { KudoRow } from "@/lib/kudos/kudo-types";
 import { kudoPlainText } from "@/lib/kudos/kudo-plain-text";
+import { kudoDetailHref } from "@/lib/navigation/routes";
 import type { KudosFilters } from "@/lib/validation/kudos";
 import { CopyKudoLinkButton, type CopyKudoLinkCopy } from "./copy-kudo-link-button";
+import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 import { KudoHashtagList } from "./kudo-hashtag-list";
 import { KudoHearts, type KudoHeartsCopy } from "./kudo-hearts";
 import { KudoImageGallery, type KudoImageGalleryCopy } from "./kudo-image-gallery";
@@ -21,7 +24,8 @@ const DIVIDER = "h-px w-full bg-login-accent";
 /*
  * Feed card (Figma component `Qhg3SUg_8L`, instance 3127:21871, 680px): sender to recipient, divider, time,
  * danh hieu, content clamped to 5 lines, up to 5 images, hashtags, divider, hearts + Copy Link.
- * Unlike the Highlight card there is no "Xem chi tiet" link (Figma C.4 has only the heart and Copy Link).
+ * Unlike the Highlight card there is no "Xem chi tiet" link (Figma C.4 has only the heart and Copy Link); instead the content box
+ * is the link to the View Kudo page (its accessible name is the content text, so no nested interactive element).
  */
 export function KudoPostCard({
   kudo,
@@ -71,7 +75,10 @@ export function KudoPostCard({
           <span aria-hidden className="kudos-icon kudos-icon-pen size-8 text-login-bg" />
         </div>
         {/* mm:I3127:21871;662:11382 */}
-        <div className="rounded-xl border border-login-accent bg-[rgb(255_234_158/0.4)] px-6 py-4">
+        <Link
+          href={kudoDetailHref(kudo.id)}
+          className={`block rounded-xl border border-login-accent bg-[rgb(255_234_158/0.4)] px-6 py-4 hover:bg-[rgb(255_234_158/0.6)] motion-safe:transition-colors motion-safe:duration-200 ${KUDO_CARD_FOCUS_RING}`}
+        >
           {/* mm:I3127:21871;256:5156 */}
           <p
             data-testid="kudo-content"
@@ -79,7 +86,7 @@ export function KudoPostCard({
           >
             {kudoPlainText(kudo.content)}
           </p>
-        </div>
+        </Link>
         <KudoImageGallery images={kudo.images} copy={copy.gallery} />
         <KudoHashtagList tags={kudo.hashtags} filters={filters} locale={locale} />
       </div>

@@ -4,7 +4,8 @@
 // signature against this server's JWKS (a fresh keypair + random kid per start).
 import { createServer } from "node:http";
 import { generateKeyPairSync, sign, verify, randomUUID } from "node:crypto";
-import { kudosCatalog, kudosRpc } from "./kudos-fixtures.mjs";
+import { kudoDetailRefusal, kudosCatalog, kudosRpc } from "./kudos-fixtures.mjs";
+import { applyKudoDetailMode, kudoDetailControl } from "./kudo-detail-fake.mjs";
 import { handleStorage, hashtagsFailing, holdHashtagCatalog, kudoControl, mergeCreatedKudos, writeKudoRpc } from "./write-kudo-fixtures.mjs";
 import { applyKudoHearts, kudoHeartControl, setKudoHeartRpc } from "./kudo-hearts-fake.mjs";
 
@@ -55,7 +56,7 @@ function buildUser(sub) {
   };
 }
 
-function mint(forged, subOverride) {
+function mintSession(forged, subOverride) {
   const now = Math.floor(Date.now() / 1000);
   const sub = subOverride || randomUUID();
   const sessionId = randomUUID();
@@ -72,6 +73,11 @@ function mint(forged, subOverride) {
     refresh_token: `e2e-refresh-${sessionId}`,
     user: buildUser(sub),
   };
+  return { session, sessionId };
+}
+
+function mint(forged, subOverride) {
+  const { session, sessionId } = mintSession(forged, subOverride);
   const value = `base64-${b64url(JSON.stringify(session))}`;
   if (value.length >= MAX_CHUNK_SIZE) throw new Error(`minted cookie too large: ${value.length}`);
   return { name: COOKIE_NAME, value, sessionId };
@@ -104,9 +110,11 @@ async function handleRest(req, res, url) {
     }
     const written = await writeKudoRpc(fn, body, sub); // create_kudo, kudos_search_sunners (write-kudo-fixtures.mjs)
     if (written) return send(res, written.status, written.body);
+    const refusal = fn === "kudo_detail" ? kudoDetailRefusal(body.p_id) : undefined; // Postgres: a non-uuid p_id is an error, not "no row"
+    if (refusal) return send(res, refusal.status, refusal.body);
     const result = kudosRpc(fn, body, sub);
     if (result === undefined) return send(res, 404, { code: "PGRST202", message: `no function ${name}` });
-    return send(res, 200, applyKudoHearts(fn, sub, mergeCreatedKudos(fn, body, sub, result)));
+    return send(res, 200, applyKudoHearts(fn, sub, applyKudoDetailMode(fn, sub, mergeCreatedKudos(fn, body, sub, result))));
   }
   if (req.method === "GET") {
     // per-caller injected delay / outage of the hashtag catalog (kudoControl "/__kudo-delay-hashtags", "/__kudo-fail-hashtags")
@@ -134,6 +142,8 @@ const server = createServer((req, res) => {
   }
   const heart = kudoHeartControl(url.pathname, url.searchParams); // before kudoControl, which answers any /__kudo-* path
   if (heart !== undefined) return send(res, 200, heart);
+  const detail = kudoDetailControl(url.pathname, url.searchParams); // same reason: kudoControl answers any /__kudo-* path
+  if (detail !== undefined) return send(res, 200, detail);
   const control = kudoControl(url.pathname, url.searchParams);
   if (control !== undefined) return send(res, 200, control);
   if (url.pathname.startsWith("/storage/v1/")) {
@@ -159,6 +169,11 @@ const server = createServer((req, res) => {
         if (payload) loggedOutSessions.add(payload.session_id);
         res.writeHead(204);
         return res.end();
+      }
+      case "POST /auth/v1/token": {
+        // PKCE code exchange (grant_type=pkce) of the OAuth callback: any code yields a fresh session. Refresh stays unrouted.
+        if (url.searchParams.get("grant_type") !== "pkce") return send(res, 404, { code: 404, msg: `fake-supabase: no route ${route}` });
+        return send(res, 200, mintSession(false).session);
       }
       case "GET /__mint":
         return send(res, 200, mint(url.searchParams.get("forged") === "1", url.searchParams.get("sub") || undefined));

@@ -3,7 +3,11 @@ import { login as viLogin } from "@/messages/vi/login";
 
 export const LOGIN_PATH = "/login";
 export const CALLBACK_PATH = "/auth/callback";
-/** Single post-login target; no `next` param means no open-redirect surface. */
+/**
+ * Default post-login target. The only other target is a `next` that passes the allow-list in
+ * post-login-next.ts (exactly `/sun-kudos/<guid>`, checked again at every hop), so a redirect
+ * can never leave the site or reach any other path.
+ */
 export const POST_LOGIN_PATH = "/";
 export const LOGIN_ERROR_PARAM = "error";
 export const LOGIN_ERROR_VALUE = "auth_failed";

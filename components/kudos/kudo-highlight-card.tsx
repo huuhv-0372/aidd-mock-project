@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
 import { IconArrowUpRight } from "@/components/site-shell/shell-icons";
 import type { Locale } from "@/lib/i18n/locales";
 import { formatKudoTime } from "@/lib/kudos/format-kudo-time";
@@ -8,6 +7,7 @@ import { kudoPlainText } from "@/lib/kudos/kudo-plain-text";
 import { kudoDetailHref } from "@/lib/navigation/routes";
 import type { KudosFilters } from "@/lib/validation/kudos";
 import { CopyKudoLinkButton, type CopyKudoLinkCopy } from "./copy-kudo-link-button";
+import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 import { KudoHashtagList } from "./kudo-hashtag-list";
 import { KudoHearts, type KudoHeartsCopy } from "./kudo-hearts";
 import { KudoPersonInfo, type KudoPersonCopy } from "./kudo-person";
@@ -90,7 +90,7 @@ export function KudoHighlightCard({
           {/* mm:I2940:13465;335:9663 */}
           <Link
             href={kudoDetailHref(kudo.id)}
-            className={`inline-flex min-h-14 min-w-11 items-center gap-1 rounded p-4 text-base leading-6 font-bold tracking-[0.15px] text-login-bg hover:bg-black/5 motion-safe:transition-colors motion-safe:duration-200 ${FOCUS_RING}`}
+            className={`inline-flex min-h-14 min-w-11 items-center gap-1 rounded p-4 text-base leading-6 font-bold tracking-[0.15px] text-login-bg hover:bg-black/5 motion-safe:transition-colors motion-safe:duration-200 ${KUDO_CARD_FOCUS_RING}`}
           >
             {copy.viewDetails}
             <IconArrowUpRight />

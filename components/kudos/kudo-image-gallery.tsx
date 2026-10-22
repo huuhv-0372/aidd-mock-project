@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
+import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 
 export type KudoImageGalleryCopy = {
   /** Thumbnail button name template, `{index}` and `{total}` are replaced: "Xem ảnh {index}/{total}". */
@@ -56,9 +57,18 @@ function ImageLightbox({ src, alt, closeLabel, onClose }: { src: string; alt: st
 
 /*
  * Attached images of a feed card (Figma C.3.6, `256:5176`): up to 5 square 88px thumbnails, 16px apart.
+ * `plain` (View Kudo, Figma 520:18779): only the thin accent ring with a small radius, no outer white frame.
  * Clicking one opens the large view; closing it returns focus to the thumbnail that opened it.
  */
-export function KudoImageGallery({ images, copy }: { images: readonly string[]; copy: KudoImageGalleryCopy }) {
+export function KudoImageGallery({
+  images,
+  copy,
+  plain = false,
+}: {
+  images: readonly string[];
+  copy: KudoImageGalleryCopy;
+  plain?: boolean;
+}) {
   const shown = images.slice(0, MAX_IMAGES);
   const [active, setActive] = useState<number | null>(null);
   const triggers = useRef<(HTMLButtonElement | null)[]>([]);
@@ -85,7 +95,7 @@ export function KudoImageGallery({ images, copy }: { images: readonly string[]; 
           data-testid="kudo-image"
           aria-label={copy.openImage.replace("{index}", String(index + 1)).replace("{total}", String(shown.length))}
           onClick={() => setActive(index)}
-          className={`relative size-[88px] shrink-0 cursor-pointer overflow-hidden rounded-[18px] border border-home-border bg-white ${FOCUS_RING}`}
+          className={`relative size-[88px] shrink-0 cursor-pointer overflow-hidden ${plain ? "rounded" : "rounded-[18px] border border-home-border bg-white"} ${KUDO_CARD_FOCUS_RING}`}
         >
           {/* mm:I3127:21871;256:5177;513:8436 */}
           <Image src={src} alt="" fill sizes="88px" unoptimized className="rounded border border-login-accent object-cover" />

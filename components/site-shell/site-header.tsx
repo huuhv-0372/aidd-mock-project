@@ -15,13 +15,17 @@ const NAV_LINK_BASE = `flex min-h-11 items-center rounded border-b border-transp
  * `controls` is the session-dependent part (bell + account menu, or the guest login link); its items
  * are direct flex children of the right group (no wrapper) and place themselves with `order`:
  * bell 1, language 2 (always rendered, static), account / login link 3 = Figma order bell, VN, profile.
+ * `dimmed` (View Kudo, Figma 520:18779): the bar sits under the page's 80% #00101A overlay; the overlay is z-20 inside the
+ * header, so the open language list (z-30) and account panel (z-40) stay bright, and it never takes a click.
  */
 export function SiteHeader({
   controls,
   activeHref,
   locale,
   copy,
+  dimmed = false,
 }: {
+  dimmed?: boolean;
   controls: ReactNode;
   activeHref: string;
   locale: Locale;
@@ -59,6 +63,7 @@ export function SiteHeader({
           {controls}
         </div>
       </div>
+      {dimmed && <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 bg-[rgb(0_16_26/0.8)]" />}
     </header>
   );
 }

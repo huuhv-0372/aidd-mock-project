@@ -1,7 +1,7 @@
 "use client";
 
-import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
 import type { Locale } from "@/lib/i18n/locales";
+import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 import { useKudoHeart } from "./kudo-hearts-store";
 
 export type KudoHeartsCopy = {
@@ -46,7 +46,7 @@ export function KudoHearts({
       disabled={own}
       aria-disabled={pending || undefined}
       onClick={() => toggle(copy.error)}
-      className={`-my-1.5 inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1 rounded py-1.5 disabled:cursor-not-allowed aria-disabled:cursor-not-allowed ${FOCUS_RING}`}
+      className={`-my-1.5 inline-flex min-h-11 min-w-11 cursor-pointer items-center gap-1 rounded py-1.5 disabled:cursor-not-allowed aria-disabled:cursor-not-allowed ${KUDO_CARD_FOCUS_RING}`}
     >
       {/* mm:I2940:13465;335:9463 */}
       <span aria-hidden className="text-2xl leading-8 font-bold text-login-bg">
