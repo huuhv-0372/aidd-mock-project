@@ -11,12 +11,13 @@ import { KudoTitleField } from "./kudo-title-field";
 import { RecipientPicker } from "./recipient-picker";
 import { useWriteKudoForm } from "./use-write-kudo-form";
 import type { WriteKudoCopy } from "./write-kudo-copy";
-import type { WriteKudoActions, WriteKudoLocale } from "./write-kudo-types";
+import type { RecipientChoice, WriteKudoActions, WriteKudoLocale } from "./write-kudo-types";
 
 type Props = {
   titleId: string;
   copy: WriteKudoCopy;
   locale: WriteKudoLocale;
+  initialRecipient: RecipientChoice | null;
   actions: WriteKudoActions;
   serializeContent: (doc: unknown) => string;
   onSent: (id: string) => void;
@@ -31,8 +32,8 @@ type Props = {
  * title to one 24px line, so the form fits a 900px-high screen; this element is the only part that scrolls.
  * It is mounted only while the dialog is open, so closing (Hủy / Esc / backdrop) throws the whole form state away.
  */
-export function WriteKudoForm({ titleId, copy, locale, actions, serializeContent, onSent, onClose, busyRef }: Props) {
-  const form = useWriteKudoForm({ copy, actions, serializeContent, onSent, onClose });
+export function WriteKudoForm({ titleId, copy, locale, initialRecipient, actions, serializeContent, onSent, onClose, busyRef }: Props) {
+  const form = useWriteKudoForm({ initialRecipient, copy, actions, serializeContent, onSent, onClose });
   const { errors, touch } = form;
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export function WriteKudoForm({ titleId, copy, locale, actions, serializeContent
         copy={copy}
         searchSunners={actions.searchSunners}
         value={form.recipient}
+        initialText={initialRecipient?.name}
         onChange={form.setRecipient}
         onBlur={() => touch("recipient")}
         onTypedChange={form.setRecipientTyped}

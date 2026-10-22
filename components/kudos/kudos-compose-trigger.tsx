@@ -22,7 +22,7 @@ export function KudosComposeTrigger({ copy }: { copy: KudosComposeCopy }) {
       {/* mm:2940:13449 */}
       <button
         type="button"
-        onClick={openComposer}
+        onClick={() => openComposer()}
         data-testid="kudos-compose-trigger"
         className={`${PILL} lg:flex-[738_1_738px] ${FOCUS_RING}`}
       >

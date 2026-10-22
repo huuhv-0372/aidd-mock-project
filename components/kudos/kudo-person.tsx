@@ -8,6 +8,18 @@ import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 
 type Tier = Exclude<HeroTier, "none">;
 type Tip = { label: string; headline: string; body: string };
+/**
+ * Which edge of its badge a tooltip lines up with; `center` is for the centred profile hero. `page` is `center` that, below md,
+ * centres on the nearest positioned ancestor (the full-width hero column) instead of the badge, so a phone's panel stays inside it.
+ */
+type TipAlign = "start" | "end" | "center" | "page";
+const TIP_ALIGN: Record<TipAlign, string> = {
+  start: "left-0",
+  end: "right-0",
+  center: "left-1/2 -translate-x-1/2",
+  page: "left-1/2 -translate-x-1/2",
+};
+const TIP_ANCHOR: Record<TipAlign, string> = { start: "relative", end: "relative", center: "relative", page: "max-md:static md:relative" };
 
 export type KudoPersonCopy = {
   anonymous: string;
@@ -48,14 +60,14 @@ export function HeroBadge({ tier, label, size = "small" }: { tier: Tier; label: 
   );
 }
 
-function HeroTitle({ tier, tip, align }: { tier: Tier; tip: Tip; align: "start" | "end" }) {
+export function HeroTitle({ tier, tip, align }: { tier: Tier; tip: Tip; align: TipAlign }) {
   const tipId = useId();
   return (
-    <span className="group/tip relative inline-flex">
+    <span className={`group/tip inline-flex ${TIP_ANCHOR[align]}`}>
       <span tabIndex={0} aria-describedby={tipId} className={`inline-flex rounded-full ${KUDO_CARD_FOCUS_RING}`}>
         <HeroBadge tier={tier} label={tip.label} />
       </span>
-      <span role="tooltip" id={tipId} className={`${TOOLTIP} ${align === "end" ? "right-0" : "left-0"}`}>
+      <span role="tooltip" id={tipId} className={`${TOOLTIP} ${TIP_ALIGN[align]}`}>
         <HeroBadge tier={tier} label={tip.label} size="large" />
         <span className="text-sm leading-5 font-bold tracking-[0.1px] text-white">{tip.headline}</span>
         <span className="text-sm leading-5 font-bold tracking-[0.1px] text-kudos-muted">{tip.body}</span>
@@ -64,7 +76,7 @@ function HeroTitle({ tier, tip, align }: { tier: Tier; tip: Tip; align: "start" 
   );
 }
 
-function Stars({ count, tip, align }: { count: 1 | 2 | 3; tip: string; align: "start" | "end" }) {
+export function Stars({ count, tip, align }: { count: 1 | 2 | 3; tip: string; align: TipAlign }) {
   const tipId = useId();
   return (
     <span className="group/tip relative inline-flex">
@@ -75,7 +87,7 @@ function Stars({ count, tip, align }: { count: 1 | 2 | 3; tip: string; align: "s
           </svg>
         ))}
       </span>
-      <span role="tooltip" id={tipId} className={`${TOOLTIP} ${align === "end" ? "right-0" : "left-0"}`}>
+      <span role="tooltip" id={tipId} className={`${TOOLTIP} ${TIP_ALIGN[align]}`}>
         <span className="text-sm leading-5 font-bold tracking-[0.1px] text-white">{tip}</span>
       </span>
     </span>

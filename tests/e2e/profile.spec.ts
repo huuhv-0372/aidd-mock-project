@@ -258,6 +258,20 @@ test.describe("Profile: my own page", () => {
     expect(await heartCalls(request, sub)).toHaveLength(0);
   });
 
+  test("the title pencil shows only on Kudos I sent: none on Đã nhận, one per card on Đã gửi and on my board card", async ({ page, request }) => {
+    const sub = await openPage(page, request, PROFILE_PATH);
+    await expect.poll(() => cardIds(cards(page))).toEqual(SELF_RECEIVED);
+    await expect(section(page).getByTestId(SEL.kudoEditIcon)).toHaveCount(0);
+    await pickDirection(page, PROFILE_TXT.sent.vi(stats.sent));
+    await expect.poll(() => cardIds(cards(page))).toEqual(SELF_SENT);
+    for (const id of SELF_SENT) await expect(card(page, id).getByTestId(SEL.kudoEditIcon)).toHaveCount(1);
+    await openProfile(page, request, "/sun-kudos", { sub });
+    const feed = page.getByTestId("kudos-feed");
+    await expect(feed.locator(`[data-testid="${SEL.kudoCard}"][data-kudo-id="${SENT_KUDO}"]`).getByTestId(SEL.kudoEditIcon)).toHaveCount(1);
+    const withPencil = await cardIds(feed.locator(`[data-testid="${SEL.kudoCard}"]:has([data-testid="${SEL.kudoEditIcon}"])`));
+    expect(withPencil.every((id) => SELF_SENT.includes(String(id)))).toBe(true);
+  });
+
   test("375x812: no horizontal scroll", async ({ page, request }) => {
     await openPage(page, request, PROFILE_PATH, { width: 375, height: 812 });
     await expect(hero(page)).toBeVisible();

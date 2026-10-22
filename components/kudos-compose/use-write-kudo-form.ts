@@ -8,6 +8,8 @@ import type { WriteKudoCopy } from "./write-kudo-copy";
 import { KUDO_LIMITS, type RecipientChoice, type WriteKudoActions } from "./write-kudo-types";
 
 type Args = {
+  /** Recipient already chosen at mount (counts as picked: no error, Gửi can enable). */
+  initialRecipient?: RecipientChoice | null;
   copy: WriteKudoCopy;
   actions: WriteKudoActions;
   serializeContent: (doc: unknown) => string;
@@ -28,8 +30,8 @@ const FIELDS: readonly Field[] = ["recipient", "title", "content", "hashtags"];
  * FormData sent to createKudo: recipientId, title, content (Markdown), hashtags (repeated slug), isAnonymous
  * ("true" | "false"), anonymousName (only when anonymous and not blank), images (repeated File, in order).
  */
-export function useWriteKudoForm({ copy, actions, serializeContent, onSent, onClose }: Args) {
-  const [recipient, setRecipient] = useState<RecipientChoice | null>(null);
+export function useWriteKudoForm({ initialRecipient = null, copy, actions, serializeContent, onSent, onClose }: Args) {
+  const [recipient, setRecipient] = useState<RecipientChoice | null>(initialRecipient);
   const [recipientTyped, setRecipientTyped] = useState(false);
   const [title, setTitle] = useState("");
   const [hasContent, setHasContent] = useState(false);
