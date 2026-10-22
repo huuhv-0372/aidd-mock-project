@@ -87,6 +87,10 @@ export const WRITE = {
   imageInput: "kudo-image-input", // <input type=file multiple>, always in the DOM while the dialog is open
   imageThumb: "image-thumb", // + a button named /Xóa ảnh/
   mention: '[data-type="mention"]',
+  // Người nhận suggestion row (issue #17): avatar (40px, placeholder when null), name, department line only when set.
+  recipientAvatar: "recipient-option-avatar",
+  recipientName: "recipient-option-name",
+  recipientDepartment: "recipient-option-department",
   placeholder: { recipient: "Tìm kiếm", editor: "Hãy gửi gắm lời cám ơn và ghi nhận đến đồng đội tại đây nhé!" },
 } as const;
 export const TOOLBAR = {

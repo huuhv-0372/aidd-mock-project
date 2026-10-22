@@ -112,6 +112,7 @@ test.describe("Viết Kudo: Người nhận", () => {
     sub = await openWriteModal(page, request);
   });
   const options = (page: Page) => writeDialog(page).getByRole("option");
+  const optionNames = (page: Page) => options(page).getByTestId(WRITE.recipientName);
 
   test("ID-8, ID-25 typing filters Sunners ignoring accents; suggestions carry no email", async ({ page }) => {
     await recipientBox(page).fill("Nguyễn");
@@ -156,6 +157,17 @@ test.describe("Viết Kudo: Người nhận", () => {
     }
   });
 
+  // Issue #17: a row showed the name only; the design (frame QIMJNgFb8K) has the avatar, the name and the department below it.
+  test("each suggestion shows the avatar, the name and the department", async ({ page }) => {
+    await recipientBox(page).fill("@Văn An");
+    await expect(optionNames(page)).toHaveText(["Nguyễn Văn An", "Trần Văn An"]);
+    await expect(options(page).getByTestId(WRITE.recipientDepartment)).toHaveText(["CEVC1", "STVC"]);
+    await expect(options(page).getByTestId(WRITE.recipientAvatar)).toHaveCount(2);
+    for (const avatar of await options(page).getByTestId(WRITE.recipientAvatar).all()) {
+      expect(await avatar.evaluate((el) => el.getBoundingClientRect().width)).toBe(40);
+    }
+  });
+
   test("ID-26 choosing a suggestion fills the field and closes the list", async ({ page }) => {
     await recipientBox(page).fill("Nguyễn Văn An"); // "An" alone has 19 matches; the list is cut to 10 alphabetically
     await writeDialog(page).getByRole("option", { name: "Nguyễn Văn An" }).click();
@@ -180,7 +192,7 @@ test.describe("Viết Kudo: Người nhận", () => {
     test(`typing a Sunner's ${label} suggests that Sunner; picking it enables Người nhận and Gửi`, async ({ page, request }) => {
       await recipientBox(page).fill(query);
       await expect(options(page)).toHaveCount(1);
-      await expect(options(page).first()).toHaveText("Nguyễn Văn An");
+      await expect(optionNames(page).first()).toHaveText("Nguyễn Văn An");
       expect(await options(page).first().textContent()).not.toContain("@"); // the email is only a way to search, never shown
       await expect(noResult(page)).toHaveCount(0);
       // without "@" the search keeps matching email: the action says so explicitly (p_name_only false)
@@ -195,18 +207,18 @@ test.describe("Viết Kudo: Người nhận", () => {
   test("an email in capitals and with surrounding spaces still finds the Sunner", async ({ page }) => {
     await recipientBox(page).fill(`  ${AN_EMAIL.toUpperCase()}  `);
     await expect(options(page)).toHaveCount(1);
-    await expect(options(page).first()).toHaveText("Nguyễn Văn An");
+    await expect(optionNames(page).first()).toHaveText("Nguyễn Văn An");
   });
 
   test("an email fragment that fits several Sunners lists them by name", async ({ page }) => {
     await recipientBox(page).fill("van.an@"); // both nguyen.van.an@ and tran.van.an@
-    await expect(options(page)).toHaveText(["Nguyễn Văn An", "Trần Văn An"]);
+    await expect(optionNames(page)).toHaveText(["Nguyễn Văn An", "Trần Văn An"]);
   });
 
   // "@ + tên" (spec D.1, clarifications 2026-10-19): a leading "@" searches by name only, without the "@".
   test("'@Văn An' suggests by name (the '@' is not searched); picking one fills the field", async ({ page, request }) => {
     await recipientBox(page).fill("@Văn An");
-    await expect(options(page)).toHaveText(["Nguyễn Văn An", "Trần Văn An"]);
+    await expect(optionNames(page)).toHaveText(["Nguyễn Văn An", "Trần Văn An"]);
     expect((await sunnerSearches(request, sub)).at(-1)).toMatchObject({ p_query: "Văn An", p_name_only: true });
     await options(page).filter({ hasText: "Trần Văn An" }).click();
     await expect(recipientBox(page)).toHaveValue("Trần Văn An");
