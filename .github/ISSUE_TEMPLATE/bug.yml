@@ -1,0 +1,77 @@
+name: Bug Report
+description: Báo cáo lỗi
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: input
+    id: screen
+    attributes:
+      label: Màn hình / URL bị lỗi
+      placeholder: /vi/sun-kudos hoặc #13
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Mô tả lỗi
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Các bước tái tạo
+      placeholder: |
+        1. Đăng nhập bằng ...
+        2. Vào ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Kết quả mong đợi
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Kết quả thực tế
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Môi trường
+      options:
+        - Local (npm run dev)
+        - Preview Worker (npm run preview)
+        - Production (Cloudflare Workers)
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Thiết bị / trình duyệt / kích thước màn hình
+      placeholder: Chrome 140, iPhone 14, 390px
+  - type: dropdown
+    id: locale
+    attributes:
+      label: Ngôn ngữ
+      options:
+        - VI
+        - EN
+        - Cả hai
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Mức độ
+      options:
+        - Chặn (không dùng được tính năng)
+        - Nặng (sai logic/dữ liệu)
+        - Nhẹ (lệch UI, chữ)
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Ảnh chụp / log
+      description: Kéo thả ảnh, dán log console hoặc lỗi server
