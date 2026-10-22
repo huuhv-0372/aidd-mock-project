@@ -95,9 +95,32 @@ describe("kudoEditorJsonToMarkdown", () => {
     expect(md({ type: "blockquote", content: [p(text("a", { type: "bold" })), p(), p(text("b"))] })).toBe("> **a**\n>\n> b");
   });
 
+  // A quote with nothing in it would be written as a bare `>`: the reader shows that as a stray marker, so none is written.
+  it("writes nothing for a blockquote whose lines are all empty", () => {
+    const quote = (...content: KudoEditorNode[]): KudoEditorNode => ({ type: "blockquote", content });
+    expect(md(p(text("a")), quote(p(), p()), p(text("b")))).toBe("a\nb");
+    expect(md(quote(p()))).toBe("");
+    expect(md({ type: "blockquote" })).toBe("");
+    expect(md(quote(p(), quote(p())))).toBe("");
+    expect(md(p(text("a")), quote(p(), p(text("b"))))).toBe("a\n>\n> b");
+  });
+
   it("escapes Markdown characters in plain text", () => {
     expect(md(p(text("2*3 _x_ ~y~ [z] `c` \\")))).toBe("2\\*3 \\_x\\_ \\~y\\~ \\[z\\] \\`c\\` \\\\");
     expect(md(p({ type: "mention", attrs: { id: ID, label: "A]B" } }))).toBe(`@[A\\]B](${ID})`);
+  });
+
+  it("escapes a line-start `N.` or `>` typed as text, on every line, and nothing mid-line", () => {
+    const item = (...c: KudoEditorNode[]): KudoEditorNode => ({ type: "listItem", content: c });
+    expect(md(p(text("2025.")), p(text("1. foo")), p(text("> x")), p(text("a 1. b > c")))).toBe(
+      "2025\\.\n1\\. foo\n\\> x\na 1. b > c",
+    );
+    expect(md(p(text("a"), { type: "hardBreak" }, text("2. b")))).toBe("a\n2\\. b");
+    expect(md({ type: "orderedList", content: [item(p(text("1. x")), p(text(">y")))] })).toBe("1. 1\\. x\n   \\>y");
+    expect(md({ type: "blockquote", content: [p(text("3. z"))] })).toBe("> 3\\. z");
+    expect(md(p(text("1.5 apples")), p(text("1234567890. x")), p(text("1. b", { type: "bold" })))).toBe(
+      "1.5 apples\n1234567890. x\n**1. b**",
+    );
   });
 
   it("leaves accented text and ordinary punctuation alone", () => {

@@ -5,6 +5,8 @@
  * Mirrors the serializer: every `\n` is a line (paragraphs and hard breaks are not told apart), `1. ` lines form an
  * ordered list whose item continues on lines indented by three spaces, `> ` lines form a quote; inlines are
  * `**b**`, `_i_`, `~~s~~`, `[t](url)` and `@[Name](uuid)`. Blank lines are dropped, as in kudo-plain-text.ts.
+ * The serializer escapes a line-start `N.`/`>` typed as text (`N\.`, `\>`); content stored before that escape existed
+ * may still hold them bare, so a marker that would leave nothing to show stays text instead.
  *
  * Runs on untrusted text, so nothing here can backtrack: delimiters are found with indexOf, link/mention patterns
  * exclude their own delimiters (labels hold no `[`/`]`, targets no `(`/`)`), nesting depth is capped.
@@ -22,12 +24,12 @@ export type KudoBlock =
 
 // Same escape scheme as kudo-plain-text.ts: escaped characters become private-use placeholders before parsing,
 // so an escaped delimiter is never read as Markdown.
-const ESCAPABLE = "\\`*_~[]";
+const ESCAPABLE = "\\`*_~[].>";
 const PLACEHOLDER_BASE = 0xe000;
-const PLACEHOLDER = /[-]/g;
+const PLACEHOLDER = /[-]/g;
 
 const protectEscapes = (markdown: string) =>
-  markdown.replace(/\\([\\`*_~[\]])/g, (_, char: string) => String.fromCharCode(PLACEHOLDER_BASE + ESCAPABLE.indexOf(char)));
+  markdown.replace(/\\([\\`*_~[\].>])/g, (_, char: string) => String.fromCharCode(PLACEHOLDER_BASE + ESCAPABLE.indexOf(char)));
 
 const unescapeChar = (placeholder: string) => ESCAPABLE[placeholder.charCodeAt(0) - PLACEHOLDER_BASE];
 /** Text shown to the reader: the escaped character without its backslash. */
@@ -39,7 +41,9 @@ const INDENT = "   ";
 const MAX_DEPTH = 8;
 const LIST_MARKER = /^(\d{1,9})\.(?: |$)/;
 const QUOTE_MARKER = /^> ?/;
-const MENTION = /@\[([^[\]]*)\]\(([^()]*)\)/y;
+// A mention's target is a user id: the same 8-4-4-4-12 hex rule as `pgUuid` (z.guid()) in lib/validation/write-kudo.ts,
+// inlined so this module stays dependency-free. Any other target leaves `@` as text and `[` opens a normal link.
+const MENTION = /@\[([^[\]]*)\]\(([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\)/y;
 const LINK = /\[([^[\]]*)\]\(([^()]*)\)/y;
 const MARKS = [
   ["**", "strong"],
@@ -47,14 +51,14 @@ const MARKS = [
   ["_", "em"],
 ] as const;
 
-/** Only absolute http(s) URLs become links (same rule as the serializer's safeHref), normalised by `URL`. */
+/**
+ * Only absolute http(s) URLs become links (same rule as the serializer's safeHref), normalised by `URL`.
+ * canParse first: a throwing `new URL` per invalid target cost ~25x a valid one on every view.
+ */
 function safeHref(raw: string): string | null {
-  try {
-    const url = new URL(raw);
-    return url.protocol === "http:" || url.protocol === "https:" ? url.href : null;
-  } catch {
-    return null;
-  }
+  if (!URL.canParse(raw)) return null;
+  const url = new URL(raw);
+  return url.protocol === "http:" || url.protocol === "https:" ? url.href : null;
 }
 
 type Token = { nodes: KudoInline[]; end: number };
@@ -105,7 +109,29 @@ function parseInline(text: string): KudoInline[] {
   return out;
 }
 
-/** One list: consecutive items numbered start, start+1, ...; each item takes the INDENT-ed lines below it. */
+const paragraph = (line: string): KudoBlock => ({ type: "paragraph", children: parseInline(line.trim()) });
+
+/**
+ * Whether `lines[at]` opens a list. A marker with text does. A marker-only line (`2025.`) is an empty first item,
+ * which the serializer writes as `N. `, only when something continues it: an INDENT-ed line (the item's content) or
+ * the next line numbered N+1. Anything else leaves the number as text instead of an empty item.
+ */
+function opensList(lines: string[], at: number): boolean {
+  const match = LIST_MARKER.exec(lines[at]);
+  if (!match) return false;
+  if (lines[at].slice(match[0].length).trim() !== "") return true;
+  const next = lines[at + 1];
+  if (next === undefined) return false;
+  if (next.startsWith(INDENT)) return true;
+  const following = LIST_MARKER.exec(next);
+  return following !== null && Number(following[1]) === Number(match[1]) + 1;
+}
+
+/**
+ * One list: consecutive items numbered start, start+1, ...; each item takes the INDENT-ed lines below it.
+ * A marker-only line that continues the numbering (`1. a`, `2. b`, `3.`) is an empty item: the serializer writes an
+ * empty editor item that way, and the reader still sees the number as the item marker, so no text is lost.
+ */
 function readList(lines: string[], from: number, depth: number): { block: KudoBlock; next: number } {
   const start = Number(LIST_MARKER.exec(lines[from])?.[1]);
   const items: KudoBlock[][] = [];
@@ -127,15 +153,23 @@ function parseBlocks(lines: string[], depth: number): KudoBlock[] {
     if (!line.trim()) {
       i++;
     } else if (nested && line.startsWith(">")) {
+      const from = i;
       const inner: string[] = [];
-      for (; i < lines.length && lines[i].startsWith(">"); i++) inner.push(lines[i].replace(QUOTE_MARKER, ""));
-      blocks.push({ type: "quote", children: parseBlocks(inner, depth + 1) });
-    } else if (nested && LIST_MARKER.test(line)) {
+      for (; i < lines.length && lines[i].startsWith(">"); i++) {
+        // A bare `>` is an empty line of the quote: dropped like a blank line anywhere else, so it never splits a list.
+        const content = lines[i].replace(QUOTE_MARKER, "");
+        if (content.trim()) inner.push(content);
+      }
+      const children = parseBlocks(inner, depth + 1);
+      // A quote of bare `>` lines has nothing to show: keep the markers as text rather than an empty box.
+      if (children.length) blocks.push({ type: "quote", children });
+      else blocks.push(...lines.slice(from, i).map(paragraph));
+    } else if (nested && opensList(lines, i)) {
       const { block, next } = readList(lines, i, depth);
       blocks.push(block);
       i = next;
     } else {
-      blocks.push({ type: "paragraph", children: parseInline(line.trim()) });
+      blocks.push(paragraph(line));
       i++;
     }
   }

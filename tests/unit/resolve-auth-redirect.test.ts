@@ -75,7 +75,7 @@ describe("resolveAuthRedirect: post-login next", () => {
     "",
     "https://evil.example",
     "//evil.example",
-    "/\evil.example",
+    "/\\evil.example",
     "%2F%2Fevil.example",
     `${KUDO}?x=1`,
     `${KUDO}/`,
@@ -86,7 +86,11 @@ describe("resolveAuthRedirect: post-login next", () => {
     expect(resolveAuthRedirect("/login", true, next)).toBe("/");
   });
 
-  it("never redirects an authenticated user on a non-login path because of next", () => {
-    expect(resolveAuthRedirect("/awards-information", true, KUDO)).toBeNull();
-  });
+  // `/login/x` and `/loginx` only look like the login page: next must not act there.
+  it.each(["/awards-information", "/login/x", "/loginx"])(
+    "never redirects an authenticated user on the non-login path %s because of next",
+    (path) => {
+      expect(resolveAuthRedirect(path, true, KUDO)).toBeNull();
+    },
+  );
 });

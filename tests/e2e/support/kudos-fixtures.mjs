@@ -161,6 +161,32 @@ export const DETAIL_KUDO = {
   anonymous_name: null,
 };
 
+/** Id of a sample person by key ("pNN"), for specs that look for a sender's id in the page. */
+export const personIdFor = personId;
+
+// View Kudo hardening (kudo_detail-only, like DETAIL_KUDO). Stored content a crafted row could hold: link targets with no
+// parentheses so the renderer's link pattern matches them, in every scheme that must never become an anchor, plus raw HTML.
+export const XSS_KUDO_ID = "c1000000-0000-0000-0000-0000000000d2";
+export const XSS_LINE_LABELS = { a: "Liên kết a thứ nhất.", b: "Liên kết b thứ hai.", c: "Liên kết c thứ ba.", d: "Liên kết d thứ tư." };
+export const XSS_RAW_IMG = '<img src=x onerror="window.__xss=1">';
+export const XSS_RAW_SCRIPT = "<script>window.__xss=1</script>";
+export const XSS_KUDO = {
+  ...DETAIL_KUDO,
+  id: XSS_KUDO_ID,
+  title: "KUDO THỬ XSS",
+  content: [
+    "Liên kết [a](javascript:alert%281%29) thứ nhất.",
+    "Liên kết [b](JaVaScRiPt:x) thứ hai.",
+    "Liên kết [c](data:text/html,x) thứ ba.",
+    "Liên kết [d](vbscript:x) thứ tư.",
+    XSS_RAW_IMG,
+    XSS_RAW_SCRIPT,
+    "Dòng cuối an toàn.",
+  ].join("\n"),
+  images: [],
+  hashtags: [],
+};
+
 /** Person JSON (kudos_person_json). Counts are over the sample kudos; anonymous senders are not named. */
 function personOf(key, sub) {
   const received = KUDOS.filter((k) => k.recipient_key === key);
@@ -297,10 +323,20 @@ const EMPTY_FOR_ANONYMOUS = {
  * POST /rest/v1/rpc/<name>. Returns the JSON body (table/setof -> array, jsonb -> object) or undefined for
  * an unknown function.
  */
-/** kudo_detail(p_id): one Kudo in the KudoRow shape, or [] for a guest, an allowed caller with no data, or an unknown id. */
+// Postgres `uuid` input: 8-4-4-4-12 hex, any case. Anything else is an error, not "no row".
+const PG_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** PostgREST refusal of kudo_detail for a p_id that is not uuid-shaped (400, 22P02), or undefined when the id parses. */
+export function kudoDetailRefusal(p_id) {
+  if (typeof p_id === "string" && PG_UUID.test(p_id)) return undefined;
+  return { status: 400, body: { code: "22P02", details: null, hint: null, message: `invalid input syntax for type uuid: "${p_id}"` } };
+}
+
+/** kudo_detail(p_id): one Kudo in the KudoRow shape, or [] for a guest, an allowed caller with no data, or an unknown id. Ids compare like Postgres uuids (case-insensitive). */
 function kudoDetail(p_id, sub) {
-  if (!sub || sub === EMPTY_USER_ID) return [];
-  const k = [...KUDOS, DETAIL_KUDO].find((row) => row.id === p_id);
+  if (!sub || sub === EMPTY_USER_ID || typeof p_id !== "string") return [];
+  const wanted = p_id.toLowerCase();
+  const k = [...KUDOS, DETAIL_KUDO, XSS_KUDO].find((row) => row.id === wanted);
   return k ? [rowFor(k, sub)] : [];
 }
 

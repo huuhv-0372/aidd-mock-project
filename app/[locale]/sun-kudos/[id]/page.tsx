@@ -7,7 +7,6 @@ import { KudoRichContent } from "@/components/kudos/kudo-rich-content";
 import { getRouteDictionary } from "@/lib/i18n/get-dictionary";
 import { getKudoDetail } from "@/lib/kudos/get-kudo-detail";
 import { setKudoHeart } from "@/lib/kudos/set-kudo-heart-action";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type PageProps = { params: Promise<{ locale: string; id: string }> };
 
@@ -24,8 +23,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function KudoDetailPage({ params }: PageProps) {
   const { locale, dict } = await getRouteDictionary(params);
   const { id } = await params;
-  const client = await createSupabaseServerClient();
-  const result = await getKudoDetail(id, client);
+  // No client here: getKudoDetail creates it inside its error handling, after the id check (a broken env is then a
+  // 404 for a malformed id and the generic in-frame error otherwise, never a 500).
+  const result = await getKudoDetail(id);
   if (result.status === "not_found") notFound();
   const copy = dict.kudos.detail;
   return (

@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
 import type { Locale } from "@/lib/i18n/locales";
 import type { KudoHashtag } from "@/lib/kudos/kudo-types";
 import { buildKudosFilterHref } from "@/lib/kudos/kudos-filter-href";
 import type { KudosFilters } from "@/lib/validation/kudos";
+import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 
 const MAX_TAGS = 5;
 
@@ -37,7 +37,7 @@ export function KudoHashtagList({
           href={buildKudosFilterHref(filters, { hashtag: tag.slug })}
           scroll={false}
           data-testid="kudo-hashtag"
-          className={`-my-2.5 mr-2 inline-block rounded py-2.5 hover:underline ${FOCUS_RING}`}
+          className={`-my-2.5 mr-2 inline-block rounded py-2.5 hover:underline ${KUDO_CARD_FOCUS_RING}`}
         >
           #{locale === "en" ? tag.name_en : tag.name_vi}
         </Link>

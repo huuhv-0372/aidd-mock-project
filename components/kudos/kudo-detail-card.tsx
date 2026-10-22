@@ -15,7 +15,7 @@ export type KudoDetailCardCopy = KudoPostCardCopy & { close: string };
 const DIVIDER = "h-px w-full bg-login-accent";
 /* Block spacing and marks of the rich content (paragraphs, ordered list, quote, links); strong / em / s keep the browser defaults. */
 const RICH_CONTENT =
-  "[&>*+*]:mt-2 [&_p]:whitespace-pre-line [&_ol]:list-decimal [&_ol]:pl-8 [&_blockquote]:border-l-4 [&_blockquote]:border-login-bg/30 [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:rounded [&_a]:underline [&_a]:underline-offset-2 [&_a]:outline-offset-2 [&_a]:focus-visible:outline-2 [&_a]:focus-visible:outline-login-accent";
+  "[&>*+*]:mt-2 [&_p]:whitespace-pre-line [&_ol]:list-decimal [&_ol]:pl-8 [&_blockquote]:border-l-4 [&_blockquote]:border-login-bg/30 [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:rounded [&_a]:underline [&_a]:underline-offset-2 [&_a]:outline-offset-2 [&_a]:focus-visible:outline-2 [&_a]:focus-visible:outline-login-bg";
 
 /*
  * View Kudo frame (Figma 520:18779, 680px): the feed card laid out in full, so nothing between `content` and the frame clips or

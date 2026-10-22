@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
 import type { Locale } from "@/lib/i18n/locales";
 import { formatKudoTime } from "@/lib/kudos/format-kudo-time";
 import type { KudoRow } from "@/lib/kudos/kudo-types";
@@ -7,6 +6,7 @@ import { kudoPlainText } from "@/lib/kudos/kudo-plain-text";
 import { kudoDetailHref } from "@/lib/navigation/routes";
 import type { KudosFilters } from "@/lib/validation/kudos";
 import { CopyKudoLinkButton, type CopyKudoLinkCopy } from "./copy-kudo-link-button";
+import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 import { KudoHashtagList } from "./kudo-hashtag-list";
 import { KudoHearts, type KudoHeartsCopy } from "./kudo-hearts";
 import { KudoImageGallery, type KudoImageGalleryCopy } from "./kudo-image-gallery";
@@ -77,7 +77,7 @@ export function KudoPostCard({
         {/* mm:I3127:21871;662:11382 */}
         <Link
           href={kudoDetailHref(kudo.id)}
-          className={`block rounded-xl border border-login-accent bg-[rgb(255_234_158/0.4)] px-6 py-4 hover:bg-[rgb(255_234_158/0.6)] motion-safe:transition-colors motion-safe:duration-200 ${FOCUS_RING}`}
+          className={`block rounded-xl border border-login-accent bg-[rgb(255_234_158/0.4)] px-6 py-4 hover:bg-[rgb(255_234_158/0.6)] motion-safe:transition-colors motion-safe:duration-200 ${KUDO_CARD_FOCUS_RING}`}
         >
           {/* mm:I3127:21871;256:5156 */}
           <p

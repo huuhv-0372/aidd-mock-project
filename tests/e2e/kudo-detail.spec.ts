@@ -1,36 +1,22 @@
-// View Kudo (MoMorph onDIohs2bS, Figma 520:18779): the detail page /sun-kudos/{id}. Phase 01 RED: fails until the route,
-// the frame, the Đóng button and the guest next= redirect land. Contract: plans/261021-view-kudo/clarifications.md + plan.md.
+// View Kudo (MoMorph onDIohs2bS, Figma 520:18779): the detail page /sun-kudos/{id}. Contract: plans/261021-view-kudo/clarifications.md + plan.md.
+// Hardening cases (XSS, close, login next, anonymous sender, contrast, bold) live in the other kudo-detail-*.spec.ts files.
 // Signed-in cases run on AUTHED (3103, fake Supabase); guest cases on PAST (3101, anonymous). Each case mints its own sub.
 // Selectors + copy: support/kudo-detail-contract.ts. Fixtures: support/kudos-fixtures.mjs (DETAIL_KUDO is kudo_detail-only).
 import { randomUUID } from "node:crypto";
-import { expect, test, type APIRequestContext, type Locator, type Page } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
+import { AUTHED, PAST } from "./support/authed-session";
 import { KUDOS_PATH, SEL, formatKudoTime, openKudos, signInAs } from "./support/kudos-contract";
 import { heartCalls, heartLabel } from "./support/kudo-hearts-contract";
 import { DETAIL, detailPath } from "./support/kudo-detail-contract";
+import { closeButton, frame, openDetail } from "./support/kudo-detail-helpers";
 import { DETAIL_END_SENTENCE, DETAIL_KUDO, KUDOS, PEOPLE } from "./support/kudos-fixtures.mjs";
 
-const AUTHED = process.env.E2E_AUTHED_URL || "http://localhost:3103";
-const PAST = process.env.E2E_PAST_URL || "http://localhost:3101";
 // Feed kudos: TARGET is not mine, not liked, 15 hearts, top of Highlight, on the feed's first page. OWN is sent by the viewer.
 const TARGET_ID = String(KUDOS[2].id);
 const TARGET_HEARTS = Number(KUDOS[2].heart_count);
 const OWN_ID = String(KUDOS[0].id);
 const UNKNOWN_ID = "c1000000-0000-0000-0000-00000000ffff"; // valid uuid shape, no fixture
 
-/** Signs in as a fresh user, optionally sets EN, then navigates on AUTHED. Returns the HTTP status and the sub. */
-async function openDetail(
-  page: Page, request: APIRequestContext, path: string, opts: { width?: number; height?: number; locale?: "en" } = {},
-): Promise<{ status: number | undefined; sub: string }> {
-  const sub = randomUUID();
-  await page.setViewportSize({ width: opts.width ?? 1440, height: opts.height ?? 900 });
-  await signInAs(page, request, sub);
-  if (opts.locale) await page.context().addCookies([{ name: "NEXT_LOCALE", value: opts.locale, url: AUTHED }]);
-  const res = await page.goto(`${AUTHED}${path}`);
-  return { status: res?.status(), sub };
-}
-
-const frame = (page: Page) => page.getByTestId(DETAIL.frame);
-const closeButton = (page: Page, locale: "vi" | "en" = "vi") => page.getByRole("button", { name: DETAIL.close[locale], exact: true });
 const people = PEOPLE as Record<string, string[]>;
 const senderName = people[DETAIL_KUDO.sender_key][0];
 const recipientName = people[DETAIL_KUDO.recipient_key][0];
@@ -64,9 +50,10 @@ test.describe("View Kudo: page and access", () => {
     await expect(page.getByRole("heading", { level: 1, name: DETAIL.notFoundHeading })).toBeVisible();
   });
 
-  test("malformed id answers HTTP 404", async ({ page, request }) => {
+  test("malformed id answers HTTP 404 with the not-found page", async ({ page, request }) => {
     const { status } = await openDetail(page, request, detailPath("not-a-uuid"));
     expect(status).toBe(404);
+    await expect(page.getByRole("heading", { level: 1, name: DETAIL.notFoundHeading })).toBeVisible();
   });
 });
 
