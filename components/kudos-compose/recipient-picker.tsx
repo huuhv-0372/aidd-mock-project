@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, type ChangeEvent, type KeyboardEven
 import { ChevronDownIcon } from "./compose-icons";
 import { FieldLabel } from "./compose-field-label";
 import { ERROR_FLOAT, INPUT } from "./compose-field-styles";
+import { RecipientOptionContent } from "./recipient-option-content";
 import type { WriteKudoCopy } from "./write-kudo-copy";
 import type { RecipientChoice, SunnerOption, WriteKudoActions } from "./write-kudo-types";
 
@@ -23,10 +24,10 @@ type Props = {
 
 const SEARCH_DELAY_MS = 150;
 
-// Dropdown rows reuse the hashtag dropdown look (p9zO-c4a4x): #00070C panel, 40px rows, white bold text.
+// Dropdown panel reuses the hashtag dropdown look (p9zO-c4a4x): #00070C panel, white bold text. Rows carry avatar + name + department.
 const PANEL = "absolute top-full right-0 left-0 z-20 mt-1 rounded-lg border border-home-border bg-kudos-panel p-1.5";
 const OPTION =
-  "flex min-h-11 md:min-h-10 w-full cursor-pointer items-center rounded-sm px-4 text-left text-base leading-6 font-bold tracking-[0.15px] text-white hover:bg-[rgb(255_234_158/0.1)] aria-selected:bg-[rgb(255_234_158/0.2)]";
+  "flex min-h-11 md:min-h-10 w-full cursor-pointer items-center gap-3 rounded-sm py-2 pr-4 pl-2.5 text-left text-base leading-6 font-bold tracking-[0.15px] text-white hover:bg-[rgb(255_234_158/0.1)] aria-selected:bg-[rgb(255_234_158/0.2)]";
 
 /*
  * Người nhận (B / B.1 / B.2, mm:520:9871): autocomplete over Sunners. Typing (after trim) asks the server action for
@@ -169,7 +170,7 @@ export function RecipientPicker({ copy, searchSunners, value, initialText = "", 
                 onClick={() => pick(item)}
                 className={OPTION}
               >
-                {item.full_name}
+                <RecipientOptionContent item={item} />
               </li>
             ))}
           </ul>

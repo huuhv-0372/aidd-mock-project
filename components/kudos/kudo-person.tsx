@@ -35,6 +35,9 @@ const BADGE_IMAGE: Record<Exclude<Tier, "new">, string> = {
   legend: "/images/kudos/hero-legend.png",
 };
 
+/** Incognito icon in place of the sender's avatar on an anonymous Kudo (owner-supplied, issue #17). */
+const ANONYMOUS_AVATAR = "/images/kudos/anonymous-avatar.png";
+
 const TOOLTIP =
   "pointer-events-none invisible absolute top-full z-50 mt-2 flex w-[min(304px,calc(100vw_-_4rem))] flex-col gap-[11px] rounded-2xl bg-kudos-panel p-4 text-left opacity-0 group-focus-within/tip:visible group-focus-within/tip:opacity-100 group-hover/tip:visible group-hover/tip:opacity-100 motion-safe:transition-opacity motion-safe:duration-150";
 
@@ -96,7 +99,7 @@ export function Stars({ count, tip, align }: { count: 1 | 2 | 3; tip: string; al
 
 /*
  * One side of the Kudo card header (Figma `Infor`, 235px column): 64px avatar, name, department, Hero title and stars.
- * Anonymous Kudo: `person` is null, the alias (or the generic label) is shown and nothing links anywhere.
+ * Anonymous Kudo: `person` is null, the incognito icon and the alias (or the generic label) are shown and nothing links anywhere.
  * `role` becomes the test id `kudo-sender` / `kudo-recipient` on the name. Avatars are 64px Google or demo images,
  * so they skip the image optimiser (`unoptimized`). From `sm` the column is 235px (Figma) and hugs its side of the card: it bleeds into the grid gap by up to 35px so
  * the two columns never overlap, a long name fits one line and truncates; on mobile the name wraps instead.
@@ -118,7 +121,7 @@ export function KudoPersonInfo({
   const tier = person ? heroTier(person.distinct_senders) : "none";
   const stars = person ? starCount(person.kudos_received) : 0;
   const name = person ? (person.full_name ?? "") : (anonymousName || copy.anonymous);
-  const avatar = person?.avatar_url;
+  const avatar = person ? person.avatar_url : ANONYMOUS_AVATAR;
   const avatarEl = (
     <span className="block size-16 overflow-hidden rounded-full border-[1.869px] border-white bg-[#eee]">
       {avatar && <Image src={avatar} alt="" width={64} height={64} unoptimized className="size-full object-cover" />}

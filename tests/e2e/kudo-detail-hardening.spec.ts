@@ -83,6 +83,8 @@ test.describe("View Kudo: anonymous sender (T5)", () => {
   test("an anonymous Kudo shows the alias and the real sender is nowhere in the page", async ({ page, request }) => {
     await openDetail(page, request, detailPath(ANON.id));
     await expect(frame(page).getByTestId("kudo-sender")).toHaveText(ANON_ALIAS);
+    // Issue #17: the sender avatar is the incognito icon, not an empty grey circle.
+    await expect(frame(page).locator('img[src="/images/kudos/anonymous-avatar.png"]')).toBeVisible();
     const html = await page.content();
     expect(html, "sender name").not.toContain(REAL_SENDER_NAME);
     expect(html, "sender id").not.toContain(REAL_SENDER_ID);
