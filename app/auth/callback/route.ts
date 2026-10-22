@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { clearPostLoginNextCookie } from "@/lib/auth/clear-post-login-next-cookie";
 import {
   LOGIN_ERROR_PARAM,
   LOGIN_ERROR_VALUE,
@@ -6,19 +7,14 @@ import {
   POST_LOGIN_PATH,
 } from "@/lib/auth/constants";
 import { isAllowedEmail } from "@/lib/auth/is-allowed-email";
-import {
-  POST_LOGIN_NEXT_COOKIE,
-  parsePostLoginNext,
-  postLoginNextCookieOptions,
-} from "@/lib/auth/post-login-next";
+import { POST_LOGIN_NEXT_COOKIE, parsePostLoginNext } from "@/lib/auth/post-login-next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { parseAuthCallbackQuery } from "@/lib/validation/auth-callback";
 
 /** Every exit clears the one-shot post-login cookie, so a target never outlives its sign-in. */
-function redirectClearingNext(url: URL): NextResponse {
-  const response = NextResponse.redirect(url);
-  response.cookies.set(POST_LOGIN_NEXT_COOKIE, "", postLoginNextCookieOptions(0));
-  return response;
+async function redirectClearingNext(url: URL): Promise<NextResponse> {
+  await clearPostLoginNextCookie();
+  return NextResponse.redirect(url);
 }
 
 /**
@@ -40,7 +36,8 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(query.code);
     if (error) {
       console.error("[auth/callback] exchangeCodeForSession failed", error);
-      return redirectClearingNext(loginError);
+      // `await` keeps a cookies() failure inside this try, so it still ends on the login-error redirect.
+      return await redirectClearingNext(loginError);
     }
     // Defense in depth: the DB rejects new non-domain users, but accounts created before the
     // gate can still complete OAuth. Drop their session and show the generic error.
@@ -48,7 +45,7 @@ export async function GET(request: NextRequest) {
       console.error("[auth/callback] rejected sign-in: email domain not allowed");
       const { error: signOutError } = await supabase.auth.signOut();
       if (signOutError) console.error("[auth/callback] signOut failed", signOutError);
-      return redirectClearingNext(loginError);
+      return await redirectClearingNext(loginError);
     }
   } catch (err) {
     console.error("[auth/callback] unexpected failure", err);

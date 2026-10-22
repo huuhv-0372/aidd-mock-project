@@ -1,0 +1,69 @@
+name: Màn hình / Tính năng
+description: Một màn hình hoặc tính năng trong scope, làm theo thiết kế MoMorph
+title: "[Screen] "
+labels: ["screen"]
+body:
+  - type: input
+    id: momorph-link
+    attributes:
+      label: Link MoMorph
+      placeholder: https://momorph.ai/files/{fileKey}/screens/{screenId}
+    validations:
+      required: true
+  - type: input
+    id: screen-code
+    attributes:
+      label: Mã màn / tính năng
+      description: "vd: SCR001 / F001 — để trống nếu chưa có"
+  - type: textarea
+    id: description
+    attributes:
+      label: Mô tả
+      description: Màn hình làm gì, cho ai dùng
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Tiêu chí chấp nhận
+      description: Logic theo spec MoMorph — mỗi dòng một điều kiện kiểm tra được
+      placeholder: |
+        - Khách chưa đăng nhập bị chuyển về /login
+        - Bấm tim lần hai thì bỏ tim
+    validations:
+      required: true
+  - type: dropdown
+    id: access
+    attributes:
+      label: Ai được truy cập
+      options:
+        - Công khai (khách xem được)
+        - Chỉ Sunner đã đăng nhập
+        - Cả hai, nội dung khác nhau
+    validations:
+      required: true
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Ghi chú kỹ thuật
+      description: Route, bảng/RPC Supabase cần thêm, component dùng lại, rủi ro đã biết
+  - type: input
+    id: estimate
+    attributes:
+      label: Estimate (giờ)
+      placeholder: "3"
+    validations:
+      required: true
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      description: Tick dần khi làm — không cần tick lúc tạo issue
+      options:
+        - label: UI khớp Figma trên mobile và desktop
+        - label: Logic đúng spec MoMorph
+        - label: Hiển thị đúng cả VI và EN
+        - label: Unit test (Vitest)
+        - label: E2E test (Playwright)
+        - label: Migration có đủ rollback + verify, RLS đã bật (nếu đổi DB)
+        - label: Cập nhật docs/project-changelog.md

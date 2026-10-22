@@ -19,10 +19,29 @@ describe("kudoPlainText", () => {
     expect(kudoPlainText("Xem [tài liệu](https://example.com/a) ![ảnh](/x.png)")).toBe("Xem tài liệu ảnh");
   });
 
-  it("removes list, quote and heading markers per line", () => {
-    expect(kudoPlainText("- một\n* hai\n1. ba\n> trích dẫn\n## Tiêu đề")).toBe(
-      "một\nhai\nba\ntrích dẫn\nTiêu đề",
-    );
+  // Only the markers the serializer writes and the detail page reads (kudo-content-blocks.ts): `N. ` and `>`,
+  // nested ones too. Anything else (`- `, `* `, `# `, `1) `) is text there, so the card shows it as text as well.
+  it("removes the list and quote markers the detail page reads, nested too", () => {
+    expect(kudoPlainText("1. ba\n> trích dẫn\n>\n> 1. > sâu\n   2. con\n123456789. x")).toBe("ba\ntrích dẫn\nsâu\ncon\nx");
+  });
+
+  // The detail page shows a quote that holds no text as its `>` lines (kudo-content-blocks.ts), so the card does too;
+  // a bare `>` inside a quote that has text is just an empty line of it (an empty editor paragraph) and is dropped.
+  it("keeps a quote marker that quotes no text, as the detail page does", () => {
+    expect(kudoPlainText(">")).toBe(">");
+    expect(kudoPlainText("a\n>\n> \nb")).toBe("a\n>\n>\nb");
+    expect(kudoPlainText("1. a\n   >")).toBe("a\n>");
+    expect(kudoPlainText("> a\n>\n> b")).toBe("a\nb");
+    expect(kudoPlainText("> a\n\n>")).toBe("a");
+  });
+
+  it("keeps markers the detail page shows as text", () => {
+    const text = "- một\n* hai\n## Tiêu đề\n+ bốn\n1) năm\n1.5 táo\n2024.01.02 x\n1234567890. x\n2025.";
+    expect(kudoPlainText(text)).toBe(text);
+  });
+
+  it("unescapes a line-start `N\\.` or `\\>` without reading it as a marker", () => {
+    expect(kudoPlainText("2025\\.\n1\\. foo\n\\> x")).toBe("2025.\n1. foo\n> x");
   });
 
   it("drops blank lines so line-clamp counts real lines", () => {
@@ -65,7 +84,7 @@ describe("kudoPlainText", () => {
   // Cards render every stored Kudo and the validator runs this on every submitted text: no input may cost
   // super-linear time. Each pattern opens a delimiter that never closes. 20,000 chars (4x the content cap) so a
   // quadratic regex cannot hide under the budget: at 5000 chars the old patterns still took 10-64 ms.
-  it.each(["[", "@[", "*a ", "_a ", "**a ", "~~a ", "`", "[a](", "[](", "![", "__a "])(
+  it.each(["[", "@[", "*a ", "_a ", "**a ", "~~a ", "`", "[a](", "[](", "![", "__a ", "> ", "1. ", "   ", "1.  "])(
     "strips 20,000 chars of %j in under 50 ms",
     (pattern) => {
       const input = pattern.repeat(Math.ceil(20_000 / pattern.length)).slice(0, 20_000);

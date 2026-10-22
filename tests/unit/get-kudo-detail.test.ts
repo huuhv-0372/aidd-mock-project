@@ -3,6 +3,10 @@ import { getKudoDetail } from "@/lib/kudos/get-kudo-detail";
 import type { ServerClient } from "@/lib/kudos/get-kudos-board-data";
 import { DETAIL_KUDO, EMPTY_USER_ID, KUDOS, kudosRpc } from "@/tests/e2e/support/kudos-fixtures.mjs";
 
+// The page calls getKudoDetail(id) with no client: the default one must be created inside the guarded path (L1).
+const createServerClient = vi.hoisted(() => vi.fn());
+vi.mock("@/lib/supabase/server", () => ({ createSupabaseServerClient: createServerClient }));
+
 const SUB = "6f1c1c3e-3b0f-4a53-9a55-2f3d2a1f9b11";
 // Seed ids are any 8-4-4-4-12 hex (not RFC 4122 v4): z.guid() must accept them.
 const SEED_ID = "c1000000-0000-0000-0000-0000000000d1";
@@ -70,5 +74,34 @@ describe("getKudoDetail", () => {
     expect(await getKudoDetail(SEED_ID, fakeClient(SUB, override).client)).toEqual({ status: "error" });
     expect(errorSpy).toHaveBeenCalledTimes(1);
     expect(String(errorSpy.mock.calls[0][0])).toMatch(/^\[kudos\] kudo_detail /);
+  });
+
+  describe("with the default client (as the page calls it)", () => {
+    // Block body: a function returned from beforeEach is run as a teardown, which would call the mock again.
+    beforeEach(() => {
+      createServerClient.mockReset();
+    });
+
+    it("is not_found for a malformed id without creating a client", async () => {
+      expect(await getKudoDetail("not-a-uuid")).toEqual({ status: "not_found" });
+      expect(createServerClient).not.toHaveBeenCalled();
+    });
+
+    it("is error and logs server-side when the client cannot be created (broken env)", async () => {
+      createServerClient.mockImplementation(async () => {
+        throw new Error("Missing Supabase env");
+      });
+      expect(await getKudoDetail(SEED_ID)).toEqual({ status: "error" });
+      expect(createServerClient).toHaveBeenCalledOnce();
+      expect(errorSpy).toHaveBeenCalledTimes(1);
+      expect(String(errorSpy.mock.calls[0][0])).toMatch(/^\[kudos\] kudo_detail /);
+    });
+
+    it("queries through the client it creates", async () => {
+      const { client, rpc } = fakeClient(SUB);
+      createServerClient.mockResolvedValue(client);
+      expect((await getKudoDetail(SEED_ID)).status).toBe("ok");
+      expect(rpc).toHaveBeenCalledExactlyOnceWith("kudo_detail", { p_id: SEED_ID });
+    });
   });
 });

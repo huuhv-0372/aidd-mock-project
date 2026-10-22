@@ -31,5 +31,19 @@
   "vars": {
     "EVENT_START_AT": "2026-10-16T09:00:00+07:00",
     "AWARDS_CEREMONY_AT": "2026-12-26T18:30:00+07:00"
+  },
+  // Worker Previews (PR branches via `wrangler preview`) inherit nothing from production: vars and
+  // bindings must be repeated here. Supabase URL/publishable key go in the Previews Base config on
+  // the dashboard (or `wrangler preview base-config secret put`), not in this file.
+  // WORKER_SELF_REFERENCE is left out: Previews limit service bindings, and OpenNext only calls it
+  // for revalidation queues / `res.revalidate`, which the default config here does not use.
+  "previews": {
+    "vars": {
+      "EVENT_START_AT": "2026-10-16T09:00:00+07:00",
+      "AWARDS_CEREMONY_AT": "2026-12-26T18:30:00+07:00"
+    },
+    "images": {
+      "binding": "IMAGES"
+    }
   }
 }

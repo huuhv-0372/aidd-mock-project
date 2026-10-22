@@ -100,6 +100,8 @@ describe("parseKudoContent: blocks", () => {
     expect(parseKudoContent("")).toEqual([]);
   });
 
+  // `3.` continues the running list, so it stays an empty item (the serializer's form for an empty editor item; the
+  // number still shows as the marker). A marker-only line that does not continue a list is text: see the B2 tests.
   it("groups consecutive numbered lines into one ordered list", () => {
     expect(parseKudoContent("1. a\n2. **b**\n3.")).toEqual([
       { type: "list", start: 1, items: [[p(t("a"))], [p({ type: "strong", children: [t("b")] })], []] },

@@ -7,27 +7,35 @@ const ORIGIN = "https://saa.example";
 const KUDO = "/sun-kudos/c1000000-0000-0000-0000-000000000003";
 const LOGIN_ERROR = `${ORIGIN}/login?error=auth_failed`;
 
-const mocks = vi.hoisted(() => ({ exchange: vi.fn(), signOut: vi.fn() }));
+const mocks = vi.hoisted(() => ({ exchange: vi.fn(), signOut: vi.fn(), cookieSet: vi.fn() }));
+vi.mock("next/headers", () => ({ cookies: async () => ({ set: mocks.cookieSet }) }));
 vi.mock("@/lib/supabase/server", () => ({
   createSupabaseServerClient: async () => ({
     auth: { exchangeCodeForSession: mocks.exchange, signOut: mocks.signOut },
   }),
 }));
 
-function callback(cookie: string | null, query = "code=abc"): NextRequest {
+function callback(cookie: string | null, query = "code=abc", origin = ORIGIN): NextRequest {
   const headers = new Headers();
   if (cookie !== null) headers.set("cookie", `${POST_LOGIN_NEXT_COOKIE}=${encodeURIComponent(cookie)}`);
-  return new NextRequest(`${ORIGIN}/auth/callback?${query}`, { headers });
+  return new NextRequest(`${origin}/auth/callback?${query}`, { headers });
 }
 
-/** The Set-Cookie that clears the post-login cookie: empty, expired, same path as when it was set. */
-function expectNextCookieCleared(res: Response) {
-  const header = res.headers.getSetCookie().find((c) => c.startsWith(`${POST_LOGIN_NEXT_COOKIE}=`));
-  expect(header).toBeDefined();
-  expect(header).toMatch(new RegExp(`^${POST_LOGIN_NEXT_COOKIE}=;`));
-  expect(header).toMatch(/Max-Age=0/i);
-  expect(header).toMatch(/Path=\//i);
-  expect(header).toMatch(/HttpOnly/i);
+/**
+ * The clear goes through the cookies() store (Next merges it into the response, keeping Max-Age=0), never
+ * through response.cookies: once the store is written Next re-parses the response's own Set-Cookie and drops
+ * Max-Age=0 (real-runtime proof: tests/e2e/kudo-detail-login-next.spec.ts). Same attributes as when it was set.
+ */
+function expectNextCookieCleared(res: Response, secure = false) {
+  expect(mocks.cookieSet).toHaveBeenCalledExactlyOnceWith(POST_LOGIN_NEXT_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure,
+    path: "/",
+    maxAge: 0,
+  });
+  const own = res.headers.getSetCookie().filter((c) => c.startsWith(`${POST_LOGIN_NEXT_COOKIE}=`));
+  expect(own, "no second, response-level Set-Cookie that Next would re-parse").toEqual([]);
 }
 
 describe("auth callback: post-login next", () => {
@@ -36,13 +44,31 @@ describe("auth callback: post-login next", () => {
     errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     mocks.exchange.mockReset().mockResolvedValue({ data: { user: { email: "a@sun-asterisk.com" } }, error: null });
     mocks.signOut.mockReset().mockResolvedValue({ error: null });
+    mocks.cookieSet.mockReset();
   });
   afterEach(() => errorSpy.mockRestore());
 
   it("redirects to the stored Kudo after sign-in and clears the cookie", async () => {
     const res = await GET(callback(KUDO));
+    expect(mocks.exchange).toHaveBeenCalledExactlyOnceWith("abc");
     expect(res.headers.get("location")).toBe(`${ORIGIN}${KUDO}`);
     expectNextCookieCleared(res);
+  });
+
+  it("exchanges the query code and redirects on the request's own origin", async () => {
+    const other = "http://localhost:3100";
+    const res = await GET(callback(KUDO, "code=other-code", other));
+    expect(mocks.exchange).toHaveBeenCalledExactlyOnceWith("other-code");
+    expect(res.headers.get("location")).toBe(`${other}${KUDO}`);
+  });
+
+  it("clears the cookie with Secure in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    try {
+      expectNextCookieCleared(await GET(callback(KUDO)), true);
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it("falls back to / without a cookie (and still clears it)", async () => {

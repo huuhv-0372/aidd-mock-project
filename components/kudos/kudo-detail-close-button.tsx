@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
 import { LOGIN_PATH } from "@/lib/auth/constants";
 import { SUN_KUDOS_PATH } from "@/lib/navigation/routes";
+import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 
 type NavigationEntryLike = { url: string | null; index: number };
 type NavigationLike = { currentEntry: NavigationEntryLike | null; entries(): NavigationEntryLike[] };
@@ -50,7 +50,7 @@ export function KudoDetailCloseButton({ label }: { label: string }) {
     <button
       type="button"
       onClick={close}
-      className={`inline-flex min-h-14 min-w-11 cursor-pointer items-center rounded p-4 text-base leading-6 font-bold tracking-[0.15px] text-login-bg hover:bg-black/5 motion-safe:transition-colors motion-safe:duration-200 ${FOCUS_RING}`}
+      className={`inline-flex min-h-14 min-w-11 cursor-pointer items-center rounded p-4 text-base leading-6 font-bold tracking-[0.15px] text-login-bg hover:bg-black/5 motion-safe:transition-colors motion-safe:duration-200 ${KUDO_CARD_FOCUS_RING}`}
     >
       {label}
     </button>

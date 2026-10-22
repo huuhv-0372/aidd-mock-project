@@ -57,7 +57,9 @@ describe("writeKudoSchema", () => {
     ["x".repeat(5001), false],
     ["", false],
     ["  \n  ", false],
-    [">", false], // a lone quote marker has no text
+    // A quote marker that quotes nothing is text on the card and the detail page alike (kudoPlainText), so a hand-made
+    // lone `>` counts as content. The editor never writes one: the serializer drops an empty quote, so that is "" above.
+    [">", true],
   ])("content case %#", (content, ok) => {
     expect(parse({ content }).success).toBe(ok);
   });
