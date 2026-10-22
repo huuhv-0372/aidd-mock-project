@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
 import type { Locale } from "@/lib/i18n/locales";
 import type { KudoFeedCursor, KudoRow } from "@/lib/kudos/kudo-types";
-import type { loadMoreKudos } from "@/lib/kudos/load-more-kudos-action";
+import type { KudosFeedPage } from "@/lib/kudos/get-kudos-board-data";
 import type { KudosFilters } from "@/lib/validation/kudos";
 import { KudoPostCard, type KudoPostCardCopy } from "./kudo-post-card";
 
@@ -15,6 +15,13 @@ export type KudosFeedCopy = {
   error: string; // not from Figma
   retry: string; // not from Figma
 };
+
+/** Fetches the page after `cursor`. The board passes its Server Action; the profile passes a closure over its own action. */
+export type KudosFeedLoadMore = (input: {
+  cursor: KudoFeedCursor;
+  hashtag?: string;
+  department?: string;
+}) => Promise<KudosFeedPage | { error: "generic" }>;
 
 type Status = "idle" | "loading" | "error";
 
@@ -38,7 +45,7 @@ export function KudosFeedList({
   initialItems: readonly KudoRow[];
   initialCursor: KudoFeedCursor | null;
   filters: KudosFilters;
-  loadMore: typeof loadMoreKudos;
+  loadMore: KudosFeedLoadMore;
   locale: Locale;
   copy: KudosFeedCopy;
   cardCopy: KudoPostCardCopy;

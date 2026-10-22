@@ -26,7 +26,7 @@ export function kudoDetailHref(id: string): string {
   return `${SUN_KUDOS_PATH}/${encodeURIComponent(id)}`;
 }
 
-/** Profile page of a Sunner (route not built yet: resolves to 404 until the profile plan lands). */
+/** Profile page of another Sunner (`app/[locale]/profile/[id]`); the caller's own id redirects to PROFILE_PATH. */
 export function profileHref(id: string): string {
   return `${PROFILE_PATH}/${encodeURIComponent(id)}`;
 }

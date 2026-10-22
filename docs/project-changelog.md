@@ -4,6 +4,24 @@ Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi ti�
 
 ## 2026-10-22
 
+### Thêm: trang Hồ sơ (`/profile` của mình, `/profile/<id>` của người khác)
+
+- Hai route mới `app/[locale]/profile/page.tsx` (Figma 362:5037) và `app/[locale]/profile/[id]/page.tsx` (Figma 362:5097), cùng một `ProfileView` (`components/profile/`). Chỉ người đã đăng nhập (không vào `PUBLIC_PATHS`): khách về `/login` không kèm `next`. `/profile/<id của mình>` (mọi kiểu chữ) về `/profile`; `id` sai dạng (`profileIdSchema`, `z.guid()`, kiểm trước mọi truy vấn), không có hồ sơ, hoặc người gọi không có dòng hồ sơ thì HTTP 404; đọc lỗi thì một dòng chung trong khung. Tiêu đề tab "Hồ sơ của tôi | SAA 2025" / "My profile | SAA 2025" và "{tên} | SAA 2025". Header và footer đều đánh dấu "Sun* Kudos" đang chọn, không có widget Viết KUDOS. Tên người trên thẻ Kudo và danh sách người nhận quà (đã trỏ tới `profileHref`) nay mở trang này thay vì 404.
+- Giao diện: hero (avatar, tên, phòng ban, Hero badge, sao), 6 ô icon xám (chưa có Secret Box). Của mình: thẻ thống kê (`KudosStatsPanel` thêm prop `spacious`) và phần KUDOS có dropdown Đã nhận (mặc định) / Đã gửi. Của người khác: thanh "Gửi lời cám ơn và ghi nhận tới {tên}" mở Viết Kudo với người nhận điền sẵn, và chữ tĩnh "Đã nhận: N Kudos"; không có đường nào tới danh sách đã gửi của họ. Danh sách dùng `KudoPostCard`, cuộn vô hạn 10 thẻ mỗi lượt (Server Action `loadMoreProfileKudos`).
+- Mã: `lib/profiles/` (`get-profile-page-data.ts` bọc `cache()`, `fetch-profile-kudos.ts`, `load-more-profile-kudos-action.ts`, `profile-types.ts`), schema trong `lib/validation/profile.ts`, chữ ở `messages/{vi,en}/profile.ts` (khoá `profile` đã vào `Dictionary`; một số dòng là bản nhóm tự dịch, `not from Figma`).
+- Supabase (chạy tay): `supabase/migrations/20261022100000_create_profile_rpcs.sql` (kèm `rollbacks/…_down.sql`, `verify/…_verify.sql`). Thêm hai RPC chỉ đọc, `SECURITY DEFINER`, `search_path` rỗng, kiểm quy tắc tài khoản trước tiên, chỉ `authenticated`: `profile_card(p_id)` (đối tượng người của board, không email; `null` cho `id` không có) và `kudos_profile_feed(p_profile, p_direction, cursor, p_limit)` (qua `kudos_rows` nên Kudo ẩn danh vẫn giấu người gửi). `received` đúng cho mọi hồ sơ; **`sent` chỉ trả cho hồ sơ của chính người gọi**, hồ sơ khác 0 dòng, vì danh sách đã gửi của người khác sẽ lộ họ đã gửi Kudo ẩn danh nào. **Chủ dự án đã chạy trên Supabase thật ngày 2026-10-22, file verify 14/14 PASS** (`plans/261021-profile/clarifications.md`).
+- Thay đổi dùng chung:
+  - `openComposer(options?: { recipient })` điền sẵn người nhận cho modal Viết Kudo (`components/kudos-compose/*`, `normalize-composer-options.ts`); không tham số thì như cũ, và mọi nơi gọi cũ (nút A.1, widget, panel Thể lệ) không đổi hành vi.
+  - `components/kudos/kudos-kv-backdrop.tsx` (kèm `KUDOS_PAGE_ALERT_CARD`) tách khỏi banner board và `kudo-detail-layout.tsx`; nay dùng chung cho banner, Xem Kudo và Hồ sơ.
+  - `KudosFeedList` nhận kiểu `KudosFeedLoadMore`; `kudo-person.tsx` xuất `HeroTitle`, `Stars` và có thêm kiểu căn tooltip `page`; `readBlock` ở `lib/kudos/get-kudos-board-data.ts` được export.
+  - **Đổi hành vi trên board (quyết định chủ dự án 2026-10-22):** biểu tượng bút chì cạnh tiêu đề thẻ Kudo (`KudoPostCard`) nay chỉ hiện trên Kudo do chính người xem gửi (`is_mine`), cả ở board lẫn Hồ sơ; trước đây hiện trên mọi thẻ.
+- Test: E2E `tests/e2e/profile.spec.ts` (31 ca; `support/profile-contract.ts`, `support/profile-fixtures.mjs` phản chiếu hai RPC, nối vào `fake-supabase-server.mjs`; `kudo-hearts-fake.mjs` phủ trạng thái tim cho cả `kudos_profile_feed`); unit `get-profile-page-data`, `load-more-profile-kudos-action`, `normalize-composer-options`. Lần chạy cuối (do controller báo): lint 0, tsc 0, vitest 826/826, E2E 298/298, Worker gzip 2259 KiB.
+- Giới hạn đã biết:
+  - E2E dùng Supabase giả nên không bắt được lỗi SQL: môi trường mới phải chạy migration rồi file verify (mọi dòng PASS).
+  - Khung "Profile người khác" chưa có node MoMorph, dựng theo ảnh chủ dự án gửi; hai trang dùng chung một dải key visual (gradient 6deg đo từ ảnh trang của mình), chủ dự án chấp nhận lệch nhỏ. Dòng "Bạn đã xem hết Kudos." giữ như board dù Figma không có.
+  - Chưa làm: ô tìm hồ sơ ở banner, Secret Box (nên hàng icon luôn xám), hồ sơ không có chỗ sửa thông tin.
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`, `docs/project-changelog.md`. Spec F001 không đổi (cổng thời gian, `PUBLIC_PATHS` và ngoại lệ `next` không đổi).
+
 ### Sửa: vòng review trang Xem Kudo (renderer, bảng, cookie `next`, focus, font)
 
 - Sửa (trung bình): `lib/kudos/kudo-content-blocks.ts` dựng `URL` cho mọi đích liên kết rồi bắt lỗi, nên mỗi đích không hợp lệ tốn gấp khoảng 25 lần đích hợp lệ trên mỗi lượt xem (nội dung không tin cậy). Nay gọi `URL.canParse` trước, chỉ dựng `URL` khi đích parse được.

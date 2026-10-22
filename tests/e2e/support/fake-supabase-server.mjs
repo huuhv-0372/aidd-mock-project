@@ -8,6 +8,7 @@ import { kudoDetailRefusal, kudosCatalog, kudosRpc } from "./kudos-fixtures.mjs"
 import { applyKudoDetailMode, kudoDetailControl } from "./kudo-detail-fake.mjs";
 import { handleStorage, hashtagsFailing, holdHashtagCatalog, kudoControl, mergeCreatedKudos, writeKudoRpc } from "./write-kudo-fixtures.mjs";
 import { applyKudoHearts, kudoHeartControl, setKudoHeartRpc } from "./kudo-hearts-fake.mjs";
+import { profileRpc } from "./profile-fixtures.mjs";
 
 const PORT = Number(process.env.E2E_FAKE_SUPABASE_PORT || 54398);
 const HOST = "127.0.0.1";
@@ -110,6 +111,8 @@ async function handleRest(req, res, url) {
     }
     const written = await writeKudoRpc(fn, body, sub); // create_kudo, kudos_search_sunners (write-kudo-fixtures.mjs)
     if (written) return send(res, written.status, written.body);
+    const profiled = profileRpc(fn, body, sub); // profile_card, kudos_profile_feed (profile-fixtures.mjs), before the board's RPCs
+    if (profiled !== undefined) return send(res, 200, applyKudoHearts(fn, sub, profiled));
     const refusal = fn === "kudo_detail" ? kudoDetailRefusal(body.p_id) : undefined; // Postgres: a non-uuid p_id is an error, not "no row"
     if (refusal) return send(res, refusal.status, refusal.body);
     const result = kudosRpc(fn, body, sub);

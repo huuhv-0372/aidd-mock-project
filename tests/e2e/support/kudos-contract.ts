@@ -20,6 +20,7 @@ export const SEL = {
   spotlightNode: "spotlight-node", // link href /sun-kudos/{last_kudo_id}; data-match="true" on search hits
   allKudos: "all-kudos", // heading "ALL KUDOS"
   kudoCard: "kudo-card", // data-kudo-id; children below
+  kudoEditIcon: "kudo-edit-icon", // pencil beside the title: only on a Kudo the viewer sent (owner decision 2026-10-22)
   stats: "kudos-stats", // sidebar: five label + value rows
   gifts: "gift-recipients", // heading "10 SUNNER NHẬN QUÀ MỚI NHẤT"
   giftItem: "gift-recipient",

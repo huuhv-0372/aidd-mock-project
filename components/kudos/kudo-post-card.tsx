@@ -71,8 +71,8 @@ export function KudoPostCard({
           <p data-testid="kudo-title" className="min-w-0 flex-1 text-center text-base leading-6 font-bold tracking-[0.5px] text-login-bg">
             {kudo.title}
           </p>
-          {/* mm:I3127:21871;2234:33040 */}
-          <span aria-hidden className="kudos-icon kudos-icon-pen size-8 text-login-bg" />
+          {/* mm:I3127:21871;2234:33040 - only on a Kudo the viewer sent (owner decision 2026-10-22) */}
+          {kudo.is_mine && <span aria-hidden data-testid="kudo-edit-icon" className="kudos-icon kudos-icon-pen size-8 text-login-bg" />}
         </div>
         {/* mm:I3127:21871;662:11382 */}
         <Link

@@ -39,15 +39,26 @@ function StatRow({ label, value, locale, badge }: { label: string; value: number
 /*
  * Personal statistics (Figma D.1 `2940:13489`, 422px): five label + number rows, a divider between the hearts and
  * the Secret Box rows, and the "Mở Secret Box" button. The button is display-only for now (the Secret Box plan wires it):
- * `aria-disabled`, no handler, and it looks the same as an enabled button.
+ * `aria-disabled`, no handler, and it looks the same as an enabled button. The board card pads 24; the Profile card (Figma
+ * 362:5073, 439px tall) pads 40, so it passes `spacious` (24 on phones, where 40 would squeeze the label column, 40 from md).
  */
-export function KudosStatsPanel({ stats, locale, copy }: { stats: KudosMyStats | null; locale: Locale; copy: KudosStatsCopy }) {
+export function KudosStatsPanel({
+  stats,
+  locale,
+  copy,
+  spacious = false,
+}: {
+  stats: KudosMyStats | null;
+  locale: Locale;
+  copy: KudosStatsCopy;
+  spacious?: boolean;
+}) {
   const [received, sent, hearts, opened, unopened] = copy.labels;
   return (
     // mm:2940:13489
     <div
       data-testid="kudos-stats"
-      className="box-border flex w-full flex-col gap-4 rounded-[17px] border border-home-border bg-kudos-panel p-6 font-montserrat"
+      className={`box-border flex w-full flex-col gap-4 rounded-[17px] border border-home-border bg-kudos-panel p-6 font-montserrat${spacious ? " md:p-10" : ""}`}
     >
       {stats ? (
         <>

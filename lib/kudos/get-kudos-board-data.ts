@@ -46,7 +46,7 @@ export type KudosBoardData = {
 type RpcResult = { data: unknown; error: unknown };
 
 /** Validates one query result; any failure is logged in full server-side and becomes `null`. */
-async function readBlock<T>(
+export async function readBlock<T>(
   name: string,
   query: () => PromiseLike<RpcResult>,
   parse: (data: unknown) => { success: true; data: T } | { success: false; error: unknown },

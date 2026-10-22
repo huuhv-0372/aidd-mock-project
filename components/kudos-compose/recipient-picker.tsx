@@ -11,6 +11,8 @@ type Props = {
   copy: WriteKudoCopy;
   searchSunners: WriteKudoActions["searchSunners"];
   value: RecipientChoice | null;
+  /** Text shown on mount for a recipient chosen beforehand: no search runs and the list stays closed. */
+  initialText?: string;
   onChange: (value: RecipientChoice | null) => void;
   /** Leaving the field: the form decides whether to show the required error. */
   onBlur: () => void;
@@ -32,8 +34,8 @@ const OPTION =
  * Editing the text afterwards drops the choice again, so the form only ever holds a recipient the user actually picked.
  * No match (or a failed search) shows a muted status row in the dropdown: not an option, announced politely.
  */
-export function RecipientPicker({ copy, searchSunners, value, onChange, onBlur, onTypedChange, error }: Props) {
-  const [text, setText] = useState("");
+export function RecipientPicker({ copy, searchSunners, value, initialText = "", onChange, onBlur, onTypedChange, error }: Props) {
+  const [text, setText] = useState(initialText);
   const [items, setItems] = useState<SunnerOption[]>([]);
   const [open, setOpen] = useState(false);
   const [noResult, setNoResult] = useState(false);
