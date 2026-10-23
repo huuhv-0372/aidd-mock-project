@@ -2,7 +2,8 @@
 
 import { useEffect, type RefObject } from "react";
 import { AnonymousToggle } from "./anonymous-toggle";
-import { CloseIcon, SendIcon } from "./compose-icons";
+import type { KudoRow } from "@/lib/kudos/kudo-types";
+import { CloseIcon, SaveIcon, SendIcon } from "./compose-icons";
 import { BUTTON_PRIMARY, BUTTON_SECONDARY, ERROR_TEXT } from "./compose-field-styles";
 import { HashtagPicker } from "./hashtag-picker";
 import { ImagePicker } from "./image-picker";
@@ -11,7 +12,7 @@ import { KudoTitleField } from "./kudo-title-field";
 import { RecipientPicker } from "./recipient-picker";
 import { useWriteKudoForm } from "./use-write-kudo-form";
 import type { WriteKudoCopy } from "./write-kudo-copy";
-import type { RecipientChoice, WriteKudoActions, WriteKudoLocale } from "./write-kudo-types";
+import type { EditableKudo, RecipientChoice, WriteKudoActions, WriteKudoLocale } from "./write-kudo-types";
 
 type Props = {
   titleId: string;
@@ -20,7 +21,10 @@ type Props = {
   initialRecipient: RecipientChoice | null;
   actions: WriteKudoActions;
   serializeContent: (doc: unknown) => string;
+  /** Edit mode (plans/261022-edit-kudo): the Kudo to pre-fill. */
+  initialKudo: EditableKudo | null;
   onSent: (id: string) => void;
+  onSaved: (kudo: KudoRow) => void;
   onClose: () => void;
   /** Mirrors "a Kudo is being sent" so the dialog can refuse Esc / backdrop closes meanwhile. */
   busyRef: RefObject<boolean>;
@@ -29,12 +33,18 @@ type Props = {
 /*
  * Body of the Viết Kudo modal (Figma ihQ26W78P2, mm:520:11647): 752px cream card, 40px padding (12px panel + 28px here),
  * 32px between blocks. On screens under 1040px high (`short:`) the padding drops to 24px, the gaps to 20/16px and the
- * title to one 24px line, so the form fits a 900px-high screen; this element is the only part that scrolls.
+ * title to one 24px line, so the form fits a 900px-high screen; this element is the only part that scrolls. The edit
+ * heading keeps 32px there (owner screenshot of 419VXmMy6I: "Chỉnh sửa bài viết của bạn" ~439x31 at 32px bold).
  * It is mounted only while the dialog is open, so closing (Hủy / Esc / backdrop) throws the whole form state away.
+ * Edit mode (MoMorph 419VXmMy6I, same frame with another heading): pre-filled, the recipient and the anonymous state locked,
+ * Lưu + save icon in place of Gửi.
  */
-export function WriteKudoForm({ titleId, copy, locale, initialRecipient, actions, serializeContent, onSent, onClose, busyRef }: Props) {
-  const form = useWriteKudoForm({ initialRecipient, copy, actions, serializeContent, onSent, onClose });
+export function WriteKudoForm({
+  titleId, copy, locale, initialRecipient, actions, serializeContent, initialKudo, onSent, onSaved, onClose, busyRef,
+}: Props) {
+  const form = useWriteKudoForm({ initialRecipient, copy, actions, serializeContent, initialKudo, onSent, onSaved, onClose });
   const { errors, touch } = form;
+  const editing = initialKudo !== null;
 
   useEffect(() => {
     busyRef.current = form.sending;
@@ -43,14 +53,15 @@ export function WriteKudoForm({ titleId, copy, locale, initialRecipient, actions
   return (
     <div className="flex min-h-0 flex-col gap-8 overflow-y-auto px-5 py-2 font-montserrat [scrollbar-width:thin] sm:px-10 sm:py-7 short:gap-5 short:py-3">
       {/* mm:I520:11647;520:9870 */}
-      <h2 id={titleId} className="text-center text-2xl leading-8 font-bold sm:text-[32px] sm:leading-10 short:text-2xl short:leading-8">
-        {copy.title}
+      <h2 id={titleId} className={`text-center text-2xl leading-8 font-bold sm:text-[32px] sm:leading-10 ${editing ? "" : "short:text-2xl short:leading-8"}`}>
+        {editing ? copy.edit.title : copy.title}
       </h2>
       <RecipientPicker
         copy={copy}
         searchSunners={actions.searchSunners}
         value={form.recipient}
-        initialText={initialRecipient?.name}
+        initialText={initialKudo?.recipient.name ?? initialRecipient?.name}
+        locked={editing}
         onChange={form.setRecipient}
         onBlur={() => touch("recipient")}
         onTypedChange={form.setRecipientTyped}
@@ -63,6 +74,9 @@ export function WriteKudoForm({ titleId, copy, locale, initialRecipient, actions
           copy={copy}
           searchSunners={actions.searchSunners}
           error={errors.content}
+          initialContent={form.initialDoc}
+          counter={copy.editor.counter.replace("{count}", String(form.contentLength))}
+          counterOver={form.contentTooLong}
           onContentChange={form.onContentChange}
           onBlur={() => touch("content")}
           onEditorReady={form.onEditorReady}
@@ -92,6 +106,7 @@ export function WriteKudoForm({ titleId, copy, locale, initialRecipient, actions
         onCheckedChange={form.setAnonymous}
         alias={form.alias}
         onAliasChange={form.setAlias}
+        locked={editing}
       />
       {/* mm:I520:11647;520:9905 */}
       <div className="flex flex-col gap-3">
@@ -108,8 +123,8 @@ export function WriteKudoForm({ titleId, copy, locale, initialRecipient, actions
           </button>
           {/* mm:I520:11647;520:9907 */}
           <button type="button" onClick={form.submit} disabled={!form.canSend} aria-busy={form.sending} className={BUTTON_PRIMARY}>
-            {copy.actions.send}
-            <SendIcon />
+            {editing ? copy.actions.save : copy.actions.send}
+            {editing ? <SaveIcon /> : <SendIcon />}
           </button>
         </div>
       </div>

@@ -1,13 +1,13 @@
 "use server";
 
-import { inspectKudoImage, KUDO_IMAGE_BUCKET, type InspectedKudoImage } from "@/lib/kudos/kudo-image-file";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
-  fieldErrorsFromIssues,
-  writeKudoSchema,
-  type KudoField,
-  type KudoFieldErrors,
-} from "@/lib/validation/write-kudo";
+  inspectKudoImages,
+  kudoImagePublicUrls,
+  removeKudoImages,
+  uploadKudoImages,
+} from "@/lib/kudos/upload-kudo-images";
+import { fieldErrorsFromIssues, fieldOfRpcError, writeKudoSchema, type KudoFieldErrors } from "@/lib/validation/write-kudo";
 
 export type CreateKudoResult =
   | { ok: true; id: string }
@@ -15,18 +15,8 @@ export type CreateKudoResult =
   | { ok: false; error: "server" };
 
 type ServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
-type ReadyImage = Extract<InspectedKudoImage, { ok: true }>;
 
 const SERVER_ERROR = { ok: false, error: "server" } as const;
-// `create_kudo` raises errcode 22023 with one of these short codes as the message (supabase phase 02).
-const RPC_FIELD_BY_CODE: Record<string, KudoField> = {
-  invalid_recipient: "recipient",
-  invalid_title: "title",
-  invalid_content: "content",
-  invalid_hashtags: "hashtags",
-  invalid_images: "images",
-  invalid_alias: "anonymousName",
-};
 
 /** FormData fields: recipientId, title, content (Markdown), hashtags (repeated slug), isAnonymous ("true"), anonymousName, images (repeated File). */
 function readForm(formData: FormData) {
@@ -43,38 +33,6 @@ function readForm(formData: FormData) {
     anonymousName: text("anonymousName"),
     images: formData.getAll("images"),
   };
-}
-
-async function removeUploaded(client: ServerClient, paths: string[]): Promise<void> {
-  if (paths.length === 0) return;
-  try {
-    const { error } = await client.storage.from(KUDO_IMAGE_BUCKET).remove(paths);
-    if (error) console.error("[kudos] cleanup of uploaded images failed", error);
-  } catch (err) {
-    console.error("[kudos] cleanup of uploaded images failed", err);
-  }
-}
-
-/**
- * Uploads every image as a flat `{uuid}.{ext}` object; on any failure removes the ones already stored and returns null.
- * The name must never carry the sender: the public URL of an anonymous Kudo's image would reveal who wrote it.
- * Ownership is `storage.objects.owner_id`, which Storage fills from the caller's JWT and `create_kudo` checks.
- */
-async function uploadImages(client: ServerClient, images: ReadyImage[]): Promise<string[] | null> {
-  const storage = client.storage.from(KUDO_IMAGE_BUCKET);
-  const paths = images.map((image) => `${crypto.randomUUID()}.${image.ext}`);
-  const results = await Promise.allSettled(
-    images.map(async (image, index) => {
-      // The multipart part type comes from the Blob (set to the sniffed type); contentType states the same for any other body.
-      const { error } = await storage.upload(paths[index], image.body, { contentType: image.mime, upsert: false });
-      if (error) throw error;
-    }),
-  );
-  const failure = results.find((result): result is PromiseRejectedResult => result.status === "rejected");
-  if (!failure) return paths;
-  console.error("[kudos] image upload failed", failure.reason);
-  await removeUploaded(client, paths.filter((_, index) => results[index].status === "fulfilled"));
-  return null;
 }
 
 /**
@@ -105,21 +63,16 @@ export async function createKudo(formData: FormData): Promise<CreateKudoResult> 
       return SERVER_ERROR;
     }
 
-    // One image at a time: each is read whole and cleaned, so at most one full file is held while inspecting.
-    const images: ReadyImage[] = [];
-    for (const file of input.images) {
-      const inspected = await inspectKudoImage(file);
-      if (!inspected.ok) {
-        console.error("[kudos] create rejected an image", inspected.reason);
-        return { ok: false, error: "validation", fields: { images: inspected.reason } };
-      }
-      images.push(inspected);
+    const inspected = await inspectKudoImages(input.images);
+    if (!inspected.ok) {
+      console.error("[kudos] create rejected an image", inspected.reason);
+      return { ok: false, error: "validation", fields: { images: inspected.reason } };
     }
 
-    const stored = await uploadImages(supabase, images);
+    const stored = await uploadKudoImages(supabase, inspected.images);
     if (!stored) return SERVER_ERROR;
     uploaded = stored;
-    const imageUrls = stored.map((path) => supabase.storage.from(KUDO_IMAGE_BUCKET).getPublicUrl(path).data.publicUrl);
+    const imageUrls = kudoImagePublicUrls(supabase, stored);
 
     // From here the transaction may commit even if we never hear back, so the images can only go on a definitive "no".
     rpcSent = true;
@@ -141,19 +94,16 @@ export async function createKudo(formData: FormData): Promise<CreateKudoResult> 
       console.error("[kudos] create_kudo failed", error);
       // Only a coded answer (SQLSTATE / PGRST) proves the database refused the Kudo. supabase-js reports a network
       // failure or timeout as an error without a code: the outcome is unknown, so the images stay.
-      if (error.code) await removeUploaded(supabase, uploaded);
-      const field =
-        error.code === "22023" && Object.hasOwn(RPC_FIELD_BY_CODE, error.message) ? RPC_FIELD_BY_CODE[error.message] : undefined;
-      return field
-        ? { ok: false, error: "validation", fields: { [field]: "invalid" } }
-        : SERVER_ERROR;
+      if (error.code) await removeKudoImages(supabase, uploaded);
+      const field = fieldOfRpcError(error);
+      return field ? { ok: false, error: "validation", fields: { [field]: "invalid" } } : SERVER_ERROR;
     }
     return { ok: true, id: data as string };
   } catch (err) {
     console.error("[kudos] create unexpected failure", err);
     // Before the RPC was sent no Kudo can reference the uploads, so they go. After it, the Kudo may exist: keep them.
     // (`client` is unset when it could not even be created, in which case nothing was uploaded.)
-    if (client && !rpcSent) await removeUploaded(client, uploaded);
+    if (client && !rpcSent) await removeKudoImages(client, uploaded);
     return SERVER_ERROR;
   }
 }

@@ -3,22 +3,29 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { KUDO_LIMITS } from "./write-kudo-types";
 
-export type AttachedImage = { id: string; file: File; url: string };
+/** One thumbnail. `file` is null for an image the Kudo already has (its `url` is the stored URL, not an object URL). */
+export type AttachedImage = { id: string; file: File | null; url: string };
 
 type Messages = { imageFormat: string; imageSize: string };
+
+const fromUrls = (urls: readonly string[]): AttachedImage[] => urls.map((url, index) => ({ id: `kept-${index}`, file: null, url }));
+const revoke = (image: AttachedImage) => image.file && URL.revokeObjectURL(image.url);
 
 /**
  * Images of one Kudo (F): up to 5 jpg/png/webp files <= 5 MB, previewed through object URLs that are revoked on remove
  * and on unmount. Only the browser MIME type and size are checked here; the server action sniffs the real bytes.
+ * Edit mode starts with the Kudo's stored `existing` URLs (in order, removable, never revoked); new files are appended,
+ * so the list always reads "kept images in order, then new ones in add order" - the order the server stores.
  */
-export function useImageAttachments(messages: Messages) {
-  const [images, setImages] = useState<AttachedImage[]>([]);
+export function useImageAttachments(messages: Messages, existing: readonly string[] = []) {
+  const [initial] = useState(() => fromUrls(existing));
+  const [images, setImages] = useState<AttachedImage[]>(initial);
   const [error, setError] = useState<string | null>(null);
-  const current = useRef<AttachedImage[]>([]);
+  const current = useRef<AttachedImage[]>(initial);
   const counter = useRef(0);
 
   useEffect(() => {
-    return () => current.current.forEach((image) => URL.revokeObjectURL(image.url));
+    return () => current.current.forEach(revoke);
   }, []);
 
   const add = useCallback(
@@ -45,7 +52,7 @@ export function useImageAttachments(messages: Messages) {
 
   const remove = useCallback((id: string) => {
     const gone = current.current.find((image) => image.id === id);
-    if (gone) URL.revokeObjectURL(gone.url);
+    if (gone) revoke(gone);
     current.current = current.current.filter((image) => image.id !== id);
     setImages(current.current);
     setError(null);

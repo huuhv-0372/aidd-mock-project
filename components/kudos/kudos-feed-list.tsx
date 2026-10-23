@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useKudosComposer } from "@/components/kudos-compose/kudos-composer-provider";
 import { FOCUS_RING } from "@/components/site-shell/shell-class-names";
 import type { Locale } from "@/lib/i18n/locales";
 import type { KudoFeedCursor, KudoRow } from "@/lib/kudos/kudo-types";
@@ -53,6 +54,7 @@ export function KudosFeedList({
   const [items, setItems] = useState<readonly KudoRow[]>(initialItems);
   const [cursor, setCursor] = useState<KudoFeedCursor | null>(initialCursor);
   const [status, setStatus] = useState<Status>("idle");
+  const { savedKudos } = useKudosComposer(); // a Kudo edited from its pencil shows its saved row here, with no reload
   const sentinel = useRef<HTMLDivElement>(null);
   const inFlight = useRef(false);
   const { hashtag, department } = filters;
@@ -97,7 +99,7 @@ export function KudosFeedList({
     // mm:2940:13482
     <div data-testid="kudos-feed" className="flex w-full flex-col gap-6">
       {items.map((kudo) => (
-        <KudoPostCard key={kudo.id} kudo={kudo} filters={filters} locale={locale} copy={cardCopy} />
+        <KudoPostCard key={kudo.id} kudo={savedKudos.get(kudo.id) ?? kudo} filters={filters} locale={locale} copy={cardCopy} />
       ))}
       <div ref={sentinel} aria-hidden className="h-px w-full" />
       {status === "loading" && (

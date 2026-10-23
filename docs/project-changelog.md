@@ -2,6 +2,29 @@
 
 Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi tiết mã nằm ở `git log`.
 
+## 2026-10-23
+
+### Thêm: Sửa Kudo (sửa Kudo mình đã gửi, issue #19)
+
+- Lối vào: biểu tượng bút chì cạnh tiêu đề `KudoPostCard` (chỉ hiện trên Kudo `is_mine`, ở board lẫn Hồ sơ; quyết định 2026-10-22) nay là nút thật `components/kudos/edit-kudo-button.tsx` (vùng bấm 44px, `aria-label` "Chỉnh sửa Kudo" / "Edit Kudo", vào được bằng Tab và Enter), gọi `useKudosComposer().openEditor(kudo)`. Chưa có lối sửa ở thẻ Highlight và trang Xem Kudo.
+- Modal Viết Kudo có chế độ sửa (`initialKudo: EditableKudo`, dựng bằng `to-editable-kudo.ts`): tiêu đề "Chỉnh sửa bài viết của bạn", nút Hủy + Lưu (EN "Edit your Kudo", "Save"). Điền sẵn tiêu đề, nội dung, hashtag, ảnh (URL giữ lại + file mới, tổng tối đa 5) và bí danh. Nội dung Markdown đã lưu đổi lại thành tài liệu Tiptap bằng `lib/kudos/kudo-content-editor-json.ts`, nghịch đảo chính xác của serializer (mở rồi Lưu không đổi gì thì Markdown gửi đi giống từng byte). **Người nhận bị khoá** (chỉ đọc, không gợi ý, không mũi tên) và **trạng thái ẩn danh bị khoá** (ô tích chỉ hiện); bí danh vẫn sửa được, để trống cũng được. Sau khi lưu, thẻ đổi tại chỗ: provider giữ bản ghi vừa lưu trong `savedKudos` (theo id), `KudosFeedList` hiện bản đó thay cho dòng đã dựng, kèm `router.refresh()`; tim, thời gian và vị trí giữ nguyên. Lỗi lưu thì modal vẫn mở với dòng `saveFailed` chung.
+- Máy chủ: Server Action `lib/kudos/update-kudo-action.ts` (`updateKudo`): kiểm phiên bằng `getClaims()`, validate bằng `updateKudoSchema` (zod strict ở `lib/validation/write-kudo.ts`: `kudoId`, `title`, `content`, `hashtags`, `anonymousName`, `keepImages`, `images`; không nhận người nhận hay `isAnonymous`), `keepImages` phải đúng dạng URL đối tượng `kudo-images` và nằm trên origin Supabase (`isOnSupabaseOrigin`, mới, ở `lib/validation/kudos.ts`), ảnh mới qua `lib/kudos/upload-kudo-images.ts` (tách từ `createKudo`, nay dùng chung), rồi gọi RPC `update_kudo`. Sau khi RPC thành công, ảnh bị bỏ được xoá khỏi Storage theo kiểu cố gắng hết sức (lỗi chỉ log, bản lưu vẫn giữ), rồi đọc lại dòng qua `kudo_detail`. Ảnh mới chỉ bị xoá khi chắc chắn Kudo không giữ chúng (lỗi trước khi gửi RPC, hoặc RPC trả lỗi có mã); Kudo không có và Kudo của người khác cùng trả `not_found`. Kết quả cho client: `ok` kèm dòng đã lưu, hoặc `validation` / `server` / `not_found`.
+- Supabase (chạy tay): `supabase/migrations/20261023100000_create_update_kudo_rpc.sql` (kèm `rollbacks/…_down.sql`, `verify/…_verify.sql`). Thêm RPC `update_kudo(p_id, p_title, p_content, p_hashtag_slugs, p_image_urls, p_anonymous_name) → text[]`: `SECURITY DEFINER`, `search_path` rỗng, chỉ `authenticated`; kiểm quy tắc tài khoản trước tiên, rồi khoá dòng Kudo của người gửi (`for update`; `id` không có và Kudo của người khác cùng `not_found`, không lộ Kudo có tồn tại), rồi mới kiểm trường (`invalid_title`, `invalid_content`, `invalid_hashtags`, `invalid_images`, `invalid_alias`). Không bao giờ đổi `sender_id`, `recipient_id`, `is_anonymous`, `created_at`, `heart_count`; thay hẳn hashtag và ảnh (vị trí 1..n theo thứ tự gửi lên); một ảnh hợp lệ khi đã là ảnh của chính Kudo này hoặc là đối tượng người gọi vừa tải lên. Trả về các URL ảnh bị bỏ mà không Kudo nào khác còn giữ, để ứng dụng xoá khỏi Storage. Rollback chỉ xoá hàm (bản đã lưu giữ nguyên; thiếu hàm thì mọi lần Lưu hiện lỗi chung). **Chủ dự án đã chạy trên Supabase thật ngày 2026-10-23, file verify 11/11 PASS** (`plans/261022-edit-kudo/clarifications.md`).
+- Thay đổi dùng chung, ảnh hưởng cả Viết Kudo:
+  - Bộ đếm "N/5.000" (EN "N/5,000") dưới ô soạn ở cả hai chế độ, đếm theo code point của Markdown đã serialize (cùng cách máy chủ đếm); vượt 5000 thì chuyển đỏ và khoá nút Gửi/Lưu. Chữ VI/EN đánh dấu `not from Figma` (ảnh khung sửa ghi "0/1.000", chủ dự án đã nâng giới hạn lên 5.000).
+  - Schema nội dung dùng chung (`content` trong `lib/validation/write-kudo.ts`) đổi `\r\n` và `\r` thành `\n` trước khi cắt và đếm, vì trình duyệt gửi chữ multipart với CRLF; áp cho cả `createKudo` lẫn `updateKudo`.
+  - Hàng bí danh có nhãn hiện sẵn bên trái ô nhập từ `sm` trở lên (dưới `sm` nhãn xếp trên ô), không dấu `*` vì bí danh không bắt buộc.
+  - Xoá hết hashtag thì hiện ngay "Không được để trống".
+  - `KudosFeedList` nay đọc `useKudosComposer()` nên cần `KudosComposerProvider` ở trên; mọi chỗ dựng (All Kudos của board, danh sách Hồ sơ) đã có sẵn.
+- Test: E2E `tests/e2e/edit-kudo.spec.ts` (18 ca; `support/edit-kudo-contract.ts`; RPC `update_kudo` giả phản chiếu SQL trong `support/write-kudo-fixtures.mjs`); unit `kudo-content-editor-json`, `update-kudo-action`, `update-kudo-validation`. Lần chạy cuối (do controller báo): lint 0, tsc 0, vitest 922/922, E2E 317/317, Worker gzip 2258 KiB.
+- Giới hạn đã biết:
+  - E2E dùng Supabase giả nên không bắt được lỗi SQL: môi trường mới phải chạy migration rồi file verify (mọi dòng PASS).
+  - Hai tab cùng sửa một Kudo: lần lưu sau thắng (không có kiểm phiên bản).
+  - Trang Xem Kudo hiện một liên kết có nhãn là mention thành chữ thường; validator nội dung không soi liên kết mà nhãn chứa mention (không có đường render nào tới đó).
+  - `savedKudos` không hết hạn trong vòng đời provider; chưa có dấu "đã chỉnh sửa" trên thẻ.
+  - `update_kudo` cũng không kiểm đích liên kết trong `content` (như `create_kudo`): chỉ zod của Server Action kiểm, và việc chặn vẫn ở phía đọc.
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`, `docs/project-changelog.md`. Spec F001 không đổi.
+
 ## 2026-10-22
 
 ### Sửa: dropdown Người nhận thiếu avatar/phòng ban, avatar Kudo ẩn danh (issue #17)

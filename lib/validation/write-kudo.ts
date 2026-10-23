@@ -52,6 +52,8 @@ function hasOnlySafeLinks(markdown: string): boolean {
 
 const content = z
   .string()
+  // Browsers send multipart text with CRLF line breaks: store LF (what the editor writes), counted after this.
+  .overwrite((markdown) => markdown.replace(/\r\n?/g, "\n"))
   .trim()
   // `abort`: zod 4 still runs later refines after a failed check; an oversized body must never reach them
   // (this parse runs before the session check, so it is reachable without signing in).
@@ -69,21 +71,17 @@ const images = z
     });
   });
 
+const title = z.string().trim().min(1).max(KUDO_TITLE_MAX);
+const hashtags = z
+  .array(z.string().trim().min(1).max(50))
+  .min(1)
+  .max(KUDO_HASHTAGS_MAX)
+  .refine((slugs) => new Set(slugs).size === slugs.length);
+const anonymousName = z.string().trim().max(KUDO_ALIAS_MAX).optional();
+
 /** Untrusted input of `createKudo` after the FormData fields are collected. The sender is never part of it. */
 export const writeKudoSchema = z
-  .object({
-    recipientId: pgUuid,
-    title: z.string().trim().min(1).max(KUDO_TITLE_MAX),
-    content,
-    hashtags: z
-      .array(z.string().trim().min(1).max(50))
-      .min(1)
-      .max(KUDO_HASHTAGS_MAX)
-      .refine((slugs) => new Set(slugs).size === slugs.length),
-    isAnonymous: z.boolean(),
-    anonymousName: z.string().trim().max(KUDO_ALIAS_MAX).optional(),
-    images,
-  })
+  .object({ recipientId: pgUuid, title, content, hashtags, isAnonymous: z.boolean(), anonymousName, images })
   // An alias only exists for an anonymous Kudo; blank means "use the board's default label".
   .transform((data) => ({
     ...data,
@@ -91,6 +89,28 @@ export const writeKudoSchema = z
   }));
 
 export type WriteKudoInput = z.output<typeof writeKudoSchema>;
+
+/**
+ * A kept image of an edited Kudo: the public URL of a flat `{uuid}.{ext}` object in `kudo-images`, the shape
+ * `create_kudo` / `update_kudo` accept (the RPC also checks it is the Kudo's own image or one the caller uploaded).
+ */
+export const KUDO_IMAGE_URL = /^https?:\/\/[^/?#@\s]+\/storage\/v1\/object\/public\/kudo-images\/([0-9a-f-]{36}\.(?:jpg|png|webp))$/;
+const keepImages = z
+  .array(z.string().max(2048).regex(KUDO_IMAGE_URL))
+  .max(KUDO_IMAGE_MAX_COUNT)
+  .refine((urls) => new Set(urls).size === urls.length);
+
+/**
+ * Untrusted input of `updateKudo` (plans/261022-edit-kudo). Strict: a Kudo's recipient and anonymous state never change,
+ * so neither is accepted. Kept + new images are at most five. The alias is for an anonymous Kudo only, which
+ * `update_kudo` enforces (the form sends it only for one); blank -> null (the board's default label).
+ */
+export const updateKudoSchema = z
+  .strictObject({ kudoId: pgUuid, title, content, hashtags, anonymousName, keepImages, images })
+  .refine((data) => data.keepImages.length + data.images.length <= KUDO_IMAGE_MAX_COUNT, { path: ["images"] })
+  .transform((data) => ({ ...data, anonymousName: data.anonymousName || null }));
+
+export type UpdateKudoInput = z.output<typeof updateKudoSchema>;
 
 export type KudoField = "recipient" | "title" | "content" | "hashtags" | "images" | "anonymousName";
 /** `format` / `size` only for images; `invalid` for everything else. */
@@ -102,8 +122,25 @@ const FIELD_BY_KEY: Record<string, KudoField> = {
   content: "content",
   hashtags: "hashtags",
   images: "images",
+  keepImages: "images",
   anonymousName: "anonymousName",
 };
+
+// `create_kudo` / `update_kudo` raise errcode 22023 with one of these short codes as the message.
+const RPC_FIELD_BY_CODE: Record<string, KudoField> = {
+  invalid_recipient: "recipient",
+  invalid_title: "title",
+  invalid_content: "content",
+  invalid_hashtags: "hashtags",
+  invalid_images: "images",
+  invalid_alias: "anonymousName",
+};
+
+/** The form field a write RPC refused (22023 + field code), or undefined for any other error. */
+export function fieldOfRpcError(error: { code?: string; message?: string }): KudoField | undefined {
+  const code = error.message ?? "";
+  return error.code === "22023" && Object.hasOwn(RPC_FIELD_BY_CODE, code) ? RPC_FIELD_BY_CODE[code] : undefined;
+}
 
 /** Collapses zod issues into one generic code per form field (no zod message ever reaches the client). */
 export function fieldErrorsFromIssues(issues: readonly z.core.$ZodIssue[]): KudoFieldErrors {

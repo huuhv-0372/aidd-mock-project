@@ -5,6 +5,7 @@ import type { KudoRow } from "@/lib/kudos/kudo-types";
 import { kudoPlainText } from "@/lib/kudos/kudo-plain-text";
 import { kudoDetailHref } from "@/lib/navigation/routes";
 import type { KudosFilters } from "@/lib/validation/kudos";
+import { EditKudoButton } from "./edit-kudo-button";
 import { CopyKudoLinkButton, type CopyKudoLinkCopy } from "./copy-kudo-link-button";
 import { KUDO_CARD_FOCUS_RING } from "./kudo-card-focus-ring";
 import { KudoHashtagList } from "./kudo-hashtag-list";
@@ -72,7 +73,7 @@ export function KudoPostCard({
             {kudo.title}
           </p>
           {/* mm:I3127:21871;2234:33040 - only on a Kudo the viewer sent (owner decision 2026-10-22) */}
-          {kudo.is_mine && <span aria-hidden data-testid="kudo-edit-icon" className="kudos-icon kudos-icon-pen size-8 text-login-bg" />}
+          {kudo.is_mine && <EditKudoButton kudo={kudo} />}
         </div>
         {/* mm:I3127:21871;662:11382 */}
         <Link

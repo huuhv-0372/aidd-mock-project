@@ -2,10 +2,13 @@
 
 import type { Editor } from "@tiptap/react";
 import { useCallback, useRef, useState } from "react";
+import { kudoMarkdownToEditorJson } from "@/lib/kudos/kudo-content-editor-json";
+import type { KudoRow } from "@/lib/kudos/kudo-types";
+import { buildCreateKudoData, buildUpdateKudoData } from "./kudo-form-data";
 import { useHashtagOptions } from "./use-hashtag-options";
 import { useImageAttachments } from "./use-image-attachments";
 import type { WriteKudoCopy } from "./write-kudo-copy";
-import { KUDO_LIMITS, type RecipientChoice, type WriteKudoActions } from "./write-kudo-types";
+import { KUDO_LIMITS, type EditableKudo, type RecipientChoice, type WriteKudoActions } from "./write-kudo-types";
 
 type Args = {
   /** Recipient already chosen at mount (counts as picked: no error, Gửi can enable). */
@@ -13,7 +16,11 @@ type Args = {
   copy: WriteKudoCopy;
   actions: WriteKudoActions;
   serializeContent: (doc: unknown) => string;
+  /** Edit mode: the Kudo to pre-fill. Present = Lưu calls updateKudo instead of createKudo. */
+  initialKudo?: EditableKudo | null;
   onSent: (id: string) => void;
+  /** Edit mode: the Kudo as saved (called right before onClose). */
+  onSaved?: (kudo: KudoRow) => void;
   onClose: () => void;
 };
 
@@ -27,38 +34,52 @@ const FIELDS: readonly Field[] = ["recipient", "title", "content", "hashtags"];
  * recipient / title / content / hashtags ("invalid": the value was filled) under that field. Content over KUDO_LIMITS.contentMax characters of Markdown is
  * flagged while typing and blocks Gửi (the server would refuse it anyway).
  *
+ * Edit mode (`initialKudo`): every field starts from the saved Kudo, the same Gửi rules apply to Lưu, and the FormData
+ * (kudo-form-data.ts) carries the kept / new images instead of a recipient and the anonymous state.
  * FormData sent to createKudo: recipientId, title, content (Markdown), hashtags (repeated slug), isAnonymous
  * ("true" | "false"), anonymousName (only when anonymous and not blank), images (repeated File, in order).
  */
-export function useWriteKudoForm({ initialRecipient = null, copy, actions, serializeContent, onSent, onClose }: Args) {
-  const [recipient, setRecipient] = useState<RecipientChoice | null>(initialRecipient);
+export function useWriteKudoForm({ initialRecipient = null, copy, actions, serializeContent, initialKudo = null, onSent, onSaved, onClose }: Args) {
+  const [recipient, setRecipient] = useState<RecipientChoice | null>(initialKudo?.recipient ?? initialRecipient);
   const [recipientTyped, setRecipientTyped] = useState(false);
-  const [title, setTitle] = useState("");
-  const [hasContent, setHasContent] = useState(false);
-  const [contentTooLong, setContentTooLong] = useState(false);
-  const [hashtagSlugs, setHashtagSlugs] = useState<string[]>([]);
+  const [title, setTitle] = useState(initialKudo?.title ?? "");
+  // The converter is imported here, not by the page-level provider: it ships in the lazily loaded dialog chunk only.
+  const [initialDoc] = useState(() => (initialKudo ? kudoMarkdownToEditorJson(initialKudo.content) : undefined));
+  const [hasContent, setHasContent] = useState(Boolean(initialKudo)); // the editor re-reads it once created
+  const [contentLength, setContentLength] = useState(0);
+  const [hashtagSlugs, setHashtagSlugsState] = useState<string[]>(initialKudo?.hashtagSlugs ?? []);
   const [refused, setRefused] = useState<Partial<Record<Field, true>>>({});
-  const [anonymous, setAnonymous] = useState(false);
-  const [alias, setAlias] = useState("");
+  const [anonymous, setAnonymous] = useState(initialKudo?.isAnonymous ?? false);
+  const [alias, setAlias] = useState(initialKudo?.anonymousName ?? "");
   const [touched, setTouched] = useState<Record<Field, boolean>>({ recipient: false, title: false, content: false, hashtags: false });
   const [sending, setSending] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const images = useImageAttachments(copy.errors);
+  const images = useImageAttachments(copy.errors, initialKudo?.images);
   const editorRef = useRef<Editor | null>(null);
   const sendingRef = useRef(false);
   const hashtags = useHashtagOptions(actions.getHashtagOptions);
 
   const touch = useCallback((field: Field) => setTouched((prev) => (prev[field] ? prev : { ...prev, [field]: true })), []);
+  // Removing the last tag counts as leaving the field: "required" shows at once, not only when the dropdown closes.
+  const setHashtagSlugs = useCallback(
+    (slugs: string[]) => {
+      setHashtagSlugsState(slugs);
+      if (slugs.length === 0) touch("hashtags");
+    },
+    [touch],
+  );
   const onContentChange = useCallback(
     (editor: Editor) => {
       setHasContent(editor.getText().trim().length > 0);
-      setContentTooLong(serializeContent(editor.getJSON()).length > KUDO_LIMITS.contentMax);
+      setContentLength([...serializeContent(editor.getJSON())].length); // code points, as the server counts them
     },
     [serializeContent],
   );
   const onEditorReady = useCallback((editor: Editor | null) => {
     editorRef.current = editor;
   }, []);
+
+  const contentTooLong = contentLength > KUDO_LIMITS.contentMax;
 
   // An empty field that was left says "required"; `refused`: the server rejected a value the client had accepted (a race, a
   // forged state), which says "invalid" because the field is filled. That message stays until the next try.
@@ -77,32 +98,36 @@ export function useWriteKudoForm({ initialRecipient = null, copy, actions, seria
     const editor = editorRef.current;
     if (!canSend || !editor || !recipient || sendingRef.current) return;
     sendingRef.current = true;
+    const failedText = initialKudo ? copy.errors.saveFailed : copy.errors.sendFailed;
     setSending(true);
     setFormError(null);
     setRefused({});
     images.setError(null);
     try {
-      const data = new FormData();
-      data.set("recipientId", recipient.id);
-      data.set("title", title.trim());
-      data.set("content", serializeContent(editor.getJSON()));
-      for (const slug of hashtagSlugs) data.append("hashtags", slug);
-      data.set("isAnonymous", String(anonymous));
-      if (anonymous && alias.trim()) data.set("anonymousName", alias.trim());
-      for (const image of images.images) data.append("images", image.file);
-      const result = await actions.createKudo(data);
-      if (result.ok) {
-        onSent(result.id);
+      const common = { title, content: serializeContent(editor.getJSON()), hashtagSlugs, alias, anonymous, images: images.images };
+      let failure: { fields?: Record<string, string> } | null = null;
+      if (initialKudo) {
+        const result = await actions.updateKudo(buildUpdateKudoData({ ...common, kudoId: initialKudo.id }));
+        if (result.ok) onSaved?.(result.kudo);
+        else failure = result;
+      } else {
+        const result = await actions.createKudo(buildCreateKudoData({ ...common, recipientId: recipient.id }));
+        if (result.ok) onSent(result.id);
+        else failure = result;
+      }
+      if (!failure) {
         onClose();
         return;
       }
-      const fields = result.fields ?? {};
+      const fields = failure.fields ?? {};
       const refusedFields = FIELDS.filter((field) => fields[field]);
-      if (fields.images) images.setError(fields.images === "size" ? copy.errors.imageSize : copy.errors.imageFormat);
+      // Edit mode: "invalid" is a refused kept image or the total count, not a file format problem.
+      const imageInvalid = initialKudo ? copy.errors.invalid : copy.errors.imageFormat;
+      if (fields.images) images.setError(fields.images === "size" ? copy.errors.imageSize : fields.images === "format" ? copy.errors.imageFormat : imageInvalid);
       else if (refusedFields.length > 0) setRefused(Object.fromEntries(refusedFields.map((field) => [field, true])));
-      else setFormError(copy.errors.sendFailed); // generic, or a field with no place on the form (alias)
+      else setFormError(failedText); // generic, not_found, or a field with no place on the form (alias)
     } catch {
-      setFormError(copy.errors.sendFailed);
+      setFormError(failedText);
     } finally {
       sendingRef.current = false;
       setSending(false);
@@ -111,6 +136,6 @@ export function useWriteKudoForm({ initialRecipient = null, copy, actions, seria
 
   return {
     recipient, setRecipient, setRecipientTyped, title, setTitle, hashtagSlugs, setHashtagSlugs, hashtags, anonymous, setAnonymous, alias, setAlias,
-    onContentChange, images, errors, touch, onEditorReady, canSend, sending, formError, submit,
+    onContentChange, images, errors, touch, onEditorReady, canSend, sending, formError, submit, initialDoc, contentLength, contentTooLong,
   };
 }
