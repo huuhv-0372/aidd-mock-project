@@ -24,6 +24,7 @@ export const shell: Dictionary["shell"] = {
   account: {
     label: /* not from Figma */ "Account",
     profile: "Profile",
+    dashboard: "Dashboard",
     signOut: /* not from Figma */ "Sign out",
   },
   notifications: {

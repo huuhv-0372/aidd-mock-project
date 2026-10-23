@@ -1,3 +1,4 @@
+import { admin } from "./admin";
 import { awards } from "./awards";
 import { countdown } from "./countdown";
 import { forbidden } from "./forbidden";
@@ -11,6 +12,6 @@ import { shell } from "./shell";
 import { standards } from "./standards";
 
 /** Source of truth for the dictionary shape: messages/en is typed `Dictionary`, so a missing key fails the build. */
-export const vi = { shell, home, awards, login, countdown, notFound, forbidden, kudos, kudosCompose, standards, profile };
+export const vi = { shell, home, awards, login, countdown, notFound, forbidden, kudos, kudosCompose, standards, profile, admin };
 
 export type Dictionary = typeof vi;

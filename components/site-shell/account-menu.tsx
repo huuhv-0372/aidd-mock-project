@@ -20,15 +20,20 @@ const menuItems = (menu: HTMLElement | null) =>
 
 /*
  * Profile button + dropdown. `children` is the sign-out slot (a <form> holding SignOutButton),
- * rendered only while the menu is open. Items: Profile + Sign out (no Admin Dashboard: no roles yet).
+ * rendered only while the menu is open. Items: Profile + Sign out; admins also get Dashboard between them (MoMorph
+ * 54rekaCHG1): the caller passes `dashboardLabel` + `dashboardHref` only when the DB says the viewer is an admin.
  */
 export function AccountMenu({
   label,
   profileLabel,
+  dashboardLabel,
+  dashboardHref,
   children,
 }: {
   label: string;
   profileLabel: string;
+  dashboardLabel?: string;
+  dashboardHref?: string;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -104,6 +109,17 @@ export function AccountMenu({
           <Link href={PROFILE_PATH} role="menuitem" onClick={() => close(false)} className={MENU_ITEM}>
             {profileLabel}
           </Link>
+          {dashboardLabel && dashboardHref ? (
+            <Link
+              href={dashboardHref}
+              role="menuitem"
+              data-testid="admin-account-dashboard"
+              onClick={() => close(false)}
+              className={MENU_ITEM}
+            >
+              {dashboardLabel}
+            </Link>
+          ) : null}
           <div role="none">{children}</div>
         </div>
       ) : null}
