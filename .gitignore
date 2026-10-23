@@ -132,3 +132,6 @@ next-env.d.ts
 .open-next
 .wrangler
 .dev.vars*
+
+# Playwright MCP browser session artifacts
+.playwright-mcp/

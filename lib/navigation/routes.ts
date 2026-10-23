@@ -5,6 +5,11 @@ export const SUN_KUDOS_PATH = "/sun-kudos";
 export const STANDARDS_PATH = "/tieu-chuan-chung";
 export const PROFILE_PATH = "/profile";
 export const FORBIDDEN_PATH = "/403";
+/** Admin area, role `admin` only. `/admin` redirects to the Users screen (Overview is not built yet). */
+export const ADMIN_PATH = "/admin";
+export const ADMIN_USERS_PATH = "/admin/users";
+/** CSV download of the filtered user list (route handler under app/[locale]/admin/users/export). */
+export const ADMIN_USERS_EXPORT_PATH = "/admin/users/export";
 
 export const AWARD_SLUGS = [
   "top-talent",

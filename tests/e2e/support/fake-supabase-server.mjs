@@ -9,6 +9,7 @@ import { applyKudoDetailMode, kudoDetailControl } from "./kudo-detail-fake.mjs";
 import { handleStorage, hashtagsFailing, holdHashtagCatalog, kudoControl, mergeCreatedKudos, writeKudoRpc } from "./write-kudo-fixtures.mjs";
 import { applyKudoHearts, kudoHeartControl, setKudoHeartRpc } from "./kudo-hearts-fake.mjs";
 import { profileRpc } from "./profile-fixtures.mjs";
+import { adminControl, adminRpc } from "./admin-users-fake.mjs";
 
 const PORT = Number(process.env.E2E_FAKE_SUPABASE_PORT || 54398);
 const HOST = "127.0.0.1";
@@ -105,6 +106,8 @@ async function handleRest(req, res, url) {
   if (req.method === "POST" && name.startsWith("rpc/")) {
     const fn = name.slice("rpc/".length);
     const body = await readJson(req);
+    const admin = adminRpc(fn, body, sub); // is_admin, admin_list_users, admin_set_user_role (admin-users-fake.mjs)
+    if (admin !== undefined) return send(res, admin.status, admin.body);
     if (fn === "set_kudo_heart") { // Like Kudos (#13): sets the viewer's heart on a Kudo (kudo-hearts-fake.mjs)
       const heart = await setKudoHeartRpc(body, sub);
       return send(res, heart.status, heart.body);
@@ -143,6 +146,8 @@ const server = createServer((req, res) => {
     });
     return;
   }
+  const admin = adminControl(url.pathname, url.searchParams); // /__admin-* only, before kudoControl
+  if (admin !== undefined) return send(res, 200, admin);
   const heart = kudoHeartControl(url.pathname, url.searchParams); // before kudoControl, which answers any /__kudo-* path
   if (heart !== undefined) return send(res, 200, heart);
   const detail = kudoDetailControl(url.pathname, url.searchParams); // same reason: kudoControl answers any /__kudo-* path

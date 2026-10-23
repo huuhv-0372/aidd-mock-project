@@ -22,6 +22,7 @@ export const shell = {
   account: {
     label: "Tài khoản",
     profile: "Profile",
+    dashboard: "Dashboard",
     signOut: "Sign out",
   },
   notifications: {
