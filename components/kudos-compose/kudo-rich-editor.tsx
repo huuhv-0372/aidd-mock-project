@@ -1,6 +1,6 @@
 "use client";
 
-import { EditorContent, useEditor, type Editor } from "@tiptap/react";
+import { EditorContent, useEditor, type Editor, type JSONContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Placeholder } from "@tiptap/extensions";
 import { useEffect, useId, useRef, useState } from "react";
@@ -18,6 +18,11 @@ type Props = {
   copy: WriteKudoCopy;
   searchSunners: WriteKudoActions["searchSunners"];
   error: string | null;
+  /** Document the editor starts with (edit mode: the saved Markdown turned into Tiptap JSON). Read once, at mount. */
+  initialContent?: unknown;
+  /** Text of the counter on the hint row ("N/5.000"), already formatted by the form; `counterOver` turns it red. */
+  counter: string;
+  counterOver: boolean;
   /** The document changed: the form reads whether it has visible text (a mention counts) and how long its Markdown is. */
   onContentChange: (editor: Editor) => void;
   /** Leaving the editor (not for the Add link detour): the form decides whether to show the required error. */
@@ -43,7 +48,7 @@ function editorAttributes(label: string, describedBy: string, error: string | nu
  * (Add link dialog) and "@" mentions. The toolbar, the "@" list and the Add link dialog all live inside this block so
  * they stay inside the modal's top layer.
  */
-export function KudoRichEditor({ copy, searchSunners, error, onContentChange, onBlur, onEditorReady }: Props) {
+export function KudoRichEditor({ copy, searchSunners, error, initialContent, counter, counterOver, onContentChange, onBlur, onEditorReady }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const linkOpenRef = useRef(false);
   const [linkOpen, setLinkOpen] = useState(false);
@@ -68,7 +73,10 @@ export function KudoRichEditor({ copy, searchSunners, error, onContentChange, on
       Placeholder.configure({ placeholder: copy.editor.placeholder }),
       createMentionExtension({ searchSunners, onPopup: mention.onPopup, onKey: mention.onKey }),
     ],
+    content: initialContent as JSONContent | undefined,
     editorProps: { attributes: editorAttributes(copy.editor.label, hintId, null) },
+    // Initial content raises no update: tell the form once so its counter and "has text" start right.
+    onCreate: ({ editor: created }) => onContentChange(created),
     onUpdate: ({ editor: current }) => onContentChange(current),
     onBlur: () => {
       if (!linkOpenRef.current) onBlur();
@@ -115,9 +123,17 @@ export function KudoRichEditor({ copy, searchSunners, error, onContentChange, on
         onHover={mention.move}
       />
       {/* mm:I520:11647;520:9887 */}
-      <p id={hintId} className="text-center text-base leading-6 font-bold tracking-[0.5px] text-login-bg">
-        {copy.editor.mentionHint}
-      </p>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+        <p id={hintId} className="text-base leading-6 font-bold tracking-[0.5px] text-login-bg">
+          {copy.editor.mentionHint}
+        </p>
+        <p
+          data-testid="content-counter"
+          className={`ml-auto text-base leading-6 font-bold tracking-[0.5px] tabular-nums ${counterOver ? "text-[#cf1322]" : "text-kudos-muted"}`}
+        >
+          {counter}
+        </p>
+      </div>
       {error && (
         <p id={errorId} data-testid="error-content" className={ERROR_FLOAT}>
           {error}

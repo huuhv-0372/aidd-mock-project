@@ -20,6 +20,8 @@ type Props = {
   /** Whether the input holds text (after trim): the form words the required error differently when it does. */
   onTypedChange: (typed: boolean) => void;
   error: string | null;
+  /** Edit mode: the recipient of a sent Kudo cannot change. The field shows the name read-only, with no suggestions and no arrow. */
+  locked?: boolean;
 };
 
 const SEARCH_DELAY_MS = 150;
@@ -35,7 +37,7 @@ const OPTION =
  * Editing the text afterwards drops the choice again, so the form only ever holds a recipient the user actually picked.
  * No match (or a failed search) shows a muted status row in the dropdown: not an option, announced politely.
  */
-export function RecipientPicker({ copy, searchSunners, value, initialText = "", onChange, onBlur, onTypedChange, error }: Props) {
+export function RecipientPicker({ copy, searchSunners, value, initialText = "", onChange, onBlur, onTypedChange, error, locked = false }: Props) {
   const [text, setText] = useState(initialText);
   const [items, setItems] = useState<SunnerOption[]>([]);
   const [open, setOpen] = useState(false);
@@ -129,6 +131,7 @@ export function RecipientPicker({ copy, searchSunners, value, initialText = "", 
           role="combobox"
           autoComplete="off"
           value={text}
+          readOnly={locked}
           placeholder={copy.recipient.placeholder}
           aria-expanded={open}
           aria-controls={open ? listId : undefined}
@@ -146,12 +149,14 @@ export function RecipientPicker({ copy, searchSunners, value, initialText = "", 
             setNoResult(false);
             onBlur();
           }}
-          className={`${INPUT} pr-14`}
+          className={`${INPUT} ${locked ? "cursor-default" : "pr-14"}`}
         />
         {/* mm:I520:11647;520:9873;186:2761 */}
-        <span className="pointer-events-none absolute top-1/2 right-6 -translate-y-1/2 text-login-bg">
-          <ChevronDownIcon />
-        </span>
+        {!locked && (
+          <span className="pointer-events-none absolute top-1/2 right-6 -translate-y-1/2 text-login-bg">
+            <ChevronDownIcon />
+          </span>
+        )}
         {open && (
           <ul
             id={listId}

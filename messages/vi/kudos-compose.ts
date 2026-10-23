@@ -84,6 +84,8 @@ export const kudosCompose: KudosComposeMessages = {
       placeholder: "Hãy gửi gắm lời cám ơn và ghi nhận đến đồng đội tại đây nhé!",
       mentionHint: "Bạn có thể “@ + tên” để nhắc tới đồng nghiệp khác",
       mentionListLabel: "Gợi ý đồng nghiệp" /* not from Figma */,
+      /* not from Figma: the screenshot of the edit frame reads "0/1.000", the owner moved the limit to 5.000. {count} = Markdown length */
+      counter: "{count}/5.000",
     },
     hashtag: {
       label: "Hashtag",
@@ -96,11 +98,14 @@ export const kudosCompose: KudosComposeMessages = {
     },
     image: { label: "Image", add: "+ Image", max: "Tối đa 5", remove: "Xóa ảnh" },
     anonymous: { label: "Gửi lời cám ơn và ghi nhận ẩn danh", aliasLabel: "Tên ẩn danh" },
-    actions: { cancel: "Hủy", send: "Gửi" },
+    actions: { cancel: "Hủy", send: "Gửi", save: "Lưu" },
+    /* Edit mode (MoMorph 419VXmMy6I): the title is the screenshot text; the pencil name is not from Figma. */
+    edit: { title: "Chỉnh sửa bài viết của bạn", pencil: "Chỉnh sửa Kudo" },
     errors: {
       imageFormat: "Định dạng file không hợp lệ" /* not from Figma */,
       imageSize: "Ảnh tối đa 5 MB" /* not from Figma */,
       sendFailed: "Không gửi được lời cám ơn, vui lòng thử lại." /* not from Figma */,
+      saveFailed: "Không lưu được thay đổi, vui lòng thử lại." /* not from Figma */,
       contentTooLong: "Nội dung tối đa 5000 ký tự" /* not from Figma */,
       invalid: "Giá trị không hợp lệ, vui lòng kiểm tra lại" /* not from Figma */,
     },

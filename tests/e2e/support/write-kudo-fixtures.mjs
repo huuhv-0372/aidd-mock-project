@@ -7,6 +7,7 @@
 // fail here the way it would against that SQL.
 // Isolation: created kudos, uploads and logs are keyed by the caller's JWT sub, so a test never shows up in another
 // test's feed (other specs count the 28 base kudos). Ids are NOT RFC 4122 v4 (zod z.guid lesson).
+import { randomUUID } from "node:crypto";
 import { HASHTAGS, KUDOS, PEOPLE } from "./kudos-fixtures.mjs";
 
 const BUCKET = "kudo-images";
@@ -44,7 +45,12 @@ const CREATED = []; // { id, created_at, sender_sub, recipient, title, content, 
 const states = new Map();
 const objects = new Map(); // flat "<uuid>.<ext>" -> { owner, bytes, mime }; owner = the upload's JWT sub (storage.objects.owner_id)
 const stateOf = (sub) => {
-  if (!states.has(sub)) states.set(sub, { rpc: [], uploads: [], deletes: [], failRpc: false, refuseOnce: null, delayMs: 0, searchDelayMs: 0, failHashtags: false, hashtagDelayMs: 0 });
+  if (!states.has(sub)) {
+    states.set(sub, {
+      rpc: [], uploads: [], deletes: [], failRpc: false, refuseOnce: null, delayMs: 0, searchDelayMs: 0, failHashtags: false, hashtagDelayMs: 0,
+      failUpdate: false, refuseUpdateOnce: null, // update_kudo: generic 500 while on / one 22023 refusal (edit-kudo.spec.ts)
+    });
+  }
   return states.get(sub);
 };
 const pgError = (message, status = 400, code = "22023") => ({ status, body: { code, details: null, hint: null, message } });
@@ -81,10 +87,14 @@ function searchSunners({ p_query, p_limit, p_name_only }, sub) {
     .map(({ id, full_name, avatar_url, department }) => ({ id, full_name, avatar_url, department })); // never email
 }
 
-function validate(p, sub) {
-  if (!sub) return "forbidden";
-  const recipient = findRecipient(p.p_recipient_id, sub);
-  if (!recipient || recipient.id === sub) return "invalid_recipient";
+/** A flat `{uuid}.{ext}` object owned by this JWT sub (owner_id, never the path: an anonymous image URL must not name the sender). */
+const ownedBy = (url, sub) => {
+  const m = IMAGE_URL.exec(String(url));
+  return Boolean(m) && objects.get(m[1])?.owner === sub;
+};
+
+/** Title, content, hashtags and images: the rules create_kudo and update_kudo share, in the SQL's order. */
+function checkCommon(p, imageOk) {
   const title = String(p.p_title ?? "").trim();
   if (chars(title) < 1 || chars(title) > 100) return "invalid_title";
   const content = String(p.p_content ?? "");
@@ -93,15 +103,22 @@ function validate(p, sub) {
   if (slugs.length < 1 || slugs.length > 5 || new Set(slugs).size !== slugs.length
     || !slugs.every((s) => HASHTAGS.some((h) => h.slug === s))) return "invalid_hashtags";
   const urls = Array.isArray(p.p_image_urls) ? p.p_image_urls : [];
-  // Flat name, no uid (an anonymous Kudo's image URL must not identify the sender); ownership is owner_id, not the path.
-  const imageOk = (url) => {
-    const m = IMAGE_URL.exec(String(url));
-    return Boolean(m) && objects.get(m[1])?.owner === sub;
-  };
   if (urls.length > 5 || new Set(urls).size !== urls.length || !urls.every(imageOk)) return "invalid_images";
-  if (!p.p_is_anonymous && p.p_anonymous_name != null) return "invalid_alias";
-  if (p.p_is_anonymous && chars(String(p.p_anonymous_name ?? "").trim()) > 50) return "invalid_alias";
   return null;
+}
+
+/** The alias rule: only an anonymous Kudo carries one, at most 50 characters (blank = the default label). */
+function aliasCode(p, anonymous) {
+  if (!anonymous && p.p_anonymous_name != null) return "invalid_alias";
+  if (anonymous && chars(String(p.p_anonymous_name ?? "").trim()) > 50) return "invalid_alias";
+  return null;
+}
+
+function validate(p, sub) {
+  if (!sub) return "forbidden";
+  const recipient = findRecipient(p.p_recipient_id, sub);
+  if (!recipient || recipient.id === sub) return "invalid_recipient";
+  return checkCommon(p, (url) => ownedBy(url, sub)) ?? aliasCode(p, Boolean(p.p_is_anonymous));
 }
 
 async function createKudo(p, sub) {
@@ -128,20 +145,89 @@ async function createKudo(p, sub) {
 
 /** POST /rest/v1/rpc/<fn> for the write RPCs; undefined = not mine. Every call is logged per caller. */
 export async function writeKudoRpc(name, body, sub) {
-  if (name !== "create_kudo" && name !== "kudos_search_sunners") return undefined;
+  if (name === "kudo_detail") return createdDetail(body.p_id, sub); // a read, not logged; undefined falls through to the board's RPCs
+  if (name !== "create_kudo" && name !== "kudos_search_sunners" && name !== "update_kudo") return undefined;
   const state = stateOf(sub || "anonymous");
   state.rpc.push({ name, body }); // logged on arrival: a test can see a call in flight while its answer is still held back
   if (name === "create_kudo") return createKudo(body, sub);
+  if (name === "update_kudo") return updateKudo(body, sub);
   if (state.searchDelayMs) await sleep(state.searchDelayMs);
   return { status: 200, body: searchSunners(body, sub) };
 }
 
 const rowOf = (k, sub) => ({
   id: k.id, created_at: k.created_at, title: k.title, content: k.content, is_anonymous: k.anon, anonymous_name: k.alias,
-  heart_count: 0, liked_by_me: false, is_mine: true,
-  sender: k.anon ? null : personJson({ id: sub, ...SELF }, sub), recipient: personJson(k.recipient, sub),
+  heart_count: k.heart_count ?? 0, liked_by_me: false, is_mine: k.sender_sub === sub,
+  sender: k.anon ? null : personJson({ id: k.sender_sub, ...SELF }, sub), recipient: personJson(k.recipient, sub),
   hashtags: k.hashtags.map(({ slug, name_vi, name_en }) => ({ slug, name_vi, name_en })), images: k.images,
 });
+
+// SQL: sender_id = auth.uid() AND the Kudo exists, else the same not_found; the alias and image rules are the create ones.
+function updateKudo(p, sub) {
+  if (!sub) return pgError("forbidden", 403, "42501");
+  const id = String(p.p_id ?? "").toLowerCase();
+  const k = CREATED.find((c) => c.id === id && c.sender_sub === sub);
+  if (!k) return pgError("not_found");
+  const imageOk = (url) => k.images.includes(url) || ownedBy(url, sub); // a Kudo's own image, or one this caller uploaded
+  const code = checkCommon(p, imageOk) ?? aliasCode(p, k.anon);
+  if (code) return pgError(code);
+  const state = stateOf(sub);
+  if (state.refuseUpdateOnce) { // the DB refuses a field the client had accepted, once (/__kudo-refuse-update-once?code=)
+    const refused = state.refuseUpdateOnce;
+    state.refuseUpdateOnce = null;
+    return pgError(refused);
+  }
+  if (state.failUpdate) return pgError("fake: injected update failure boom-secret-detail", 500, "XX000");
+  const urls = p.p_image_urls ?? [];
+  const removed = k.images.filter((url) => !urls.includes(url)); // returned like the SQL: the URLs the Kudo no longer has
+  Object.assign(k, {
+    title: String(p.p_title).trim(), content: p.p_content, images: urls,
+    hashtags: HASHTAGS.filter((h) => p.p_hashtag_slugs.includes(h.slug)),
+    alias: k.anon ? String(p.p_anonymous_name ?? "").trim() || null : null,
+  });
+  return { status: 200, body: removed };
+}
+
+// kudo_detail read-back of a Kudo this fake created (the update action re-reads its row through it). Undefined = not one of ours.
+function createdDetail(pId, sub) {
+  const k = CREATED.find((c) => c.id === String(pId).toLowerCase());
+  if (!k) return undefined;
+  return { status: 200, body: sub ? [rowOf(k, sub)] : [] };
+}
+
+const SEED_PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==", "base64");
+/** Markdown the edit modal must reproduce byte for byte when nothing is changed (bold, italic, a mention, a link). */
+export const EDIT_SEED_CONTENT = [
+  "Cảm ơn **bạn** rất nhiều vì đã _luôn_ hỗ trợ cả team trong quý này.",
+  "Cảm ơn @[Nguyễn Thị Minh Anh](2a000000-0000-0000-0000-000000000002) đã đồng hành cùng mình. Xem thêm [tài liệu nội bộ](https://example.com/guide) nhé.",
+].join("\n");
+export const EDIT_SEED_TITLE = "NGƯỜI TRUYỀN CẢM HỨNG";
+export const EDIT_SEED_RECIPIENT = "Nguyễn Văn An";
+export const EDIT_SEED_HASHTAGS = ["dedicated", "professional"];
+export const EDIT_SEED_HEARTS = 7;
+
+/**
+ * An own Kudo of the caller for the edit tests (GET /__kudo-seed-own?sub=&anon=1&alias=): three PNG objects owned by the caller
+ * (their names are random, so parallel tests never share an object), the EDIT_SEED_* content, and a heart count the save must keep.
+ * It lists first on the caller's board, as a just-created Kudo does.
+ */
+export function seedOwnKudo(sub, { anonymous = false, alias = null } = {}) {
+  const images = Array.from({ length: 3 }, () => {
+    const name = `${randomUUID()}.png`;
+    objects.set(name, { owner: sub, bytes: SEED_PNG, mime: "image/png" });
+    return `http://127.0.0.1:54398/storage/v1/object/public/${BUCKET}/${name}`;
+  });
+  const id = `c3000000-0000-0000-0000-${String(CREATED.length + 1).padStart(12, "0")}`;
+  const recipient = SUNNERS.find((s) => s.full_name === EDIT_SEED_RECIPIENT);
+  const created_at = new Date(Math.max(Date.now(), BASE_FLOOR_MS) + CREATED.length).toISOString();
+  const kudo = {
+    id, sender_sub: sub, created_at, recipient, title: EDIT_SEED_TITLE, content: EDIT_SEED_CONTENT,
+    hashtags: HASHTAGS.filter((h) => EDIT_SEED_HASHTAGS.includes(h.slug)), images, anon: anonymous,
+    alias: anonymous ? alias : null, heart_count: EDIT_SEED_HEARTS,
+  };
+  CREATED.push(kudo);
+  return { id, title: kudo.title, content: kudo.content, images, anonymous, alias: kudo.alias, heartCount: EDIT_SEED_HEARTS, createdAt: created_at };
+}
 
 /** The caller's own new kudos lead page 1 of kudos_feed (they are newer than every base kudo). */
 export function mergeCreatedKudos(name, body, sub, rows) {
@@ -164,6 +250,9 @@ export const holdHashtagCatalog = (sub) => (sub && stateOf(sub).hashtagDelayMs ?
  * /__kudo-delay-search?ms= (kudos_search_sunners), /__kudo-fail-hashtags?on=1|0 (hashtags catalog GET answers 500),
  * /__kudo-delay-hashtags?ms= (the hashtags catalog GET is held back by ms before it answers, failing or not),
  * /__kudo-refuse-once?code= (the next create_kudo that passes validation answers 400 / 22023 / <code>, e.g. invalid_hashtags).
+ * Edit mode (edit-kudo-contract.ts): /__kudo-seed-own?anon=1&alias= (an own Kudo, returns its id, images and content),
+ * /__kudo-fail-update?on=1|0 (update_kudo answers a generic 500), /__kudo-refuse-update-once?code= (the next update_kudo that
+ * passes validation answers 400 / 22023 / <code>, e.g. not_found).
  */
 export function kudoControl(pathname, params) {
   if (!pathname.startsWith("/__kudo-")) return undefined;
@@ -175,6 +264,9 @@ export function kudoControl(pathname, params) {
   else if (pathname === "/__kudo-delay-hashtags") state.hashtagDelayMs = Number(params.get("ms") || 0);
   else if (pathname === "/__kudo-fail-hashtags") state.failHashtags = params.get("on") !== "0";
   else if (pathname === "/__kudo-refuse-once") state.refuseOnce = params.get("code");
+  else if (pathname === "/__kudo-fail-update") state.failUpdate = params.get("on") !== "0";
+  else if (pathname === "/__kudo-refuse-update-once") state.refuseUpdateOnce = params.get("code");
+  else if (pathname === "/__kudo-seed-own") return seedOwnKudo(sub, { anonymous: params.get("anon") === "1", alias: params.get("alias") });
   else if (pathname === "/__kudo-log") {
     const own = [...objects].filter(([, o]) => o.owner === sub).map(([path]) => path);
     return { rpc: state.rpc, uploads: state.uploads, deletes: state.deletes, objects: own };

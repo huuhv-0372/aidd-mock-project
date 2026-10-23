@@ -54,6 +54,15 @@ function supabaseOrigin(): string | null {
   }
 }
 
+/** Whether `url` is on the Supabase project origin; false for a relative or malformed URL, or an unusable env. */
+export function isOnSupabaseOrigin(url: string, origin = supabaseOrigin()): boolean {
+  try {
+    return origin !== null && new URL(url).origin === origin;
+  } catch {
+    return false;
+  }
+}
+
 let loggedDroppedImage = false;
 
 /**
@@ -64,11 +73,7 @@ function keepAllowedKudoImages(urls: string[]): string[] {
   const origin = supabaseOrigin();
   const allowed = urls.filter((url) => {
     if (url.startsWith("/images/")) return !url.includes("\\") && !url.includes("..");
-    try {
-      return origin !== null && new URL(url).origin === origin;
-    } catch {
-      return false;
-    }
+    return isOnSupabaseOrigin(url, origin);
   });
   if (allowed.length !== urls.length && !loggedDroppedImage) {
     loggedDroppedImage = true;

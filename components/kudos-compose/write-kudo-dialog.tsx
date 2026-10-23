@@ -5,7 +5,8 @@ import { DIALOG_PANEL } from "./compose-field-styles";
 import { useModalDialog } from "./use-modal-dialog";
 import { WriteKudoForm } from "./write-kudo-form";
 import type { WriteKudoCopy } from "./write-kudo-copy";
-import type { RecipientChoice, WriteKudoActions, WriteKudoLocale } from "./write-kudo-types";
+import type { KudoRow } from "@/lib/kudos/kudo-types";
+import type { EditableKudo, RecipientChoice, WriteKudoActions, WriteKudoLocale } from "./write-kudo-types";
 
 export type WriteKudoDialogProps = {
   open: boolean;
@@ -21,13 +22,17 @@ export type WriteKudoDialogProps = {
   actions: WriteKudoActions;
   /** Tiptap JSON -> Markdown (lib/kudos/kudo-content-markdown.ts `toMarkdown`). */
   serializeContent: (doc: unknown) => string;
+  /** Edit mode (plans/261022-edit-kudo): a Kudo the viewer sent. Present = the modal pre-fills it and Lưu saves it. */
+  initialKudo?: EditableKudo | null;
+  /** A Kudo was saved in edit mode, with the row as stored (called right before onClose). */
+  onSaved: (kudo: KudoRow) => void;
 };
 
 /*
- * Viết Kudo modal (Figma ihQ26W78P2): native <dialog> + showModal() (focus trap, Esc, inert page). The form inside is
+ * Viết Kudo modal (Figma ihQ26W78P2; edit mode: 419VXmMy6I): native <dialog> + showModal() (focus trap, Esc, inert page). The form inside is
  * mounted only while open, so every open starts empty. Works with next/dynamic({ ssr: false }) (named + default export).
  */
-export function WriteKudoDialog({ open, onClose, onSent, locale, initialRecipient = null, copy, actions, serializeContent }: WriteKudoDialogProps) {
+export function WriteKudoDialog({ open, onClose, onSent, locale, initialRecipient = null, copy, actions, serializeContent, initialKudo = null, onSaved }: WriteKudoDialogProps) {
   const ref = useModalDialog(open);
   const titleId = useId();
   const busyRef = useRef(false);
@@ -49,7 +54,9 @@ export function WriteKudoDialog({ open, onClose, onSent, locale, initialRecipien
           initialRecipient={initialRecipient}
           actions={actions}
           serializeContent={serializeContent}
+          initialKudo={initialKudo}
           onSent={onSent}
+          onSaved={onSaved}
           onClose={onClose}
           busyRef={busyRef}
         />

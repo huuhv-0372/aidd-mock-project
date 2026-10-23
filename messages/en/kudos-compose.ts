@@ -72,6 +72,7 @@ export const kudosCompose: Dictionary["kudosCompose"] = {
       placeholder: "Please send your thanks and recognition to your teammates here!",
       mentionHint: "You can '@ + name' to mention another colleague",
       mentionListLabel: /* not from Figma */ "Colleague suggestions",
+      counter: /* not from Figma */ "{count}/5,000",
     },
     hashtag: {
       label: "Hashtag",
@@ -84,11 +85,13 @@ export const kudosCompose: Dictionary["kudosCompose"] = {
     },
     image: { label: "Image", add: /* not from Figma */ "+ Image", max: /* not from Figma */ "Max 5", remove: /* not from Figma */ "Remove image" },
     anonymous: { label: "Send thanks and recognition anonymously", aliasLabel: /* not from Figma */ "Anonymous name" },
-    actions: { cancel: "Cancel", send: "Send" },
+    actions: { cancel: "Cancel", send: "Send", save: /* not from Figma */ "Save" },
+    edit: { title: /* not from Figma */ "Edit your Kudo", pencil: /* not from Figma */ "Edit Kudo" },
     errors: {
       imageFormat: /* not from Figma */ "Invalid file format",
       imageSize: /* not from Figma */ "Image must be 5 MB or smaller",
       sendFailed: /* not from Figma */ "Couldn't send your Kudos, please try again.",
+      saveFailed: /* not from Figma */ "Couldn't save your changes, please try again.",
       contentTooLong: /* not from Figma */ "Content can be at most 5000 characters",
       invalid: /* not from Figma */ "Invalid value, please check and try again",
     },
