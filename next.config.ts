@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     agentFeedback: true,
+    agentUpgrade: "security",
     // Enables forbidden() and forbidden.tsx (HTTP 403 page); still experimental in Next 16.
     authInterrupts: true,
     // Viết Kudo posts up to 5 images x 5 MB plus text in one Server Action (default 1 MB). Both
