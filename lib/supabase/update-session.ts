@@ -39,7 +39,11 @@ export async function updateSession(request: NextRequest): Promise<SessionResult
   });
 
   try {
-    return { response, isAuthenticated: isSignedInClaims(await supabase.auth.getClaims(), "supabase") };
+    // Await before reading `response`: a token refresh inside getClaims() runs setAll, which swaps in the
+    // response carrying the rotated cookies. Reading it first returns the stale one, the browser keeps the
+    // spent refresh token, and its next use past Supabase's reuse window revokes the session (-> /login).
+    const claims = await supabase.auth.getClaims();
+    return { response, isAuthenticated: isSignedInClaims(claims, "supabase") };
   } catch (error) {
     console.error("[supabase] getClaims threw:", error);
     return { response, isAuthenticated: false };
