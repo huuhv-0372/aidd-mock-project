@@ -4,6 +4,19 @@ Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi ti�
 
 ## 2026-10-26
 
+### Sửa (nghiêm trọng): người dùng bị đẩy về `/login` dù đang đăng nhập
+
+- Triệu chứng: đang viết hoặc sửa Kudo (hoặc thao tác bất kỳ) thì bị chuyển về `/login`, thường khi phiên đã mở hơn một giờ.
+- Nguyên nhân: `updateSession` (`lib/supabase/update-session.ts`) dựng object kết quả `{ response, isAuthenticated: … await getClaims() }`. JavaScript đọc `response` trước khi `await` chạy, nên khi `getClaims()` làm mới token (gọi `setAll`, thay `response` bằng bản có cookie mới) thì proxy vẫn trả bản cũ không có `Set-Cookie`. Trình duyệt giữ refresh token đã dùng; lần dùng lại sau cửa sổ tái sử dụng 10 giây của Supabase bị trả `refresh_token_already_used`, Supabase thu hồi cả phiên, proxy chuyển về `/login`. Viết Kudo thường mất hơn 10 giây giữa các request nên hay gặp ở đây.
+- Sửa: `await getClaims()` trước, rồi mới đọc `response`. Test hồi quy `tests/unit/update-session.test.ts` (hỏng trên mã cũ vì `set-cookie` rỗng).
+- Đã tái hiện trước khi sửa bằng `next start` + Supabase giả có xoay vòng refresh token: request 1 xoay token nhưng không trả cookie; 12 giây sau request 2 nhận 307 về `/login`.
+
+### Thêm: thông báo thành công khi gửi và sửa Kudo
+
+- Gửi Kudo thành công: modal đóng và hiện toast "Đã gửi lời cám ơn thành công!" / "Your Kudos has been sent!". Lưu bản sửa thành công: "Đã lưu thay đổi!" / "Your changes have been saved!" (`/* not from Figma */`). Thay quyết định cũ "Không toast" ở `plans/261019-1022-write-kudos/clarifications.md` theo yêu cầu chủ dự án.
+- Dùng lại toast chung `components/ui/status-toast.tsx` (`role="status"`, tự ẩn sau 3 giây), gắn trong `KudosComposerProvider` nên có trên mọi trang có modal (Homepage, Hệ thống giải, Sun* Kudos, Hồ sơ). Chuỗi ở `write.success` trong `messages/{vi,en}/kudos-compose.ts`.
+- Kiểm thử: E2E `write-kudo.spec.ts` (ID-47) và `edit-kudo.spec.ts` kiểm toast. Lần chạy cuối cho cả hai mục: lint 0, tsc 0, vitest 1068/1068, `next build` + E2E 377/377.
+
 ### Bảo mật: vá lỗ hổng trong công cụ build (`npm audit` từ 8 xuống 0)
 
 - `npm audit` báo 8 lỗ hổng (6 high, 2 moderate), đều nằm trong gói con của công cụ build và chạy thử (`wrangler`, `miniflare`, `@opennextjs/*`): `undici` (DoS, bỏ qua kiểm tra SRI), `glob` (chèn lệnh qua CLI), `body-parser` (DoS). Không gói nào nằm trong mã chạy của trang.

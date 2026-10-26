@@ -23,6 +23,8 @@ export type WriteKudoCopy = {
   actions: { cancel: string; send: string; save: string };
   /** Edit mode of the modal (plans/261022-edit-kudo): heading and the accessible name of the pencil on a card. */
   edit: { title: string; pencil: string };
+  /** Toast after the modal closes on a successful Gửi (`sent`) or Lưu (`saved`). */
+  success: { sent: string; saved: string };
   errors: { imageFormat: string; imageSize: string; sendFailed: string; saveFailed: string; contentTooLong: string; invalid: string };
   addLink: AddLinkCopy;
 };

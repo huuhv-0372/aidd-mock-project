@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
+import { useStatusToast } from "@/components/ui/status-toast";
 import type { Locale } from "@/lib/i18n/locales";
 import { createKudo } from "@/lib/kudos/create-kudo-action";
 import { getHashtagOptions } from "@/lib/kudos/get-hashtag-options-action";
@@ -74,6 +75,7 @@ export function KudosComposerProvider({
   const [editing, setEditing] = useState<EditableKudo | null>(null);
   const [savedKudos, setSavedKudos] = useState<ReadonlyMap<string, KudoRow>>(() => new Map());
   const guestWriteHref = useRef<string | null>(null);
+  const { show: showToast, toast } = useStatusToast();
 
   const openRules = useCallback(() => setRulesOpen(true), []);
   const setGuestWriteHref = useCallback((href: string | null) => {
@@ -113,6 +115,7 @@ export function KudosComposerProvider({
           onClose={() => setComposerOpen(false)}
           onSent={() => {
             setComposerOpen(false);
+            showToast(copy.write.success.sent);
             router.refresh();
           }}
           locale={locale}
@@ -124,10 +127,12 @@ export function KudosComposerProvider({
           onSaved={(kudo) => {
             setSavedKudos((previous) => new Map(previous).set(kudo.id, kudo));
             setComposerOpen(false);
+            showToast(copy.write.success.saved);
             router.refresh();
           }}
         />
       )}
+      {toast}
     </KudosComposerContext.Provider>
   );
 }

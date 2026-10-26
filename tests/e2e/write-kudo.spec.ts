@@ -638,11 +638,12 @@ test.describe("Viết Kudo: Hủy, Gửi", () => {
     });
   }
 
-  test("ID-47 one tag, no image: the RPC gets the picked recipient, title, content, slug; modal closes", async ({ page, request }) => {
+  test("ID-47 one tag, no image: the RPC gets the picked recipient, title, content, slug; modal closes with a success toast", async ({ page, request }) => {
     const sub = await openWriteModal(page, request);
     await fillKudo(page);
     await sendButton(page).click();
     await expect(writeDialog(page)).toBeHidden();
+    await expect(page.getByRole("status").filter({ hasText: "Đã gửi lời cám ơn thành công!" })).toBeVisible();
     const calls = await createCalls(request, sub);
     expect(calls).toHaveLength(1);
     expect(calls[0]).toMatchObject({

@@ -87,6 +87,7 @@ export const kudosCompose: Dictionary["kudosCompose"] = {
     anonymous: { label: "Send thanks and recognition anonymously", aliasLabel: /* not from Figma */ "Anonymous name" },
     actions: { cancel: "Cancel", send: "Send", save: /* not from Figma */ "Save" },
     edit: { title: /* not from Figma */ "Edit your Kudo", pencil: /* not from Figma */ "Edit Kudo" },
+    success: { sent: /* not from Figma */ "Your Kudos has been sent!", saved: /* not from Figma */ "Your changes have been saved!" },
     errors: {
       imageFormat: /* not from Figma */ "Invalid file format",
       imageSize: /* not from Figma */ "Image must be 5 MB or smaller",

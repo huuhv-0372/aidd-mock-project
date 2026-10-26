@@ -101,6 +101,10 @@ export const kudosCompose: KudosComposeMessages = {
     actions: { cancel: "Hủy", send: "Gửi", save: "Lưu" },
     /* Edit mode (MoMorph 419VXmMy6I): the title is the screenshot text; the pencil name is not from Figma. */
     edit: { title: "Chỉnh sửa bài viết của bạn", pencil: "Chỉnh sửa Kudo" },
+    success: {
+      sent: "Đã gửi lời cám ơn thành công!" /* not from Figma */,
+      saved: "Đã lưu thay đổi!" /* not from Figma */,
+    },
     errors: {
       imageFormat: "Định dạng file không hợp lệ" /* not from Figma */,
       imageSize: "Ảnh tối đa 5 MB" /* not from Figma */,
