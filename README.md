@@ -1,187 +1,692 @@
 # SAA 2025 (AIDD mock project)
 
-Next.js 16 (App Router, TypeScript) + Tailwind CSS v4. Supabase Auth (Google login, `@sun-asterisk.com` accounts only) is wired in; it deploys to Cloudflare Workers through OpenNext (`wrangler.jsonc`, `open-next.config.ts`). See `CLAUDE.md` for the stack and conventions.
+Website sự kiện **Sun\* Annual Awards 2025** kèm hệ thống ghi nhận **Sun\* Kudos**: Sunner đăng nhập bằng tài khoản Google công ty, gửi lời cảm ơn cho đồng đội, thả tim, xem bảng Live và hồ sơ của nhau. Quản trị viên có thêm khu Admin để quản lý người dùng.
+Dự án mock AIDD, dựng bằng **Next.js 16** (App Router) và **Supabase**, chạy trên **Cloudflare Workers** qua OpenNext. Giao diện có hai ngôn ngữ (tiếng Việt mặc định, tiếng Anh).
 
-## Run
+---
+
+## Mục lục
+
+- [Tech Stack](#tech-stack)
+- [Yêu cầu](#yêu-cầu)
+- [Quick Start](#quick-start)
+- [Cấu trúc dự án](#cấu-trúc-dự-án)
+- [Cấu hình](#cấu-hình)
+- [Cơ sở dữ liệu và migration](#cơ-sở-dữ-liệu-và-migration)
+- [Dữ liệu mẫu](#dữ-liệu-mẫu)
+- [Trang và đường dẫn](#trang-và-đường-dẫn)
+- [Phần 1: Người dùng (Sunner)](#phần-1-người-dùng-sunner)
+  - [Tính năng đã làm](#tính-năng-đã-làm)
+  - [Tính năng sẽ làm sau](#tính-năng-sẽ-làm-sau)
+- [Phần 2: Quản trị (Admin)](#phần-2-quản-trị-admin)
+  - [Tính năng đã làm](#tính-năng-đã-làm-1)
+  - [Tính năng sẽ làm sau](#tính-năng-sẽ-làm-sau-1)
+- [Server Actions và Route Handlers](#server-actions-và-route-handlers)
+- [Vai trò và phân quyền](#vai-trò-và-phân-quyền)
+- [Kiểm thử](#kiểm-thử)
+- [Triển khai](#triển-khai)
+- [Tài liệu khác](#tài-liệu-khác)
+
+---
+
+## Tech Stack
+
+| Tầng | Công nghệ | Phiên bản |
+|---|---|---|
+| Framework | Next.js (App Router, TypeScript) | 16.4.3 |
+| UI | React | 19.3.0 |
+| Ngôn ngữ | TypeScript | ^5 |
+| Giao diện | Tailwind CSS v4 (CSS-first, `@theme` trong `app/globals.css`) | ^4 |
+| Soạn thảo | Tiptap (`@tiptap/*`, ghim phiên bản) | 3.31.4 |
+| Kiểm tra dữ liệu | zod | ^4.6.6 |
+| Xác thực, CSDL, lưu ảnh | Supabase (`@supabase/ssr`, `@supabase/supabase-js`) | ^0.12.7, ^2.117.3 |
+| Chạy trên Cloudflare | `@opennextjs/cloudflare` + Wrangler | 1.20.11, ^4.151.0 |
+| Unit test | Vitest | ^5.0.3 |
+| E2E test | Playwright | ^1.64.0 |
+| Lint | ESLint (`eslint-config-next` 16.4.3) | ^9 |
+
+Phiên bản lấy từ `package.json` trên nhánh `main`.
+
+---
+
+## Yêu cầu
+
+| Công cụ | Yêu cầu |
+|---|---|
+| **Node.js** | 22.12 trở lên (máy phát triển dùng v24). Next.js 16 cần ≥ 20.9, Vitest 5 cần `^22.12 \|\| ^24 \|\| >=26` |
+| **npm** | đi kèm Node |
+| **Supabase** | một project (Google provider bật), để chạy với dữ liệu thật |
+| **Cloudflare** | tài khoản Workers, chỉ cần khi triển khai |
+
+Không cần project Supabase để chạy test: E2E dùng Supabase giả.
+
+---
+
+## Quick Start
+
+### 1. Lấy mã nguồn và cài thư viện
 
 ```bash
+git clone https://github.com/huuhv-0372/aidd-mock-project.git
+cd aidd-mock-project
 npm install
-cp .env.example .env.local   # then adjust EVENT_START_AT, AWARDS_CEREMONY_AT and the Supabase keys
-npm run dev                  # http://localhost:3000
 ```
 
-| Command | What it does |
+### 2. Tạo file biến môi trường
+
+```bash
+cp .env.example .env.local
+```
+
+Sửa `EVENT_START_AT`, `AWARDS_CEREMONY_AT` và hai khoá Supabase (xem [Cấu hình](#cấu-hình)). Muốn xem trang đếm ngược thì đặt `EVENT_START_AT` ở tương lai.
+
+### 3. Chạy server phát triển
+
+```bash
+npm run dev    # http://localhost:3000
+```
+
+Trước giờ `EVENT_START_AT` mọi trang đều chuyển về `/countdown`; để vào thẳng trang chủ, đặt `EVENT_START_AT` ở quá khứ. Đăng nhập thật cần chạy migration trên Supabase (xem [Cơ sở dữ liệu và migration](#cơ-sở-dữ-liệu-và-migration)).
+
+### 4. Chạy E2E lần đầu
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+### Các lệnh khác
+
+| Lệnh | Tác dụng |
 |---|---|
-| `npm run dev` | Dev server |
-| `npm run build` | Production build |
-| `npm run start` | Serve the production build |
+| `npm run dev` | Server phát triển |
+| `npm run build` | Build production |
+| `npm run start` | Chạy bản build production |
 | `npm run lint` | ESLint |
-| `npm test` | Unit tests (Vitest, `tests/unit/`) |
-| `npm run preview` | OpenNext build, then a local workerd preview of the Worker |
-| `npm run deploy` | OpenNext build, then `opennextjs-cloudflare deploy` |
-| `npm run test:e2e` | `next build` then Playwright (`tests/e2e/`); starts four app servers on ports 3100-3103 plus a test-only fake Supabase on 127.0.0.1:54398 |
+| `npm test` | Unit test (Vitest, `tests/unit/`) |
+| `npm run test:e2e` | `next build` rồi Playwright (`tests/e2e/`) |
+| `npm run preview` | Build OpenNext rồi xem thử Worker cục bộ trên workerd |
+| `npm run deploy` | Build OpenNext rồi `opennextjs-cloudflare deploy` |
 
-First time running e2e: `npx playwright install chromium`.
+---
 
-## Prelaunch gate
+## Cấu trúc dự án
 
-`proxy.ts` gates every route on the server environment variable `EVENT_START_AT` (see `.env.example`):
+```
+aidd-mock-project/
+├── proxy.ts                  # Cổng prelaunch, làm mới phiên, chặn mặc định, rewrite ngôn ngữ
+├── app/
+│   ├── [locale]/             # Mọi trang (URL công khai không mang mã ngôn ngữ)
+│   │   ├── page.tsx          # Trang chủ /
+│   │   ├── login/  countdown/  awards-information/  tieu-chuan-chung/  403/
+│   │   ├── sun-kudos/        # Bảng Live và [id] (xem một Kudo)
+│   │   ├── profile/          # Hồ sơ của mình và [id] (người khác)
+│   │   ├── admin/            # Khu Admin: users/ và users/export (CSV)
+│   │   ├── not-found.tsx  forbidden.tsx  [...rest]/   # Trang 404, 403
+│   │   └── layout.tsx
+│   ├── auth/callback/        # Route handler OAuth (nằm ngoài [locale])
+│   ├── fonts/  globals.css   # Font LED, token Tailwind @theme
+├── components/
+│   ├── admin/  awards/  countdown/  errors/  home/  login/  not-found/  standards/
+│   ├── kudos/                # Bảng Live, thẻ Kudo, tim, xem Kudo
+│   ├── kudos-compose/        # Modal Viết/Sửa Kudo (Tiptap), panel Thể lệ
+│   ├── profile/              # Trang hồ sơ
+│   ├── site-shell/           # Header, footer, widget nổi dùng chung
+│   └── ui/                   # Bộ chọn ngôn ngữ, toast dùng chung
+├── lib/
+│   ├── admin/  auth/  awards/  countdown/  event/  i18n/
+│   ├── kudos/  profiles/  navigation/       # Dữ liệu, Server Action, hàm thuần
+│   ├── supabase/             # env, client phía server, làm mới phiên
+│   └── validation/           # Schema zod dùng chung
+├── messages/{vi,en}/         # Toàn bộ chữ giao diện; en phải thoả kiểu của vi
+├── supabase/
+│   ├── migrations/  verify/  rollbacks/     # SQL chạy tay trong SQL Editor
+│   └── seed/                 # Dữ liệu demo (chỉ môi trường demo)
+├── tests/
+│   ├── unit/                 # Vitest
+│   └── e2e/                  # Playwright + support/ (Supabase giả)
+├── docs/                     # Tài liệu kỹ thuật, spec, changelog, screenshots/
+├── public/                   # images/, _headers (cache asset tĩnh)
+├── patches/                  # Bản vá @opennextjs/cloudflare (áp qua postinstall)
+├── plans/                    # Kế hoạch, báo cáo từng tính năng
+├── wrangler.jsonc  open-next.config.ts  next.config.ts
+└── playwright.config.ts  vitest.config.ts  .env.example
+```
 
-- Before that time, every route except `/countdown` and static assets redirects (307) to `/countdown`.
-- After that time, `/countdown` redirects to `/login`; the gate lets other routes through (see Access control below for who may open them).
-- `EVENT_START_AT` missing or invalid: the gate stays open (no countdown) and an error is logged on the server.
-- Format: ISO 8601 with an explicit offset, e.g. `2025-12-01T09:00:00+07:00`. Server-only, never prefix with `NEXT_PUBLIC_`.
+Mỗi file giữ dưới khoảng 200 dòng, đặt tên kebab-case. Quy ước đầy đủ: [`CLAUDE.md`](CLAUDE.md). Vai trò từng file: [`docs/codebase-summary.md`](docs/codebase-summary.md).
 
-Once the event starts (or the countdown reaches zero) the redirect lands on `/login`.
+---
 
-To preview the countdown locally, set `EVENT_START_AT` to a future time in `.env.local`.
+## Cấu hình
 
-## Access control (default-deny)
+Mẫu nằm ở `.env.example`. Biến `NEXT_PUBLIC_*` đọc lúc chạy nên build không cần chúng.
 
-After the gate, `proxy.ts` refreshes the session and an anonymous visitor may open only the exact paths in `PUBLIC_PATHS` (`lib/auth/constants.ts`): `/` (the homepage: guests see it with a login link in the header), `/login`, `/auth/callback`, `/countdown`, `/tieu-chuan-chung` (the community standards page, public by owner decision 2026-10-21), `/403` (the access-denied page, public by owner decision 2026-10-21: it carries no data). Every other path redirects (307) to `/login` (a guest on exactly `/sun-kudos/<guid>` gets `/login?next=/sun-kudos/<guid>` so sign-in returns to that Kudo, see Login below; unknown paths included, so a guest cannot probe which paths exist; a path of only slashes such as `//` counts as `/`). Add new public routes to that list. Static assets excluded by the matcher in `proxy.ts` do not go through this check. If the Supabase env is missing everyone counts as signed out, so everything outside the list redirects to `/login`. The proxy is only the first layer: pages that serve data must re-verify the session on the server.
+| Biến | Bắt buộc | Ví dụ | Dùng để |
+|---|---|---|---|
+| `EVENT_START_AT` | nên đặt (thiếu thì cổng mở và server log lỗi) | `2026-12-01T09:00:00+07:00` | Mốc mở trang web; trước mốc này mọi route chuyển về `/countdown`. **Chỉ phía server** |
+| `AWARDS_CEREMONY_AT` | nên đặt (thiếu thì đếm ngược trang chủ hiện `00`) | `2026-12-26T18:30:00+07:00` | Mốc lễ trao giải mà đếm ngược trang chủ nhắm tới. **Chỉ phía server** |
+| `NEXT_PUBLIC_SUPABASE_URL` | bắt buộc (thiếu thì mọi người bị coi là chưa đăng nhập) | `https://your-project-ref.supabase.co` | URL project Supabase |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | bắt buộc | `sb_publishable_xxx` | Khoá publishable (công khai theo thiết kế, RLS bảo vệ dữ liệu) |
 
-## Homepage (`/`)
+- Hai biến thời gian dùng ISO 8601 có offset tường minh. Không bao giờ đặt tiền tố `NEXT_PUBLIC_` cho biến chỉ dành cho server hay cho secret.
+- Tên khoá Supabase vẫn đang được đổi: kiểm tên đúng trên dashboard Supabase (trang API keys) trước khi dùng.
+- Trên Worker, hai biến thời gian là mục `vars` trong `wrangler.jsonc` (cả `previews.vars` cho Worker Previews). Khoá Supabase đặt theo môi trường trên dashboard Cloudflare hoặc `wrangler secret put`; **không** để secret thật trong `vars` vì dễ bị commit nhầm dạng plaintext. `keep_vars: true` giữ chúng qua các lần deploy.
+- Dashboard Supabase: bật provider **Google**, thêm `<origin>/auth/callback` vào danh sách redirect URL, tắt provider Email, Phone và Anonymous.
 
-The SAA homepage (`app/[locale]/page.tsx`, `components/home/` plus the shared shell in `components/site-shell/`, images in `public/images/home/`) is reachable only after launch, and is public: guests and signed-in users both get it. Its countdown targets the awards ceremony time from the server-only env `AWARDS_CEREMONY_AT` (ISO 8601 with an explicit offset, e.g. `2026-12-26T18:30:00+07:00`; see `.env.example`), read in `lib/event/get-awards-ceremony-at.ts`. `EVENT_START_AT` only drives the prelaunch gate. If `AWARDS_CEREMONY_AT` is missing or invalid, the server logs `[home-countdown] AWARDS_CEREMONY_AT missing or invalid` and the countdown shows `00` with "Coming soon" hidden (same once the time has passed). On the Worker it is a `vars` entry in `wrangler.jsonc`.
+---
 
-- Header controls depend on the session, read on the server by `components/site-shell/header-session-controls.tsx` (`getIsAuthenticated()` in `lib/auth/get-is-authenticated.ts`, verified with `getClaims()`; any failure counts as a guest). It sits inside `<Suspense>` with a same-size placeholder as fallback, so `/` stays Partial Prerender. Signed in: notification bell plus account menu. Guest: a "Đăng nhập" link to `/login` (`components/site-shell/login-link.tsx`). The language selector is always shown.
-- Account menu (signed in only): Profile (`/profile`), Dashboard (admins only, to `/admin`, see Admin below) and Sign out. Sign out is the server action `lib/auth/sign-out.ts` (`scope: local`, this browser only) and always ends on `/login`. The Dashboard item shows only when the database says the viewer is an admin (`getIsAdmin()` in `lib/admin/get-is-admin.ts`, called by `header-session-controls.tsx` only after the session check, because `is_admin` is not granted to `anon`).
-- The notification bell (signed in only) opens an empty panel (no notification data yet). The language selector (`components/ui/language-selector.tsx`, shared with `/login`) switches VI/EN (see Language below).
-- Nav, CTA and award links point to `/awards-information` (with `#<slug>` per award), `/sun-kudos`, `/tieu-chuan-chung`, `/profile` (constants in `lib/navigation/routes.ts`). `/awards-information`, `/sun-kudos`, `/tieu-chuan-chung` and `/profile` are built (see below).
-- Error pages (no header/footer; title, illustration, description and a "Về trang chủ" / "Back to home" button; shared frame `components/errors/error-screen.tsx`, images in `public/images/errors/`, copy in `messages/{vi,en}/not-found.ts` and `forbidden.ts`). **404** (`not-found.tsx`): a signed-in user on a path that does not exist gets HTTP 404 with this page; a guest on such a path is still redirected to `/login` (default-deny, see above). **403** (`forbidden.tsx`): `experimental.authInterrupts` is on in `next.config.ts`, so any route can `import { forbidden } from "next/navigation"` and call `forbidden()` to answer with this page; call it before the response starts streaming, otherwise the status stays 200. `/403` (`app/[locale]/403/page.tsx`) calls it as a public preview and returns HTTP 403. The home buttons are not in Figma (kept on request). The EN 404 copy and the EN 403 title come from Figma; the EN 403 description and all VI copy are team translations.
-- The standards page (`app/[locale]/tieu-chuan-chung/page.tsx`, blocks in `components/standards/`, copy in `messages/{vi,en}/standards.ts`) is public: the footer "Tiêu chuẩn chung" link and the "Tiêu chuẩn cộng đồng" link in the Viết Kudo toolbar (opens a new tab) both land on it. It has the shared header and footer but no Viết Kudo widget; the footer link is marked `aria-current="page"` through `SiteFooter`'s optional `activeHref`.
-- Hero image is now a ~315 KB WebP (`public/images/home/keyvisual-bg.webp`). `next/image` optimization on the Worker goes through the `IMAGES` binding in `wrangler.jsonc`.
+## Cơ sở dữ liệu và migration
 
-## Awards Information (`/awards-information`)
+Dự án **không dùng Supabase CLI**. Các file SQL trong `supabase/` được dán tay vào **Supabase SQL Editor** (role `postgres`); mỗi migration chạy trong một transaction và chạy lại được.
 
-The awards page (`app/[locale]/awards-information/page.tsx`, blocks in `components/awards/`) is not in `PUBLIC_PATHS`, so it needs a signed-in user: anonymous visitors are redirected (307) to `/login`. It reuses the header, footer, Kudos block and widget button from `components/site-shell/` (shared with the homepage). The sticky category menu (`components/awards/awards-nav.tsx`) highlights the award in view and follows `#<slug>` (`useActiveAward` in `components/awards/use-active-award.ts`; pure helpers in `lib/awards/`). The six slugs live in `lib/navigation/routes.ts`. Any path that does not exist renders `app/[locale]/not-found.tsx`.
+**Áp dụng một migration:** (1) chạy theo đúng thứ tự bảng dưới, (2) dán cả file migration rồi Run, (3) chạy file verify, mọi dòng phải PASS (migration `profiles`: chạy từng khối một), (4) cần lùi thì chạy file rollback. Môi trường mới nào cũng phải chạy migration rồi verify: E2E dùng Supabase giả nên không bắt được lỗi SQL.
 
-## Sun* Kudos (`/sun-kudos`)
+| # | Migration (`supabase/migrations/`) | Thêm gì | Áp dụng trên project thật |
+|---|---|---|---|
+| 1 | `20261012133000_create_profiles.sql` | Bảng `profiles` (một dòng mỗi người được phép), quy tắc tài khoản (`@sun-asterisk.com` và Google), RLS, trigger đồng bộ từ Google, chốt chặn đăng ký | chưa ghi trong repo |
+| 2 | `20261015100000_create_kudos.sql` | 10 bảng Kudos (danh mục phòng ban, hashtag, quà; Kudo, ảnh, tim, hộp bí mật, quà tặng), 2 trigger tim, 5 hàm đọc cho bảng Live | 2026-10-15, verify 20/20 |
+| 3 | `20261019110000_create_kudo_write.sql` | `create_kudo`, `kudos_search_sunners`, bucket ảnh `kudo-images` kèm policy | 2026-10-19, verify 16/16 |
+| 4 | `20261020150000_create_kudo_heart_rpc.sql` | `set_kudo_heart` (thả/bỏ tim) | 2026-10-20, verify 7/7 |
+| 5 | `20261021120000_create_kudo_detail_rpc.sql` | `kudo_detail` (xem một Kudo) | 2026-10-21, verify 6/6 |
+| 6 | `20261022100000_create_profile_rpcs.sql` | `profile_card`, `kudos_profile_feed` (trang hồ sơ) | 2026-10-22, verify 14/14 |
+| 7 | `20261023100000_create_update_kudo_rpc.sql` | `update_kudo` (sửa Kudo mình gửi) | 2026-10-23, verify 11/11 |
+| 8 | `20261024100000_create_admin_users.sql` | `profiles.role`, `is_admin`, `admin_list_users`, `admin_set_user_role` | 2026-10-23, verify 24/24 |
 
-The Live board (`app/[locale]/sun-kudos/page.tsx`, blocks in `components/kudos/`, data and helpers in `lib/kudos/`) is not in `PUBLIC_PATHS`, so it needs a signed-in user. It shows Highlight Kudos, the Spotlight Board (streamed in its own `<Suspense>`), All Kudos with infinite scroll (Server Action `loadMoreKudos`), personal stats and the latest gift recipients. The compose pill opens the write modal (see Write Kudo below); the "Tìm kiếm profile Sunner" pill next to it is a type-ahead combobox (Server Action `searchProfiles`, up to 10 Sunners by name or email, a pick opens `/profile/<id>`); hearts are toggled in place (see Like Kudos below). Filters live in the URL (`?hashtag=<slug>&department=<code>`; unknown values are ignored). Each block loads independently: a failed read is logged on the server and only that block shows a generic error.
+Mỗi migration có `supabase/verify/<tên>_verify.sql` và `supabase/rollbacks/<tên>_down.sql` cùng tên.
 
-Data comes from `supabase/migrations/20261015100000_create_kudos.sql`: ten tables with RLS on all of them, read only through five `SECURITY DEFINER` functions (`kudos_feed`, `kudos_highlight`, `kudos_spotlight`, `kudos_my_stats`, `kudos_latest_gift_recipients`), because an anonymous Kudo must hide its sender and RLS cannot hide a column. Apply it by hand like the profiles migration (it adds a foreign key on `profiles.department` and briefly locks `profiles`: run off-peak), then run `supabase/verify/20261015100000_create_kudos_verify.sql`. It was applied to the real Supabase project on 2026-10-15 and the verify script passed 20/20; run it the same way in each new environment. Rollback: `supabase/rollbacks/20261015100000_create_kudos_down.sql`. Demo data (demo environments only, never production): `supabase/seed/20261015_kudos_demo_seed.sql`, removed by `kudos_demo_seed_cleanup.sql`. Open product question: whether hearts count for the sender or the recipient (currently the sender, one line in `kudos_my_stats`). Details: `docs/codebase-summary.md`.
+**Lưu ý trước khi chạy:**
 
-## View Kudo (`/sun-kudos/<id>`)
+- Migration 1: tắt provider Email, Phone, Anonymous trước; migration khoá ngắn `auth.users` và `auth.identities`, nên chạy ngoài giờ cao điểm.
+- Migration 2 và 8 khoá ngắn bảng `profiles` (mọi lượt đăng nhập đều ghi bảng này): chạy ngoài giờ cao điểm.
+- **Chạy migration trước khi deploy app.** Riêng migration 8: thiếu `is_admin()` thì app khoá khi lỗi (không ai là admin) và log lỗi ở mọi trang của người đã đăng nhập.
+- Rollback migration 1 xoá cả mọi dòng `profiles`; rollback 4 đến 7 chỉ xoá hàm tương ứng, dữ liệu giữ nguyên.
 
-One Kudo in full (`app/[locale]/sun-kudos/[id]/page.tsx`, Figma 520:18779; frame in `components/kudos/kudo-detail-{layout,card,close-button}.tsx`). Not in `PUBLIC_PATHS`: signed-in only. It is reached from "Xem chi tiết" on a Highlight card, the content box of an All Kudos card, the Spotlight Board and any shared Copy Link URL (`kudoDetailHref` in `lib/navigation/routes.ts`). A malformed id (`kudoIdSchema`, checked before any query) or an id with no row answers HTTP 404 through `notFound()`; a failed read shows a generic error inside the frame (details only in the server log). Data comes from the RPC `kudo_detail(p_id uuid)` (`lib/kudos/get-kudo-detail.ts`), which returns the same row shape as the feed and hides the sender of an anonymous Kudo.
+**Bảng và hàm chính:**
 
-The stored Markdown subset is rendered with its formatting by `components/kudos/kudo-rich-content.tsx` on top of `lib/kudos/kudo-content-blocks.ts`: bold, italic, strike, numbered lists, quotes, links and `@Name` mentions (shown as bold text). Everything goes through React (no `dangerouslySetInnerHTML`), only absolute `http(s)` links become `<a>` (new tab, `rel="noopener noreferrer"`; `URL.canParse` runs first so invalid targets stay cheap), `@Name` is a mention only when its target is uuid-shaped, and the parser is linear on untrusted text. The serializer escapes a typed line-start `N.` or `>` (`N\.`, `\>`) so it stays text; a bare marker from older content (`2025.` with nothing continuing it, a quote of only `>`) also reads as text. The board card text (`lib/kudos/kudo-plain-text.ts`) strips only the markers this page reads. Keyboard focus rings on cream Kudo cards use the dark `login-bg` colour (`components/kudos/kudo-card-focus-ring.ts`), and Montserrat loads 400/500/700/800/900. The Close button goes back only when the previous same-site Navigation API entry exists and is not `/login`, otherwise to `/sun-kudos`. The page has no footer and no Write-KUDOS widget (the design has neither).
+| Nhóm | Nội dung |
+|---|---|
+| Người dùng | `profiles` (`id`, `email`, `full_name`, `avatar_url`, `department`, `role`): chỉ đọc cho người đã đăng nhập đạt quy tắc tài khoản, không ai ghi được từ trình duyệt |
+| Kudos | `kudos`, `kudo_hashtags`, `kudo_images`, `kudo_hearts`; danh mục `departments`, `hashtags`, `gifts`; `special_heart_days`, `secret_boxes`, `gift_awards`. Mọi bảng bật RLS; trình duyệt không đọc trực tiếp bảng giao dịch |
+| Hàm đọc | `kudos_feed`, `kudos_highlight`, `kudos_spotlight`, `kudos_my_stats`, `kudos_latest_gift_recipients`, `kudo_detail`, `profile_card`, `kudos_profile_feed`, `kudos_search_sunners` |
+| Hàm ghi | `create_kudo`, `update_kudo`, `set_kudo_heart`, `admin_set_user_role` |
+| Admin | `is_admin`, `admin_list_users` |
+| Lưu ảnh | Storage bucket `kudo-images` (đọc công khai theo URL, tải lên và xoá chỉ với ảnh của chính mình) |
 
-Apply `supabase/migrations/20261021120000_create_kudo_detail_rpc.sql` by hand like the others (needs the profiles and kudos migrations first; idempotent, one transaction), then run `supabase/verify/20261021120000_create_kudo_detail_rpc_verify.sql` (every row must be PASS). Rollback: `supabase/rollbacks/20261021120000_create_kudo_detail_rpc_down.sql`. **Status: applied on the real Supabase project on 2026-10-21; verify 6/6 PASS** (owner confirmation, `plans/261021-view-kudo/clarifications.md`). E2E (`tests/e2e/kudo-detail.spec.ts`) uses the fake Supabase, so run migration and verify in each new environment.
+Mọi hàm đều `SECURITY DEFINER`, kiểm quy tắc tài khoản trước tiên và chỉ cấp cho người đã đăng nhập. Vì sao Kudo ẩn danh phải đọc qua hàm: RLS không giấu được một cột. Chi tiết từng migration, trạng thái áp dụng, ghi chú bảo mật: [`docs/technical-overview.md`](docs/technical-overview.md#16-cơ-sở-dữ-liệu-và-migration).
 
-## Profile (`/profile`, `/profile/<id>`)
+---
 
-Two routes, one view (`app/[locale]/profile/page.tsx` = the caller's own profile, Figma 362:5037; `app/[locale]/profile/[id]/page.tsx` = another Sunner, Figma 362:5097; blocks in `components/profile/`, data in `lib/profiles/`). Neither is in `PUBLIC_PATHS`: a guest is redirected (307) to `/login` with no `next` (the post-login allow-list only takes `/sun-kudos/<guid>`). `/profile/<own id>` (any letter case) redirects to `/profile`. A malformed id (`profileIdSchema`, `z.guid()`, checked before any query), an unknown id, or a caller with no profile card answers HTTP 404 through `notFound()`; a failed read shows a generic error inside the page frame (details only in the server log). Tab titles: "Hồ sơ của tôi | SAA 2025" / "My profile | SAA 2025" and "{name} | SAA 2025". Header and footer both mark "Sun* Kudos" as the current page; there is no Write-KUDOS widget. Name links on Kudo cards and the gift-recipient list (`profileHref` in `lib/navigation/routes.ts`) now land here instead of the 404 page.
+## Dữ liệu mẫu
 
-- Both faces: hero (avatar, name, department, Hero badge and stars), then six grey icon slots (the Secret Box is not built, so they stay empty and unlabelled).
-- Own profile: the statistics card (`KudosStatsPanel` with `spacious`, data from `kudos_my_stats`) and a KUDOS section with a dropdown, "Đã nhận" (default) / "Đã gửi". Picking the other option loads its first page; re-picking the current one does nothing.
-- Another Sunner: a write bar "Gửi lời cám ơn và ghi nhận tới {tên}" that opens Viết Kudo with that Sunner already in the recipient box (`openComposer({ recipient })`, still editable), and a static "Đã nhận: N Kudos" in place of the dropdown. Their "sent" side is never offered.
-- Both lists use `KudoPostCard` and infinite scroll (10 cards per page, Server Action `loadMoreProfileKudos`, input validated with zod in `lib/validation/profile.ts`).
+**Dữ liệu demo trên Supabase (chỉ môi trường demo hoặc staging, không bao giờ chạy trên production):**
 
-Data comes from two read-only RPCs, `profile_card(p_id uuid)` (the person JSON the board already embeds: no email; `null` for an unknown id or a refused account) and `kudos_profile_feed(p_profile, p_direction, p_cursor_created_at, p_cursor_id, p_limit)` (keyset page, newest first, through `kudos_rows`, so an anonymous Kudo still hides its sender). Both are `SECURITY DEFINER`, check the account rule first, are revoked from `public` and `anon` and granted to `authenticated` only. `received` works for any profile; **`sent` is served only when `p_profile` is the caller's own id**, any other profile gets 0 rows, because someone else's sent list would reveal which anonymous Kudos they wrote. The `sent` filter uses `auth.uid()`, never `p_profile` alone.
+| File | Tác dụng |
+|---|---|
+| `supabase/seed/20261015_kudos_demo_seed.sql` | Tạo 20 Sunner demo (`demo.sunner01..20@sun-asterisk.com`, không mật khẩu nên không ai đăng nhập được), 60 Kudo trong khoảng 28 ngày qua kèm hashtag, ảnh, tim, hộp bí mật, 12 lượt tặng quà; thêm vài Kudo, tim và hộp bí mật cho mọi profile thật để thống kê cá nhân không toàn số 0. Cần migration 2. Chạy lại được |
+| `supabase/seed/kudos_demo_seed_cleanup.sql` | Xoá mọi dòng seed đã thêm (cả Kudo liên quan người dùng demo); dữ liệu người dùng thật tự tạo không bị đụng |
 
-Apply `supabase/migrations/20261022100000_create_profile_rpcs.sql` by hand like the others (needs the profiles and kudos migrations first; idempotent, one transaction; no table, index or data change), then run `supabase/verify/20261022100000_create_profile_rpcs_verify.sql` (every row must be PASS). Rollback: `supabase/rollbacks/20261022100000_create_profile_rpcs_down.sql`. **Status: run on the real Supabase project on 2026-10-22, verify 14/14 PASS** (owner confirmation, `plans/261021-profile/clarifications.md`); run it the same way in each new environment. E2E (`tests/e2e/profile.spec.ts`) uses the fake Supabase (`tests/e2e/support/profile-fixtures.mjs`), so it cannot catch a SQL mistake.
+Seed cũng là nơi duy nhất điền cột `profiles.department` (đăng nhập không ghi cột này), nên bộ lọc phòng ban của Admin chỉ có dữ liệu sau khi chạy seed.
 
-Shared pieces changed with this page: the title pencil on `KudoPostCard` now shows only on a Kudo the viewer sent (`is_mine`), on the board too (owner decision 2026-10-22; since 2026-10-23 it is the Edit Kudo button, see below); `components/kudos/kudos-kv-backdrop.tsx` holds the key-visual band used by the board banner, View Kudo and Profile. Known limits: the other-Sunner frame has no MoMorph node (built from an image the owner supplied); the strings marked `not from Figma` in `messages/{vi,en}/profile.ts` (tab titles, load error, "Sunner" fallback name, Sent label without a count, empty Sent line) await organizer review. Details: `docs/codebase-summary.md`.
+**Dữ liệu E2E:** `npm run test:e2e` không dùng Supabase thật. Một server Supabase giả (`tests/e2e/support/fake-supabase-server.mjs`, cổng 54398) trả dữ liệu giả từ `tests/e2e/support/*`. **Ảnh màn hình trong README này chụp trên dữ liệu giả đó**, nên tên, Kudo và số liệu trong ảnh không phải dữ liệu thật.
 
-## Like Kudos (#13)
-
-The heart on a Kudo card (`components/kudos/kudo-hearts.tsx`) is a toggle button (`aria-pressed`). One provider (`KudoHeartsProvider`, `components/kudos/kudo-hearts-store.tsx`, mounted in `app/[locale]/sun-kudos/page.tsx`) holds the state of every card, so a Kudo shown in both Highlight and All Kudos changes in both. A click flips the heart and the count at once and locks the button (`aria-disabled`, extra clicks dropped) until the server answers; the answer replaces the guess. A refusal or failure puts the old value back and shows a toast (`hearts.error` in `messages/{vi,en}/kudos.ts`; the toast is the shared `components/ui/status-toast.tsx`, also used by Copy Link). The viewer's own Kudo has a `disabled` heart.
-
-The Server Action `setKudoHeart` (`lib/kudos/set-kudo-heart-action.ts`) validates `{ kudoId, liked }` with zod (`setKudoHeartInputSchema` in `lib/validation/kudos.ts`), calls the RPC `set_kudo_heart(p_kudo_id uuid, p_liked boolean)` and returns the database's `liked` and `heart_count`; errors are logged and the client only gets `"own"` or `"generic"`. The RPC **sets** the state (it is not a toggle, so repeated or overlapping calls cannot flip each other), is the only write path to `kudo_hearts`, is granted to `authenticated` only, and refuses with SQLSTATE `22023` and the message `forbidden`, `not_found` or `own_kudo` (checked in that order). The x1/x2 award stays in the triggers of `20261015100000_create_kudos.sql`: `hearts_awarded` is 2 while a row of `special_heart_days` covers now (configured by SQL only, no admin UI), so unliking takes back exactly what the like gave. Hearts are credited to the Kudo's **sender** (`kudos_my_stats.hearts_received`); the number on a card is the count of likes (`heart_count`), not the hearts awarded.
-
-Apply `supabase/migrations/20261020150000_create_kudo_heart_rpc.sql` by hand like the others (needs the profiles and kudos migrations first; idempotent, one transaction), then run `supabase/verify/20261020150000_create_kudo_heart_rpc_verify.sql` (checks H1-H6, every row must be PASS; its writes are rolled back). Rollback: `supabase/rollbacks/20261020150000_create_kudo_heart_rpc_down.sql` (removes only the RPC; hearts already given stay). **Status: applied on the real Supabase project on 2026-10-20, verify 7/7 PASS (H1-H6 + H1b), plus a real like through Google sign-in**; run migration and verify in each new environment. E2E (`tests/e2e/kudo-hearts.spec.ts`) uses the fake Supabase, which mirrors the RPC in `tests/e2e/support/kudo-hearts-fake.mjs`.
-
-## Write Kudo (#12)
-
-The floating widget on `/`, `/awards-information` and `/sun-kudos` (`components/site-shell/widget-button.tsx`) opens a menu: "Thể lệ" (rules panel), "Viết KUDOS" (write modal) and a close button. The pill A.1 on `/sun-kudos` opens the same modal. Each of the three pages is wrapped in `KudosComposer` (`components/kudos-compose/`), and so are the Profile pages (no widget there; the write bar on another Sunner's profile calls `openComposer({ recipient })`). On `/`, which is public, the widget reads the session in its own `<Suspense>` (`WidgetSessionGate`): a guest can read the rules, and "Viết KUDOS" links to `/login`. The editor (Tiptap v3, `@tiptap/*` pinned to 3.31.4) is loaded client-side only, on first open.
-
-Recipient and mentions (`components/kudos-compose/recipient-picker.tsx`, `kudo-mention-extension.ts`): "Người nhận" takes plain text (matches name or email) or "@name" (names only). No match shows "Không tìm thấy Sunner phù hợp"; text typed but not picked shows "Hãy chọn người nhận trong danh sách gợi ý". In the editor, "@" lists Sunners at once, names may contain spaces, and the list closes when an unmatched `@word` continues as plain text. "+ Image" disappears once 5 images are attached; typed editor text is weight 500 (Figma only specifies the placeholder). The modal follows the Figma frame `ihQ26W78P2`; only the required asterisk uses `Noto_Sans_JP` 700 (`app/[locale]/layout.tsx`, `preload: false`).
-
-Sending goes through the Server Action `createKudo` (`lib/kudos/create-kudo-action.ts`; helpers `search-sunners-action.ts` and `get-hashtag-options-action.ts` are read-only):
-
-- Input is validated with zod (`lib/validation/write-kudo.ts`): title 1-100 characters, content 1-5000, 1-5 distinct hashtags, up to 5 images, alias up to 50 (anonymous only), a best-effort check that link targets are `http(s)` or `@[Name](uuid)` mentions (it only sees `[label](target)` forms with no `[` in the label: nested-bracket links, `<javascript:…>` autolinks and reference-style links pass, so it is not a barrier even against a forged client). The content length limit is checked first (`abort: true`) so an oversized body never reaches the later checks, and the form also flags it while typing. Content is stored as the Markdown subset `**b** _i_ ~~s~~ 1. > [t](https://…) @[Name](uuid)` (`lib/kudos/kudo-content-markdown.ts`).
-- Images (`lib/kudos/kudo-image-file.ts`): type taken from the magic bytes (JPEG, PNG, WebP), at most 5 MB each, and personal metadata is stripped before upload, best-effort and only on the UI / Server Action path (a direct Storage upload with the publishable key skips it). JPEG keeps only the Orientation tag and drops APP1/APP11/APP13/COM (a deny-list: other APPn segments stay); PNG and WebP metadata chunks and anything after the image are dropped. Files go to the Storage bucket `kudo-images` as flat `{uuid}.{ext}` objects, so the public URL of an anonymous Kudo does not reveal the sender.
-- `next.config.ts` sets `experimental.serverActions.bodySizeLimit` and `experimental.proxyClientMaxBodySize` to `26mb` (5 images of 5 MB plus text in one request). Raise both together.
-- Errors are logged on the server; the client only gets a generic code. Uploaded images are removed only when the Kudo cannot exist (a failure before the RPC is sent, or an RPC error with a code); an unknown outcome such as a network error or timeout keeps them, so orphan images are possible. If the hashtag catalog fails to load, the dropdown shows an alert with "Thử lại"; Esc inside a dropdown in the modal closes only the dropdown.
-
-Apply `supabase/migrations/20261019110000_create_kudo_write.sql` by hand like the others (needs the profiles and kudos migrations first), then run `supabase/verify/20261019110000_create_kudo_write_verify.sql` (every row must be PASS). Rollback: `supabase/rollbacks/20261019110000_create_kudo_write_down.sql`. It adds the RPCs `create_kudo` (the only write path; the sender is always `auth.uid()`) and `kudos_search_sunners(p_query, p_limit, p_name_only)` (name or email match with exact email first, `p_name_only` = names only, a blank query lists up to 10 named Sunners, never returns email), the helper `kudos_unaccent`, and the bucket `kudo-images` with own-object INSERT/SELECT/DELETE policies. **Status: run on the real Supabase project on 2026-10-19, verify 16/16 PASS**, plus one real authenticated upload (`plans/261019-1022-write-kudos/reports/db-verify-result.md`); run it the same way in each new environment. The E2E tests use a fake Supabase that mirrors this SQL.
-
-Known limits: sending 5 images of 5 MB passed on local workerd only; the Cloudflare 128 MB isolate limit is untested on a deployed Worker (risk accepted by the owner). `create_kudo` does not validate link targets in `content` (only the Server Action does), and the Server Action check is incomplete (see above); the board renders plain text and the View Kudo page sanitises link targets on read (only `http(s)` becomes a link), so the risk is contained at render time, not at write time; any new Markdown renderer must do the same. `kudos_search_sunners` never returns an email, but it matches email substrings, so a signed-in user can probe emails. The English strings in `messages/en/kudos-compose.ts` are our own translations awaiting organizer review (`plans/261019-1022-write-kudos/reports/en-localizations.md`). Details: `docs/codebase-summary.md`.
-
-## Edit Kudo (#19)
-
-The pencil beside the title of a Kudo card (`components/kudos/edit-kudo-button.tsx`, shown only on a Kudo the viewer sent, `is_mine`, on the board and on Profile) is a 44px button, "Chỉnh sửa Kudo" / "Edit Kudo". It calls `useKudosComposer().openEditor(kudo)` and opens the Write Kudo modal in edit mode: heading "Chỉnh sửa bài viết của bạn" (EN "Edit your Kudo"), buttons Hủy and Lưu ("Save"), pre-filled title, content, hashtags, images and alias. The stored Markdown is turned back into the editor document by `lib/kudos/kudo-content-editor-json.ts`, the exact inverse of the serializer, so saving without a change sends the same Markdown. The recipient is read-only and the anonymous state is locked (shown, not editable); the alias stays editable and optional. Images are the kept URLs plus new files, at most 5 in total. After a save the card changes in place: the composer provider keeps the saved row in `savedKudos` and `KudosFeedList` shows it instead of the row it was rendered with (hearts, time and position stay), then the route refreshes. `KudosFeedList` therefore needs `KudosComposerProvider` above it; every place that renders it has one. No edit entry exists yet on the Highlight card or the View Kudo page.
-
-The Server Action `updateKudo` (`lib/kudos/update-kudo-action.ts`) verifies the session, validates with the strict zod `updateKudoSchema` (`lib/validation/write-kudo.ts`; no recipient or anonymous flag accepted), requires every kept image URL to be a `kudo-images` object URL on the Supabase origin (`isOnSupabaseOrigin`), uploads new images through `lib/kudos/upload-kudo-images.ts` (shared with `createKudo`) and calls the RPC `update_kudo`. Images the Kudo dropped are deleted from Storage after the RPC succeeds (best effort, a failure is only logged), then the row is read back through `kudo_detail`. A missing Kudo and another user's Kudo both answer `not_found`; the client only gets `validation`, `server` or `not_found`.
-
-Shared changes that also affect Write Kudo: a counter "N/5.000" (EN "N/5,000") under the editor in both modes (code points of the serialized Markdown, red and blocking send/save above 5000); `\r\n` in the content is normalized to `\n` in the shared schema (browsers send multipart text with CRLF), for create and update; the alias row has a visible inline label from `sm` up (no asterisk, it is optional); removing every hashtag shows "Không được để trống" at once.
-
-Apply `supabase/migrations/20261023100000_create_update_kudo_rpc.sql` by hand like the others (needs the profiles, kudos and kudo_write migrations first; idempotent, one transaction; no table, index, policy or data change), then run `supabase/verify/20261023100000_create_update_kudo_rpc_verify.sql` (every row must be PASS). Rollback: `supabase/rollbacks/20261023100000_create_update_kudo_rpc_down.sql` (removes only the function; saved edits stay, and without it every Save shows the generic error). `update_kudo(p_id, p_title, p_content, p_hashtag_slugs, p_image_urls, p_anonymous_name) → text[]` is `SECURITY DEFINER`, granted to `authenticated` only; it checks the account rule, then locks the caller's own Kudo row (`sender_id = auth.uid()`), never changes recipient, anonymous state, `created_at` or `heart_count`, replaces hashtags and images, and returns the dropped image URLs that no other Kudo holds. **Status: run on the real Supabase project on 2026-10-23, verify 11/11 PASS** (owner confirmation, `plans/261022-edit-kudo/clarifications.md`). E2E (`tests/e2e/edit-kudo.spec.ts`) uses the fake Supabase (`update_kudo` mirrored in `tests/e2e/support/write-kudo-fixtures.mjs`), so it cannot catch a SQL mistake.
-
-Known limits: two tabs editing one Kudo are last-write-wins; View Kudo shows a linked mention as plain text; `update_kudo` does not validate link targets in `content` either (only the Server Action does, the View Kudo page filters on read); `savedKudos` never expires within the provider's life; there is no "edited" marker on the card. The strings marked `not from Figma` in `messages/{vi,en}/kudos-compose.ts` (counter, `edit.pencil`, EN edit strings, `saveFailed`) await organizer review. Details: `docs/codebase-summary.md`.
-
-## Admin (`/admin`, `/admin/users`)
-
-The admin area is for the `admin` role only (`profiles.role`, `user` by default). `/admin` redirects to `/admin/users` (Admin - User, Figma 773:26403; `app/[locale]/admin/`, blocks in `components/admin/`, data in `lib/admin/`). Overview, Review content and Settings are not built: their tabs in the admin header are inert (`aria-disabled`).
-
-- **Who can enter:** a guest is sent to `/login` by the proxy (`/admin` is not in `PUBLIC_PATHS`; after sign-in they land on `/`, not back on `/admin`). A signed-in user who is not an admin gets the 403 page (a real HTTP 403 with no user data in the HTML). The check is `requireAdmin()` (`lib/admin/require-admin.ts`), run by the layout and again by each page; the role is asked of the database on every request (RPC `is_admin()`, never read from the token), and any failure counts as "not admin". Admins also get a "Dashboard" item in the account menu (between Profile and Sign out).
-- **The table:** 20 rows per page. Columns Sent, Received, Total Heart, Level, Badges, Time to get 6 Badges, Last Logged in, Role. Filters Unit, Level, Role; search by name or email (substring, up to 100 characters); sort by any of seven columns. The state lives in the URL: `unit`, `level`, `role`, `q`, `sort`, `dir`, `page` (a bad value falls back to its default, the page still answers 200). Hearts count only Kudos the person sent non-anonymously, and Sent includes anonymous Kudos as a bare count, so an admin cannot work out who sent an anonymous Kudo.
-- **Change a role:** the "..." button on a row opens "Change to Admin" / "Change to User" and a confirm dialog; it calls the Server Action `setUserRole` (`lib/admin/set-user-role-action.ts`, zod-validated). An admin cannot change their own role (their button is disabled and the RPC answers `self`), so the last admin cannot remove themselves.
-- **Export:** `GET /admin/users/export?<the page's filters>` (route handler `app/[locale]/admin/users/export/route.ts`; under `[locale]`, not `/api`, because the proxy locale-rewrites every non-auth path). CSV of the whole filtered and sorted result, file name `users-YYYYMMDD.csv`, fixed English header, UTF-8 BOM, CRLF, cells starting with `=`, `+`, `-`, `@`, tab or CR prefixed with `'`. Rows are read in 1000-row chunks (PostgREST `db-max-rows`), all or nothing: a failed or inconsistent chunk (including a user read twice because a concurrent write reordered rows between chunks) gives 500, more than 5000 rows gives 413, a non-admin gets 403; the file is never silently truncated.
-- **Unit filter:** it only matches once `profiles.department` is populated. Sign-in never writes that column; only the demo seed does.
-
-Apply `supabase/migrations/20261024100000_create_admin_users.sql` by hand like the others (needs the profiles and kudos migrations first; idempotent, one transaction; it takes a brief `ACCESS EXCLUSIVE` lock on `profiles`, so run it off-peak), then run `supabase/verify/20261024100000_create_admin_users_verify.sql` (every row must be PASS). Rollback: `supabase/rollbacks/20261024100000_create_admin_users_down.sql`. It adds `profiles.role` and the `SECURITY DEFINER` functions `is_admin()`, `admin_list_users(...)` and `admin_set_user_role(p_user_id, p_role)` (answers `ok`, `forbidden`, `self`, `invalid` or `not_found`); `EXECUTE` is revoked from `public` and `anon`. Nobody can write `role` through the API: `profiles` has no write policy.
-
-**Deploy order:** run the migration BEFORE deploying the app. Without `is_admin()` the app fails closed (nobody is an admin) and logs an error on every signed-in page.
-
-**First admin:** assign by hand in the Supabase SQL Editor (role `postgres`); do the same if the only admin was demoted by SQL:
+**Admin đầu tiên** gán tay trong Supabase SQL Editor (role `postgres`), sau khi đã chạy migration 8; làm lại đúng câu này nếu admin duy nhất bị hạ quyền bằng SQL:
 
 ```sql
 update public.profiles set role = 'admin' where email = '<email>@sun-asterisk.com';
 ```
 
-Status: run by the owner on the real Supabase project on 2026-10-23, verify 24/24 PASS; E2E uses a fake Supabase (`tests/e2e/support/admin-users-*`), so a new environment must run the migration and then the verify script. Not built: Overview, Review content, Settings, a role-change audit log, department editing. `profiles.role` is readable by any signed-in user, like the email (accepted). Details: `docs/codebase-summary.md` (Admin - User), `docs/system/permissions.md`.
+---
 
-## Login (Google via Supabase)
+## Trang và đường dẫn
 
-`/login` signs in with Google through Supabase (PKCE). After the gate, `proxy.ts` refreshes the session with `getClaims()`; a signed-in user opening `/login` is redirected to `/` (or to a valid `?next`, below). The OAuth callback is `/auth/callback`; failures return to `/login?error=auth_failed`.
+Quyền truy cập: **Công khai** (không cần đăng nhập), **Sunner** (đã đăng nhập bằng Google `@sun-asterisk.com`), **Admin** (Sunner có vai trò `admin`). Trước giờ `EVENT_START_AT`, mọi đường dẫn (trừ `/countdown` và asset tĩnh) chuyển về `/countdown`. Sau giờ mở, khách vào đường dẫn ngoài danh sách công khai đều bị chuyển về `/login`, kể cả đường dẫn không tồn tại.
 
-Only Google accounts with an `@sun-asterisk.com` email may sign in (`ALLOWED_EMAIL_DOMAIN` in `lib/auth/constants.ts`, exact-domain match in `lib/auth/is-allowed-email.ts`). Three layers: sign-in sends the Google hint `hd=sun-asterisk.com` (UX only); `/auth/callback` signs out and returns the generic error for any other email; the database rejects new non-domain sign-ups (see Profiles below).
+| URL | Quyền truy cập | Mô tả |
+|---|---|---|
+| `/countdown` | Công khai | Đếm ngược trước giờ mở; sau giờ mở chuyển sang `/login` |
+| `/login` | Công khai | Đăng nhập Google; người đã đăng nhập bị chuyển sang `/` |
+| `/auth/callback` | Công khai | Callback OAuth (route handler, không có giao diện) |
+| `/` | Công khai | Trang chủ SAA 2025; khách thấy nút Đăng nhập ở header |
+| `/tieu-chuan-chung` | Công khai | Tiêu chuẩn chung (tiêu chuẩn cộng đồng và bảo mật) |
+| `/403` | Công khai | Trang "Truy cập bị từ chối", trả HTTP 403 |
+| `/awards-information` | Sunner | Hệ thống giải thưởng, sáu giải (`#<slug>` mỗi giải) |
+| `/sun-kudos` | Sunner | Bảng Live: Highlight, Spotlight, tất cả Kudo, thống kê, quà |
+| `/sun-kudos/<id>` | Sunner | Xem một Kudo đầy đủ; khách được đưa qua `/login?next=` rồi quay lại đúng Kudo |
+| `/profile` | Sunner | Hồ sơ của mình |
+| `/profile/<id>` | Sunner | Hồ sơ của Sunner khác (id của mình thì chuyển về `/profile`) |
+| `/admin` | Admin | Chuyển sang `/admin/users` |
+| `/admin/users` | Admin | Bảng người dùng: lọc, tìm, sắp xếp, đổi vai trò |
+| `/admin/users/export` | Admin | Tải CSV danh sách người dùng theo bộ lọc hiện tại |
+| mọi đường dẫn khác | Sunner thấy 404, khách về `/login` | Trang 404 chỉ hiện cho người đã đăng nhập |
 
-Returning to a Kudo after sign-in: the only post-login target besides `/` is `/sun-kudos/<guid>`, passed as `?next=` (`lib/auth/post-login-next.ts`). It is an allow-list, not a sanitiser: `parsePostLoginNext` accepts exactly that shape (no query, hash, trailing slash or encoding) and returns null for anything else, so no redirect can leave the site or reach another path. The value is re-checked at the proxy, the login page, the Server Action `signInWithGoogle` and the callback. It crosses the Google round trip in the cookie `saa_post_login_next` (`httpOnly`, `SameSite=Lax`, `Secure` in production, 10 minutes), not in `redirectTo`; the callback re-checks it and clears it on every exit. The clear goes through `cookies()` (`lib/auth/clear-post-login-next-cookie.ts`), not `response.cookies`: on Next 16.4 the response's own `Set-Cookie` is re-parsed once the store was written, and that parser drops `Max-Age=0`. It lives in its own module because importing `next/headers` straight into the route duplicated a ~296 KB server chunk.
+Sunner không phải admin mở `/admin/*` sẽ nhận trang 403. `id` sai dạng hoặc không có dữ liệu ở `/sun-kudos/<id>` và `/profile/<id>` cho HTTP 404.
 
-- Env (see `.env.example`, read at runtime): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. If missing, the app logs an error and treats everyone as signed out.
-- Supabase dashboard: enable the Google provider and allow `<your-origin>/auth/callback` as a redirect URL. Disable the Email, Phone and Anonymous providers (the profiles migration assumes Google is the only way in). Production also needs both variables set on the Worker.
-- `npm run test:e2e` passes fake Supabase values, so no real project is needed for the tests.
+---
 
-## Language (VI/EN)
+## Phần 1: Người dùng (Sunner)
 
-The UI is Vietnamese (default) or English. Public URLs carry no locale: the language selector (`components/ui/language-selector.tsx`) calls the Server Action `setLocale` (`lib/i18n/set-locale-action.ts`), which stores the httpOnly cookie `NEXT_LOCALE`, then reloads the page. `proxy.ts` reads the cookie and rewrites internally to `app/[locale]/` (`lib/i18n/resolve-locale-rewrite.ts`); a missing or unknown value means `vi`. `app/auth/*` is outside `[locale]`.
+> Ảnh màn hình dưới đây chụp trên **dữ liệu giả của bộ test** (tên, Kudo, số liệu đều là mẫu). Ảnh nằm ở [`docs/screenshots/`](docs/screenshots/).
 
-- All copy lives in `messages/vi/*` and `messages/en/*`. `messages/vi` defines the `Dictionary` type and `messages/en` must satisfy it, so a missing English key fails `npm run build`. Pages read it with `getRouteDictionary` (`lib/i18n/get-dictionary.ts`).
-- English strings that do not come from Figma are marked `/* not from Figma */` in `messages/en/*` and await review; the list is in `plans/261014-1115-multi-language-vi-en/reports/en-localizations.md`.
-- Known limits: the 404 and 403 bodies are client-rendered; `Cache-Control: private, no-cache` on the rewritten response is not yet verified on OpenNext/Cloudflare. See `docs/project-changelog.md`.
+### Tính năng đã làm
 
-## Profiles (Supabase)
+#### 1. Đếm ngược trước giờ mở
 
-`public.profiles` holds one row per allowed user (`id` -> `auth.users`, `email`, `full_name`, `avatar_url`, `department`, timestamps). Triggers fill email from `auth.users` and name/avatar from the Google identity; `department` is never written by them. RLS: authenticated users passing the account rule (`@sun-asterisk.com` email and `app_metadata.provider = 'google'`) can read all rows; there are no client writes and `anon` gets nothing. Server code reads the caller's own row with `getCurrentProfile()` (`lib/profiles/get-current-profile.ts`), which returns `null` on any failure.
+`/countdown` · Công khai
 
-There is no Supabase CLI here: the SQL in `supabase/` is applied by hand in the Supabase SQL Editor (role `postgres`).
+- Trước `EVENT_START_AT`, mọi trang khác đều dẫn về đây.
+- Đồng hồ đếm Days, Hours, Minutes theo giờ server nên không lệch giữa các máy.
+- Về 0 thì tự chuyển sang `/login`; sau giờ mở, mở `/countdown` cũng được chuyển sang `/login`.
 
-| File | Use |
+![Trang đếm ngược /countdown](docs/screenshots/01-countdown.png)
+
+*Trang đếm ngược `/countdown`.*
+
+#### 2. Đăng nhập bằng Google
+
+`/login` · Công khai
+
+- Một nút đăng nhập Google; chỉ tài khoản `@sun-asterisk.com` vào được, tài khoản khác chỉ thấy một thông báo lỗi chung.
+- Bộ chọn ngôn ngữ ngay trên trang (Việt/Anh).
+- Mở một link Kudo khi chưa đăng nhập: đăng nhập xong được đưa lại đúng Kudo đó.
+- Đã đăng nhập mà mở `/login` thì được chuyển sang `/`.
+
+![Trang đăng nhập /login](docs/screenshots/02-login.png)
+
+*Trang đăng nhập `/login`.*
+
+#### 3. Trang chủ
+
+`/` · Công khai (khách và Sunner đều xem được)
+
+- Hero có đồng hồ đếm ngược tới lễ trao giải (`AWARDS_CEREMONY_AT`), khối ROOT FURTHER, giới thiệu hệ thống giải và khối Sun\* Kudos, rồi footer.
+- Khách: header có nút "Đăng nhập". Sunner: header có chuông thông báo (panel hiện chưa có thông báo) và menu tài khoản (Profile, Sign out; admin có thêm Dashboard).
+- Widget nổi ở góc phải mở "Thể lệ" và "Viết KUDOS"; khách đọc được Thể lệ, còn "Viết KUDOS" dẫn sang `/login`.
+
+![Trang chủ khi chưa đăng nhập](docs/screenshots/03-home-guest.png)
+
+*Trang chủ `/` với khách: header có nút Đăng nhập.*
+
+![Trang chủ khi đã đăng nhập](docs/screenshots/04-home.png)
+
+*Trang chủ `/` với Sunner đã đăng nhập: chuông và menu tài khoản.*
+
+#### 4. Hệ thống giải thưởng
+
+`/awards-information` · Sunner
+
+- Sáu giải: Top Talent, Top Project, Top Project Leader, Best Manager, Signature 2025 Creator, MVP.
+- Menu danh mục dính bên trái làm nổi giải đang xem khi cuộn; bấm menu thì cuộn mượt tới đúng giải.
+- Link `#<slug>` mở thẳng tới giải đó (từ trang chủ bấm vào từng giải).
+
+![Hệ thống giải thưởng](docs/screenshots/05-awards-information.png)
+
+*Trang `/awards-information`.*
+
+#### 5. Sun\* Kudos: bảng Live
+
+`/sun-kudos` · Sunner
+
+- **Highlight Kudos:** băng chuyền 5 Kudo nhiều tim nhất, lọc được theo hashtag và phòng ban; bộ lọc nằm trên URL (`?hashtag=<slug>&department=<code>`).
+- **Spotlight Board:** bảng kéo thả và thu phóng, hiện tên người nhận Kudo; có ô tìm theo tên và dòng tin Kudo mới nhất chạy ở góc.
+- **All Kudos:** toàn bộ Kudo, mới nhất trước, cuộn xuống là tải thêm; thả tim, Copy Link, bấm vào nội dung để xem chi tiết.
+- **Thống kê cá nhân:** số Kudo đã nhận, đã gửi, số tim và số Secret Box; **danh sách người nhận quà** mới nhất (nút "Mở Secret Box" hiện chưa dùng được).
+- Mỗi khối tải riêng: một khối lỗi thì chỉ khối đó báo lỗi chung.
+
+![Bảng Sun* Kudos](docs/screenshots/06-sun-kudos.png)
+
+*Bảng Live `/sun-kudos`: banner, Highlight Kudos.*
+
+![Spotlight Board](docs/screenshots/07-sun-kudos-spotlight.png)
+
+*Spotlight Board trên `/sun-kudos`.*
+
+![All Kudos và bộ lọc](docs/screenshots/08-sun-kudos-feed.png)
+
+*All Kudos, thống kê và danh sách người nhận quà trên `/sun-kudos`.*
+
+#### 6. Tìm kiếm profile Sunner
+
+`/sun-kudos` · Sunner
+
+- Ô "Tìm kiếm profile Sunner" cạnh nút soạn Kudo gợi ý ngay khi gõ (chờ 150 ms).
+- Tìm theo tên hoặc email, không phân biệt dấu; tối đa 10 người, không gồm chính mình và không hiện email.
+- Chọn một người thì mở hồ sơ của họ tại `/profile/<id>`; dùng được bằng bàn phím.
+
+![Gợi ý tìm profile Sunner](docs/screenshots/09-profile-search.png)
+
+*Ô tìm profile Sunner với danh sách gợi ý.*
+
+#### 7. Viết Kudo
+
+Widget nổi hoặc nút soạn trên `/sun-kudos`; cũng mở từ hồ sơ người khác · Sunner
+
+- Chọn người nhận (gõ tên hoặc email, hoặc `@tên`), nhập tiêu đề (1-100 ký tự) và nội dung (1-5000 ký tự, có đậm, nghiêng, gạch, danh sách, trích dẫn, link, `@mention`).
+- Chọn 1-5 hashtag, đính kèm tối đa 5 ảnh JPEG, PNG hoặc WebP (mỗi ảnh tối đa 5 MB; thông tin cá nhân trong ảnh được gỡ khi tải lên).
+- Có thể gửi ẩn danh kèm bí danh (tối đa 50 ký tự): người xem không biết ai gửi, kể cả người nhận.
+- Nội dung quá dài hay thiếu trường thì form báo ngay; gửi xong thẻ mới hiện trên bảng.
+
+![Modal Viết Kudo](docs/screenshots/10-write-kudo.png)
+
+*Modal Viết Kudo.*
+
+#### 8. Sửa Kudo
+
+Nút bút chì trên thẻ Kudo của chính mình (bảng Live và hồ sơ) · Sunner
+
+- Chỉ hiện trên Kudo mình đã gửi; mở cùng modal ở chế độ sửa, điền sẵn nội dung cũ.
+- Sửa được tiêu đề, nội dung, hashtag, ảnh (tối đa 5) và bí danh; không đổi được người nhận và chế độ ẩn danh.
+- Lưu xong thẻ đổi tại chỗ, tim, thời gian và vị trí giữ nguyên. Hủy thì bỏ bản sửa.
+
+![Modal Sửa Kudo](docs/screenshots/11-edit-kudo.png)
+
+*Modal sửa một Kudo đã gửi.*
+
+#### 9. Thả tim
+
+Trái tim trên mọi thẻ Kudo · Sunner
+
+- Bấm để thả tim, bấm lại để bỏ; số tim đổi ngay, lỗi thì trả về số cũ kèm thông báo.
+- Một Kudo hiện ở hai nơi (Highlight và All Kudos) thì cả hai cùng đổi.
+- Không thả được tim cho Kudo của chính mình.
+- Tim cộng cho người **gửi** Kudo; ngày đặc biệt được nhân đôi số tim (cấu hình bằng SQL).
+
+Nút tim xuất hiện ở các thẻ trong ảnh 08 và 12.
+
+#### 10. Xem chi tiết Kudo và chia sẻ link
+
+`/sun-kudos/<id>` · Sunner
+
+- Mở từ "Xem chi tiết" trên thẻ Highlight, từ nội dung thẻ All Kudos hoặc từ Spotlight Board.
+- Hiện đủ nội dung có định dạng, ảnh, hashtag, tim; Kudo ẩn danh vẫn giấu người gửi.
+- "Copy Link" chép địa chỉ `/sun-kudos/<id>` kèm thông báo; người nhận link đăng nhập xong sẽ vào đúng Kudo.
+- Nút Đóng quay lại trang trước (hoặc `/sun-kudos`). `id` sai dạng hoặc không có thì ra trang 404.
+
+![Xem chi tiết một Kudo](docs/screenshots/12-kudo-detail.png)
+
+*Trang xem chi tiết một Kudo.*
+
+#### 11. Hồ sơ của mình và của Sunner khác
+
+`/profile` và `/profile/<id>` · Sunner
+
+- Hero: ảnh đại diện, tên, phòng ban, huy hiệu Hero (theo số người gửi Kudo: New 1-4, Rising 5-9, Super 10-20, Legend 21 trở lên) và sao theo số Kudo đã nhận. Sáu ô icon xám bên dưới chưa có nội dung.
+- Hồ sơ của mình: thẻ thống kê và danh sách Kudo với lựa chọn "Đã nhận" hoặc "Đã gửi".
+- Hồ sơ người khác: thanh "Gửi lời cám ơn và ghi nhận tới ..." mở sẵn Viết Kudo với người đó, và số Kudo đã nhận. Danh sách "Đã gửi" của người khác không bao giờ hiện, vì sẽ lộ ai gửi Kudo ẩn danh.
+- Cả hai danh sách cuộn xuống là tải thêm (10 thẻ mỗi lần).
+
+![Hồ sơ của mình](docs/screenshots/13-profile-me.png)
+
+*Hồ sơ của mình `/profile`.*
+
+![Hồ sơ của Sunner khác](docs/screenshots/14-profile-other.png)
+
+*Hồ sơ của một Sunner khác `/profile/<id>`.*
+
+#### 12. Tiêu chuẩn cộng đồng
+
+`/tieu-chuan-chung` · Công khai
+
+- Mười tiêu chuẩn cộng đồng và hai tiêu chuẩn bảo mật, kèm dòng liên hệ.
+- Mở từ link "Tiêu chuẩn chung" ở footer, hoặc "Tiêu chuẩn cộng đồng" trên thanh công cụ Viết Kudo (mở tab mới).
+- Khách cũng xem được; trang có header và footer chung, không có widget Viết KUDOS.
+
+![Trang tiêu chuẩn cộng đồng](docs/screenshots/15-community-standards.png)
+
+*Trang `/tieu-chuan-chung`.*
+
+#### 13. Widget nổi và Thể lệ
+
+Góc phải trang chủ, `/awards-information`, `/sun-kudos` · Công khai (một phần) / Sunner
+
+- Bấm widget mở menu: "Thể lệ", "Viết KUDOS" và nút đóng; Esc hoặc bấm ra ngoài thì đóng.
+- "Thể lệ" giải thích huy hiệu Hero cho người nhận, sưu tập sáu icon cho người gửi và "Kudos Quốc Dân".
+- Khách đọc được Thể lệ; "Viết KUDOS" của khách dẫn sang `/login`.
+
+![Menu widget nổi](docs/screenshots/16-widget-menu.png)
+
+*Menu của widget nổi.*
+
+#### 14. Đổi ngôn ngữ Việt/Anh
+
+Bộ chọn ngôn ngữ ở header và trang đăng nhập · Công khai
+
+- Chọn xong trang tải lại bằng ngôn ngữ mới; lựa chọn được nhớ một năm trong cookie.
+- Địa chỉ trang không đổi theo ngôn ngữ (`/login` vẫn là `/login`).
+- Các tab khác của trình duyệt tự cập nhật theo.
+
+![Trang chủ bản tiếng Anh](docs/screenshots/17-home-en.png)
+
+*Trang chủ khi chọn tiếng Anh.*
+
+#### 15. Trang lỗi 404 và 403
+
+Mọi đường dẫn không tồn tại (404) · Sunner; `/403` · Công khai
+
+- 404: Sunner đã đăng nhập ở một đường dẫn không có thì thấy trang này, kèm nút "Về trang chủ". Khách ở đường dẫn như vậy được chuyển về `/login`.
+- 403: hiện khi Sunner không đủ quyền (ví dụ mở `/admin` khi không phải admin); trả HTTP 403 thật và không chứa dữ liệu nào.
+
+![Trang lỗi 404](docs/screenshots/18-error-404.png)
+
+*Trang 404.*
+
+![Trang lỗi 403](docs/screenshots/19-error-403.png)
+
+*Trang 403 `/403`.*
+
+#### 16. Giao diện di động
+
+Mọi trang · theo quyền của từng trang
+
+- Bố cục ưu tiên màn hình nhỏ, E2E kiểm ở bề rộng 375 px; vùng chạm theo quy ước dự án là 44 px.
+- Menu, bộ lọc, modal Viết Kudo và danh sách đều dùng được trên màn hình nhỏ.
+
+![Trang chủ trên di động](docs/screenshots/20-mobile-home.png)
+
+*Trang chủ ở bề rộng 375 px.*
+
+![Bảng Sun* Kudos trên di động](docs/screenshots/21-mobile-sun-kudos.png)
+
+*Bảng `/sun-kudos` ở bề rộng 375 px.*
+
+### Tính năng sẽ làm sau
+
+Chỉ gồm các mục đã được ghi là chưa làm, giới hạn đã biết hoặc hoãn trong tài liệu và kế hoạch của dự án.
+
+| Mục chưa làm | Ghi ở |
 |---|---|
-| `supabase/migrations/20261012133000_create_profiles.sql` | Create table, rules, RLS, triggers, sign-up gate, backfill (idempotent, one transaction) |
-| `supabase/verify/20261012133000_create_profiles_verify.sql` | Numbered checks; run one block at a time |
-| `supabase/rollbacks/20261012133000_create_profiles_down.sql` | Drop triggers, functions, table (deletes profile rows) |
+| Thông báo: chuông trên header chỉ mở panel rỗng "Chưa có thông báo", chưa có nguồn dữ liệu | `docs/codebase-summary.md` (`notification-button`); `plans/261012-1549-homepage-saa/clarifications.md` |
+| Secret Box: nút "Mở Secret Box" chưa dùng được, sáu ô icon trên hồ sơ luôn xám | `docs/codebase-summary.md` (mục "Chưa có"); `plans/261021-profile/clarifications.md` |
+| Hover vào tên để xem hồ sơ nhanh, bấm tiêu đề thẻ để lọc, mục "10 Sunner thăng hạng", cập nhật realtime trên bảng Live | `plans/261015-1010-sun-kudos-live-board/plan.md` (mục Deferred) |
+| Lối sửa Kudo trên thẻ Highlight và trang xem chi tiết; chưa có dấu "đã sửa" trên thẻ | `docs/technical-overview.md` (Sửa Kudo); `plans/261022-edit-kudo/plan.md` |
+| Link `@mention` trong trang xem chi tiết hiện là chữ thường, chưa bấm được | `plans/261022-edit-kudo/plan.md` (mục Deferred) |
+| Sửa thông tin cá nhân (tên, ảnh, phòng ban) trên hồ sơ | `docs/project-changelog.md` (mục Hồ sơ) |
+| Chống gửi trùng Kudo (khoá idempotency), giới hạn tần suất gửi, quota ảnh, dọn ảnh mồ côi | `plans/261019-1022-write-kudos/plan.md` (mục Deferred) |
+| Đổi ngôn ngữ phải tải lại cả trang, chưa làm mới mềm | `docs/project-changelog.md`; `docs/technical-overview.md` (mục Ngôn ngữ) |
+| Kiểm tra trên Worker thật: giới hạn bộ nhớ khi gửi 5 ảnh, header cache của trang đổi ngôn ngữ, luồng OAuth thật | `docs/technical-overview.md` (mục Viết Kudo và Triển khai); `plans/261014-1115-multi-language-vi-en/plan.md` |
 
-Before running the migration, disable the Email, Phone and Anonymous providers (Authentication > Sign In / Providers). The migration briefly locks `auth.users` and `auth.identities`; run it off-peak. Runbook: `plans/261012-1330-user-profiles-supabase/phase-03-apply-and-verify.md`.
+---
 
-## Docs
+## Phần 2: Quản trị (Admin)
 
-- `docs/codebase-summary.md` — layout of the code, how the gate and the access control work.
-- `docs/system/permissions.md` — who may open what (Vietnamese).
-- `docs/project-changelog.md` — notable behaviour changes, newest first (Vietnamese).
-- `docs/features/F001_CountdownPrelaunchGate/` — functional and technical spec of the gate.
-- `docs/screens/SCR001_CountdownPrelaunch/spec.md` — countdown screen spec.
+> Khu Admin chỉ dành cho vai trò `admin`. Ảnh chụp trên dữ liệu giả của bộ test.
+
+### Tính năng đã làm
+
+#### 1. Vào khu Admin và menu Dashboard
+
+`/admin` · Admin
+
+- Admin thấy mục **Dashboard** trong menu tài khoản (giữa Profile và Sign out); bấm vào mở `/admin`.
+- `/admin` chuyển thẳng sang `/admin/users` (các tab khác chưa có trang).
+- Vai trò luôn được hỏi lại CSDL ở mỗi request nên hạ quyền có hiệu lực ngay.
+
+![Menu tài khoản của admin](docs/screenshots/30-admin-account-menu.png)
+
+*Menu tài khoản của admin với mục Dashboard.*
+
+#### 2. Bảng người dùng: lọc, tìm, sắp xếp, phân trang
+
+`/admin/users` · Admin
+
+- Bảng 20 người mỗi trang, cột: Sent, Received, Total Heart, Level, Badges, Time to get 6 Badges, Last Logged in, Role.
+- Lọc theo Unit, Level, Role; tìm theo tên hoặc email (gõ rồi chờ 300 ms); sắp xếp theo bảy cột.
+- Toàn bộ trạng thái nằm trên URL (`unit`, `level`, `role`, `q`, `sort`, `dir`, `page`) nên chia sẻ và mở lại được; giá trị sai tự về mặc định.
+- Total Heart chỉ tính Kudo gửi không ẩn danh, và Kudo ẩn danh chỉ góp vào con số Sent: admin không suy ra được ai gửi Kudo ẩn danh.
+
+![Bảng người dùng](docs/screenshots/31-admin-users.png)
+
+*Bảng người dùng `/admin/users`.*
+
+![Bảng người dùng khi đang lọc](docs/screenshots/32-admin-users-filter.png)
+
+*Bảng người dùng khi lọc và tìm.*
+
+#### 3. Đổi vai trò người dùng
+
+Nút "..." trên mỗi dòng · Admin
+
+- Chọn "Change to Admin" hoặc "Change to User", rồi xác nhận trong hộp thoại.
+- Admin không đổi được vai trò của chính mình (nút bị vô hiệu), nên admin cuối cùng không tự gỡ quyền được.
+- Lỗi nào cũng chỉ hiện một dòng chung và hộp thoại giữ nguyên để thử lại.
+
+![Hộp thoại đổi vai trò](docs/screenshots/33-admin-role-change.png)
+
+*Hộp thoại xác nhận đổi vai trò.*
+
+#### 4. Xuất CSV
+
+`/admin/users/export` · Admin
+
+- Liên kết xuất lấy đúng bộ lọc và thứ tự đang xem; tải toàn bộ kết quả, không chỉ trang hiện tại.
+- Tên file `users-YYYYMMDD.csv`, mã hoá UTF-8 có BOM, tiêu đề cột tiếng Anh cố định.
+- Ô bắt đầu bằng `=`, `+`, `-`, `@` được thêm dấu `'` để Excel không chạy thành công thức.
+- Tất cả hoặc không: lỗi giữa chừng thì báo lỗi, quá 5000 dòng thì từ chối; file không bao giờ bị cắt lặng lẽ.
+
+Liên kết xuất nằm trên trang bảng người dùng (ảnh 31).
+
+#### 5. Chặn người không phải admin
+
+`/admin/*` · Sunner (không phải admin) và khách
+
+- Sunner không phải admin nhận trang 403, HTTP 403 thật và không có dữ liệu người dùng nào trong HTML.
+- Khách bị đưa về `/login` (đăng nhập xong về `/`, không quay lại `/admin`).
+- Đường dẫn xuất CSV cũng trả 403 cho người không phải admin.
+
+![Trang 403 khi không phải admin](docs/screenshots/34-admin-forbidden.png)
+
+*Sunner không phải admin mở `/admin/users`.*
+
+![Bảng người dùng trên di động](docs/screenshots/35-mobile-admin-users.png)
+
+*Bảng người dùng ở bề rộng 375 px.*
+
+### Tính năng sẽ làm sau
+
+| Mục chưa làm | Ghi ở |
+|---|---|
+| Các trang Overview, Review content, Settings (ba tab trên header Admin hiện chưa bấm được) | `docs/technical-overview.md` (mục Admin); `docs/codebase-summary.md` (mục "Chưa có"); `plans/261023-1207-admin-user-management/clarifications.md` |
+| Nhật ký đổi vai trò | `docs/project-changelog.md`; `docs/system/permissions.md` |
+| Sửa phòng ban của người dùng (hiện chỉ seed demo điền được; bộ lọc Unit trống trên production tới khi có dữ liệu) | `docs/project-changelog.md`; `plans/261023-1207-admin-user-management/clarifications.md` |
+| Sau khi đăng nhập, khách mở `/admin` được quay lại `/admin` (hiện về `/`) | `docs/system/permissions.md`; `plans/261023-1207-admin-user-management/plan.md` |
+| Giao diện cấu hình ngày nhân đôi tim (hiện chỉ cấu hình bằng SQL ở bảng `special_heart_days`) | `plans/261020-1429-like-kudos/clarifications.md` |
+| Kiểm tra CSV mở trong Excel (dấu phẩy) | `plans/261023-1207-admin-user-management/plan.md` (mục Deferred) |
+
+---
+
+## Server Actions và Route Handlers
+
+Dự án không có REST API riêng: thao tác của người dùng đi qua **Server Action** (kiểm Origin tự động của Next.js) và hai **Route Handler**. Quyền thật nằm ở cơ sở dữ liệu: các hàm RPC từ chối người không đủ điều kiện.
+
+| Tên | File | Ai gọi được | Làm gì |
+|---|---|---|---|
+| `signInWithGoogle` | `lib/auth/sign-in-with-google.ts` | Khách (form ở `/login`) | Kiểm Origin, bắt đầu OAuth Google (PKCE), ghi cookie quay lại Kudo nếu `next` hợp lệ |
+| `signOut` | `lib/auth/sign-out.ts` | Sunner (menu tài khoản) | Đăng xuất phiên của trình duyệt này, luôn về `/login` |
+| `setLocale` | `lib/i18n/set-locale-action.ts` | Mọi người | Lưu ngôn ngữ vào cookie `NEXT_LOCALE` (1 năm) |
+| `loadMoreKudos` | `lib/kudos/load-more-kudos-action.ts` | Sunner | Trang kế của All Kudos (cuộn vô hạn, giữ bộ lọc) |
+| `searchProfiles` | `lib/kudos/search-profiles-action.ts` | Sunner | Gợi ý ô "Tìm kiếm profile Sunner" (tên hoặc email, tối đa 10) |
+| `searchSunners` | `lib/kudos/search-sunners-action.ts` | Sunner | Gợi ý người nhận và `@mention` khi viết Kudo |
+| `getHashtagOptions` | `lib/kudos/get-hashtag-options-action.ts` | Sunner | Danh mục hashtag cho ô "+ Hashtag" |
+| `createKudo` | `lib/kudos/create-kudo-action.ts` | Sunner | Kiểm dữ liệu và ảnh, tải ảnh lên Storage, gọi `create_kudo` |
+| `updateKudo` | `lib/kudos/update-kudo-action.ts` | Sunner, chỉ người đã gửi Kudo đó | Sửa Kudo qua `update_kudo`, xoá ảnh đã bỏ khỏi Storage |
+| `setKudoHeart` | `lib/kudos/set-kudo-heart-action.ts` | Sunner (không tim Kudo của mình) | Đặt trạng thái tim qua `set_kudo_heart`, trả số tim mới |
+| `loadMoreProfileKudos` | `lib/profiles/load-more-profile-kudos-action.ts` | Sunner (danh sách "Đã gửi" chỉ của chính mình) | Trang kế danh sách Kudo trên hồ sơ |
+| `setUserRole` | `lib/admin/set-user-role-action.ts` | Admin (không đổi vai trò của chính mình) | Đổi vai trò người dùng qua `admin_set_user_role` |
+
+| Route Handler | File | Ai gọi được | Làm gì |
+|---|---|---|---|
+| `GET /auth/callback` | `app/auth/callback/route.ts` | Công khai (Supabase chuyển về) | Đổi `code` lấy phiên, loại email ngoài `@sun-asterisk.com`, chuyển về `/` hoặc đúng Kudo, xoá cookie `saa_post_login_next` |
+| `GET /admin/users/export` | `app/[locale]/admin/users/export/route.ts` | Admin (người khác nhận 403) | Trả CSV người dùng theo bộ lọc; 413 nếu quá 5000 dòng, 500 nếu một khúc dữ liệu lỗi |
+
+Cả hai Route Handler hiện chỉ là `GET`. Route Handler làm thay đổi dữ liệu (nếu thêm sau này, dưới `app/api/*`) không có kiểm Origin tự động như Server Action: phải tự kiểm Origin/Referer trước khi xử lý (quy ước trong `CLAUDE.md`).
+
+---
+
+## Vai trò và phân quyền
+
+Có đúng hai vai trò lưu ở `profiles.role` (`user` mặc định, `admin`), cộng với khách chưa đăng nhập. Vai trò luôn đọc từ cơ sở dữ liệu qua `is_admin()`, không nằm trong JWT.
+
+| Hành động | Khách | Sunner | Admin |
+|---|---|---|---|
+| Xem trang đếm ngược (trước giờ mở) | Có | Có | Có |
+| Xem `/`, `/login`, `/tieu-chuan-chung`, `/403` (sau giờ mở) | Có | Có | Có |
+| Đọc panel Thể lệ | Có | Có | Có |
+| Xem `/awards-information`, bảng Live, xem Kudo, hồ sơ | Không (về `/login`) | Có | Có |
+| Viết Kudo, tìm Sunner | Không | Có | Có |
+| Sửa Kudo | Không | Chỉ Kudo mình gửi | Chỉ Kudo mình gửi |
+| Thả tim | Không | Có (không tim Kudo của mình) | Có (không tim Kudo của mình) |
+| Xem danh sách Kudo "Đã gửi" | Không | Chỉ của mình | Chỉ của mình |
+| Vào `/admin/*`, xuất CSV | Không (về `/login`) | Không (403) | Có |
+| Đổi vai trò người khác | Không | Không | Có (không đổi chính mình) |
+
+Điều kiện chung: tài khoản phải là Google với email `@sun-asterisk.com`; tài khoản ngoài tên miền không đăng nhập được. Kudo ẩn danh luôn giấu người gửi (kể cả với người nhận và admin). Nhiều lớp bảo vệ: cổng thời gian (chạy trước, không có ngoại lệ), chặn mặc định ở `proxy.ts`, kiểm lại phiên ở từng trang và Server Action, và RLS cùng kiểm tra trong hàm SQL. Bảng đầy đủ bằng tiếng Việt: [`docs/system/permissions.md`](docs/system/permissions.md).
+
+---
+
+## Kiểm thử
+
+| Lệnh | Tác dụng |
+|---|---|
+| `npm test` | Unit test bằng Vitest (`tests/unit/`): hàm thuần và Server Action trong `lib/` |
+| `npm run test:e2e` | `next build` rồi Playwright (`tests/e2e/`, trình duyệt chromium) |
+| `npm run lint` | ESLint, chạy trước khi commit |
+
+- Lần đầu chạy E2E: `npx playwright install chromium`.
+- E2E khởi động bốn server ứng dụng: cổng **3100** (mốc mở ở tương lai), **3101** (mốc đã qua), **3102** (mốc không hợp lệ), **3103** (đã mở, nối với Supabase giả), cùng Supabase giả ở `127.0.0.1:54398`. Không cần project Supabase thật.
+- Ngoài CI, Playwright dùng lại server đang chạy ở các cổng này: tắt `next start` cũ trước khi chạy, nếu không bản build cũ có thể làm sai kết quả.
+- Supabase giả ký JWT và phát JWKS để `getClaims()` thật của proxy tự kiểm chữ ký; code production không có đường tắt cho test. Các hàm RPC giả phản chiếu SQL thật nên E2E **không bắt được lỗi SQL**: mỗi migration mới phải chạy file verify trên project thật.
+- Một thay đổi chỉ chạm tài liệu hay chữ giao diện thì chỉ cần kiểm phần đã sửa; thay đổi chạm xác thực, phân quyền, migration, cấu hình hay deploy thì chạy đủ bộ.
+
+Hạ tầng và danh sách bộ test: [`docs/technical-overview.md`](docs/technical-overview.md#17-kiểm-thử).
+
+---
+
+## Triển khai
+
+Triển khai lên **Cloudflare Workers** qua `@opennextjs/cloudflare`: `wrangler.jsonc` (cờ `nodejs_compat`, binding `ASSETS`, `IMAGES`, `WORKER_SELF_REFERENCE`) và `open-next.config.ts`.
+
+1. **Chạy migration trên Supabase trước** (xem [Cơ sở dữ liệu và migration](#cơ-sở-dữ-liệu-và-migration)), rồi chạy file verify. Riêng Admin: thiếu `is_admin()` thì app khoá khi lỗi và log lỗi ở mọi trang của người đã đăng nhập.
+2. **Đặt cấu hình:** `EVENT_START_AT` và `AWARDS_CEREMONY_AT` trong `vars` của `wrangler.jsonc`; hai khoá Supabase trên dashboard Cloudflare hoặc `wrangler secret put` (không để secret trong `vars`).
+3. **Dashboard Supabase:** bật Google, thêm `<origin>/auth/callback` vào redirect URL.
+4. **Xem thử cục bộ:** `npm run preview` (build OpenNext, chạy trên workerd).
+5. **Triển khai:** `npm run deploy`.
+6. **Gán admin đầu tiên** bằng SQL (xem [Dữ liệu mẫu](#dữ-liệu-mẫu)).
+
+Lưu ý:
+
+- **Giới hạn kích thước Worker:** 3 MiB (gói free) hoặc 10 MiB (gói trả phí), tính sau gzip. Đo ngày 2026-10-26: 2350.57 KiB; cân nhắc kỹ khi thêm thư viện nặng.
+- `cacheComponents` và `partialPrefetching` đang tắt trong `next.config.ts` (bật thì route có `<Suspense>` động bị treo trên Workers, lỗi 1101). Chỉ bật lại khi OpenNext có bản sửa và đã thử bằng `npm run preview`.
+- `patches/@opennextjs+cloudflare+*.patch` vá lỗi `preview-props.json` của Next 16.4; xoá patch khi upstream có bản sửa.
+- Header bảo mật: route động đặt qua `next.config.ts`, asset tĩnh qua `public/_headers`; hai cơ chế không thay thế nhau. Rate limiting dùng Cloudflare Rate Limiting Rules, cấu hình trên Cloudflare.
+- Chưa kiểm trên Worker đã triển khai: giới hạn bộ nhớ khi gửi 5 ảnh, `Cache-Control` của trang đổi ngôn ngữ, luồng OAuth thật.
+
+---
+
+## Tài liệu khác
+
+| File | Nội dung |
+|---|---|
+| [`docs/technical-overview.md`](docs/technical-overview.md) | Tài liệu kỹ thuật đầy đủ: kiến trúc, đăng nhập, từng tính năng, migration, kiểm thử, triển khai |
+| [`docs/codebase-summary.md`](docs/codebase-summary.md) | Vai trò từng thư mục và file |
+| [`docs/system/permissions.md`](docs/system/permissions.md) | Ai được mở và làm gì (tiếng Việt) |
+| [`docs/project-changelog.md`](docs/project-changelog.md) | Thay đổi hành vi đáng chú ý, mới nhất trước (tiếng Việt) |
+| [`CLAUDE.md`](CLAUDE.md) | Stack, quy ước viết code, bảo mật |
