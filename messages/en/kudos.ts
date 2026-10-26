@@ -66,6 +66,10 @@ export const kudos: Dictionary["kudos"] = {
   compose: {
     placeholder: "Today, who would you like to thank and acknowledge?",
     searchPlaceholder: "Search for Sunner profile",
+    searchSubmitLabel: /* not from Figma */ "Search",
+    searchListLabel: /* not from Figma */ "Sunner search results",
+    searchNoResult: /* not from Figma */ "No Sunner found.",
+    searchError: /* not from Figma */ "Search failed, please try again.",
   },
   highlight: {
     eyebrow,

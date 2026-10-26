@@ -17,6 +17,7 @@ import { getRouteDictionary } from "@/lib/i18n/get-dictionary";
 import { fetchKudosSpotlight, getKudosBoardData } from "@/lib/kudos/get-kudos-board-data";
 import { loadMoreKudos } from "@/lib/kudos/load-more-kudos-action";
 import type { RawSearchParams } from "@/lib/kudos/parse-kudos-filters";
+import { searchProfiles } from "@/lib/kudos/search-profiles-action";
 import { setKudoHeart } from "@/lib/kudos/set-kudo-heart-action";
 import { SUN_KUDOS_PATH } from "@/lib/navigation/routes";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -57,7 +58,7 @@ export default async function SunKudosPage({ params, searchParams }: PageProps) 
         <KudoHeartsProvider setHeart={setKudoHeart}>
           <main className="flex flex-1 flex-col gap-16 pb-20 lg:pb-[120px]">
             <KudosKvBanner copy={copy.kv}>
-              <KudosComposeTrigger copy={copy.compose} />
+              <KudosComposeTrigger copy={copy.compose} searchProfiles={searchProfiles} />
             </KudosKvBanner>
             <HighlightKudosSection
               kudos={board.highlight}

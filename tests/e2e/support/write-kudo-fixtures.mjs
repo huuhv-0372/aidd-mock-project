@@ -47,7 +47,7 @@ const objects = new Map(); // flat "<uuid>.<ext>" -> { owner, bytes, mime }; own
 const stateOf = (sub) => {
   if (!states.has(sub)) {
     states.set(sub, {
-      rpc: [], uploads: [], deletes: [], failRpc: false, refuseOnce: null, delayMs: 0, searchDelayMs: 0, failHashtags: false, hashtagDelayMs: 0,
+      rpc: [], uploads: [], deletes: [], failRpc: false, refuseOnce: null, delayMs: 0, searchDelayMs: 0, failSearch: false, failHashtags: false, hashtagDelayMs: 0,
       failUpdate: false, refuseUpdateOnce: null, // update_kudo: generic 500 while on / one 22023 refusal (edit-kudo.spec.ts)
     });
   }
@@ -152,6 +152,7 @@ export async function writeKudoRpc(name, body, sub) {
   if (name === "create_kudo") return createKudo(body, sub);
   if (name === "update_kudo") return updateKudo(body, sub);
   if (state.searchDelayMs) await sleep(state.searchDelayMs);
+  if (state.failSearch) return pgError("fake: injected search failure boom-secret-detail", 500, "XX000"); // profile search error path
   return { status: 200, body: searchSunners(body, sub) };
 }
 
@@ -247,7 +248,8 @@ export const holdHashtagCatalog = (sub) => (sub && stateOf(sub).hashtagDelayMs ?
 
 /**
  * Test-only control endpoints (GET, keyed by ?sub=): /__kudo-log, /__kudo-fail-rpc, /__kudo-delay?ms= (create_kudo),
- * /__kudo-delay-search?ms= (kudos_search_sunners), /__kudo-fail-hashtags?on=1|0 (hashtags catalog GET answers 500),
+ * /__kudo-delay-search?ms= (kudos_search_sunners), /__kudo-fail-search?on=1|0 (kudos_search_sunners answers 500),
+ * /__kudo-fail-hashtags?on=1|0 (hashtags catalog GET answers 500),
  * /__kudo-delay-hashtags?ms= (the hashtags catalog GET is held back by ms before it answers, failing or not),
  * /__kudo-refuse-once?code= (the next create_kudo that passes validation answers 400 / 22023 / <code>, e.g. invalid_hashtags).
  * Edit mode (edit-kudo-contract.ts): /__kudo-seed-own?anon=1&alias= (an own Kudo, returns its id, images and content),
@@ -261,6 +263,7 @@ export function kudoControl(pathname, params) {
   if (pathname === "/__kudo-fail-rpc") state.failRpc = true;
   else if (pathname === "/__kudo-delay") state.delayMs = Number(params.get("ms") || 0);
   else if (pathname === "/__kudo-delay-search") state.searchDelayMs = Number(params.get("ms") || 0);
+  else if (pathname === "/__kudo-fail-search") state.failSearch = params.get("on") !== "0";
   else if (pathname === "/__kudo-delay-hashtags") state.hashtagDelayMs = Number(params.get("ms") || 0);
   else if (pathname === "/__kudo-fail-hashtags") state.failHashtags = params.get("on") !== "0";
   else if (pathname === "/__kudo-refuse-once") state.refuseOnce = params.get("code");

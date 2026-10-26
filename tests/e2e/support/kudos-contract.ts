@@ -205,3 +205,37 @@ export async function openKudos(page: Page, request: APIRequestContext, opts: { 
   const authed = process.env.E2E_AUTHED_URL || "http://localhost:3103";
   await page.goto(`${authed}${KUDOS_PATH}`);
 }
+
+// ---------------------------------------------------------------------------------------------------------------
+// Tìm kiếm profile Sunner (Live board pill 2940:13450; plan 261026-0834-kudos-profile-search). The pill becomes a
+// combobox inside `profile-search`; copy + selectors are the contract for sun-kudos-profile-search*.spec.ts and
+// phases 02a/02b. Suggestions come from kudos_search_sunners (same RPC as the Viết Kudo recipient picker).
+// ---------------------------------------------------------------------------------------------------------------
+export const PROFILE_SEARCH = {
+  shell: "profile-search", // the pill: magnifier button + combobox; its status line sits inside
+  placeholder: "Tìm kiếm profile Sunner", // combobox accessible name (vi)
+  placeholderEn: "Search for Sunner profile",
+  submit: "Tìm kiếm", // magnifier button, 44x44 hit area
+  listbox: "Kết quả tìm kiếm Sunner",
+  noResult: "Không tìm thấy Sunner nào.",
+  noResultEn: "No Sunner found.",
+  error: "Không tìm kiếm được, hãy thử lại.",
+} as const;
+
+export const profileSearch = {
+  shell: (page: Page) => page.getByTestId(PROFILE_SEARCH.shell),
+  box: (page: Page) => page.getByRole("combobox", { name: PROFILE_SEARCH.placeholder }),
+  submit: (page: Page) => page.getByTestId(PROFILE_SEARCH.shell).getByRole("button", { name: PROFILE_SEARCH.submit, exact: true }),
+  listbox: (page: Page) => page.getByRole("listbox", { name: PROFILE_SEARCH.listbox }),
+  options: (page: Page) => page.getByRole("listbox", { name: PROFILE_SEARCH.listbox }).getByRole("option"),
+  status: (page: Page) => page.getByTestId(PROFILE_SEARCH.shell).getByRole("status"),
+};
+
+/** Opens /sun-kudos signed in and fails at once (named) while the pill is still display-only. */
+export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+  await openKudos(page, request, opts);
+  await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+}
+
+/** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+export const failSearchRpc = (request: APIRequestContext, sub: string, on: boolean) => request.get(`${KUDOS_FAKE}/__kudo-fail-search?sub=${sub}&on=${on ? 1 : 0}`);
