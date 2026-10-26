@@ -172,6 +172,7 @@ test.describe("Sửa Kudo: lưu", () => {
     await dialog.getByTestId(WRITE.imageInput).setInputFiles(newPhoto());
     await expect(thumbs(dialog)).toHaveCount(3);
     await saveAndClose(dialog);
+    await expect(page.getByRole("status").filter({ hasText: "Đã lưu thay đổi!" })).toBeVisible();
 
     const log = await kudoLog(request, sub);
     const [call] = rpcCalls(log, UPDATE_RPC);
