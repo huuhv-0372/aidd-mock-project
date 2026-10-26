@@ -4,6 +4,13 @@ Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi ti�
 
 ## 2026-10-26
 
+### Bảo mật: vá lỗ hổng trong công cụ build (`npm audit` từ 8 xuống 0)
+
+- `npm audit` báo 8 lỗ hổng (6 high, 2 moderate), đều nằm trong gói con của công cụ build và chạy thử (`wrangler`, `miniflare`, `@opennextjs/*`): `undici` (DoS, bỏ qua kiểm tra SRI), `glob` (chèn lệnh qua CLI), `body-parser` (DoS). Không gói nào nằm trong mã chạy của trang.
+- Sửa bằng `overrides` trong `package.json`: `undici@6` → `^6.29.1`, `undici@7` → `^7.30.1`, `glob@10` → `^10.5.0`, `body-parser@2` → `^2.4.0`. Giữ nguyên `@opennextjs/cloudflare` 1.20.11 (bản vá trong `patches/` vẫn áp được) và `wrangler` 4.151.0.
+- Không dùng `npm audit fix --force`: lệnh đó hạ `wrangler` xuống 4.35.0 và `@opennextjs/cloudflare` xuống 1.20.9, vẫn còn 5 lỗ hổng high, còn bản vá OpenNext thì không khớp phiên bản.
+- Đã kiểm: lint 0, tsc 0, vitest 1067/1067, E2E 377/377, `opennextjs-cloudflare build` và `npm run preview` (trang công khai 200, trang cần đăng nhập 307 sang `/login`, đổi ngôn ngữ đúng, không lỗi 1101). Worker gzip đo được 1976.33 KiB, giảm so với 2350.57 KiB vì bundle middleware không còn kèm `app-page-turbo.runtime` và `jsonwebtoken` của Next; preview vẫn chạy đúng.
+
 ### Thêm: ô "Tìm kiếm profile Sunner" trên Sun* Kudos tìm được người (`/sun-kudos`)
 
 - Ô cạnh nút soạn Kudo A.1 (Figma 2940:13450), trước chỉ hiển thị (`aria-disabled`), nay là combobox gợi ý khi gõ. Gõ thì chờ 150 ms rồi liệt kê tối đa 10 Sunner (avatar, tên, phòng ban; theo tên hoặc email, không phân biệt dấu, không gồm chính người gọi, không trả email). Bấm một dòng, Enter, hoặc kính lúp thì mở `/profile/<id>`; có thao tác bàn phím theo kiểu combobox. Ô nhập tối đa 100 ký tự; ô trống thì không gọi gì; không có kết quả hoặc lỗi thì một dòng trạng thái chung (VI/EN, `messages/{vi,en}/kudos.ts`).
