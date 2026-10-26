@@ -1,0 +1,110 @@
+[
+  {
+    "command": "netstat -ano | grep LISTEN for ports 3100-3103, 54398, 54399 (before run)",
+    "exitCode": 0,
+    "summary": "all six ports free before the first command (no listeners; check echoed 'free' for each)",
+    "ts": "2026-10-20T15:27:00+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "PASS: eslint clean, no findings (phase 05 GREEN, 63 s)",
+    "ts": "2026-10-20T15:28:13+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "PASS: no type errors (14 s)",
+    "ts": "2026-10-20T15:28:27+07:00"
+  },
+  {
+    "command": "npx vitest run",
+    "exitCode": 0,
+    "summary": "PASS: 40 files, 559 tests passed, 0 failed, 0 skipped (18.7 s); includes tests/unit/set-kudo-heart-action.test.ts",
+    "ts": "2026-10-20T15:28:55+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "PASS: next build (Compiled successfully) + Playwright full suite: 204 passed, 0 failed, 0 flaky, 0 skipped (7.6 min); kudo-hearts.spec.ts 9/9 and sun-kudos-feed ID-9 hearts case green",
+    "ts": "2026-10-20T15:41:00+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/kudo-hearts.spec.ts --repeat-each=5",
+    "exitCode": 0,
+    "summary": "PASS: 45 passed (9 cases x 5), 0 failed, 0 flaky (3.1 min)",
+    "ts": "2026-10-20T15:45:00+07:00"
+  },
+  {
+    "command": "node tests/e2e/support/fake-supabase-server.mjs (background, scratch launch) + npx next start -p 3103 with EVENT_START_AT/AWARDS_CEREMONY_AT and fake NEXT_PUBLIC_SUPABASE_URL",
+    "exitCode": 0,
+    "summary": "both servers answered 200 on /health and /favicon.ico; started by me for the visual check only",
+    "ts": "2026-10-20T15:46:00+07:00"
+  },
+  {
+    "command": "node <scratchpad>/like-visual-check.cjs (Playwright chromium, authed 3103 + fake 54398; 1440x900 and 375x812)",
+    "exitCode": 0,
+    "summary": "PASS: 14 screenshots in plans/261020-1429-like-kudos/reports/visual/ (feed grey/red/red-focus/grey-focus/own-disabled, Highlight grey/red at both widths); 0 console errors, 0 page errors, 0 horizontal overflow; measurements in like-measurements.json",
+    "ts": "2026-10-20T15:48:00+07:00"
+  },
+  {
+    "command": "taskkill /PID 38992 /T /F (next start 3103) and taskkill /PID 36040 /T /F (fake Supabase 54398)",
+    "exitCode": 0,
+    "summary": "both killed; netstat re-check showed no listeners on 3100-3103, 54398, 54399, 8787",
+    "ts": "2026-10-20T15:49:00+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build",
+    "exitCode": 0,
+    "summary": "PASS: OpenNext build complete, worker saved (207 s); 4 WARN lines are platform notices (not WSL, Node middleware experimental), no build error",
+    "ts": "2026-10-20T15:53:00+07:00"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run --outdir <scratch>/wrangler-out",
+    "exitCode": 0,
+    "summary": "PASS: Total Upload 10668.24 KiB / gzip 2221.89 KiB (limit 3072 KiB; +1.25 KiB vs final of 261019 2220.64 KiB); nothing uploaded",
+    "ts": "2026-10-20T15:55:00+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "(final) PASS: eslint clean, no findings (frozen tree after review fix)",
+    "ts": "2026-10-20T16:08:58.261+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "(final) PASS: no type errors",
+    "ts": "2026-10-20T16:09:44.490+07:00"
+  },
+  {
+    "command": "npx vitest run",
+    "exitCode": 0,
+    "summary": "(final) PASS: 40 files, 559 tests passed, 0 failed",
+    "ts": "2026-10-20T16:12:09.976+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "(final) PASS: next build + Playwright full suite: 204 passed, 0 failed, 0 flaky, 0 skipped (9.1 min)",
+    "ts": "2026-10-20T16:24:14.541+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/kudo-hearts.spec.ts tests/e2e/sun-kudos-feed.spec.ts --repeat-each=5",
+    "exitCode": 0,
+    "summary": "(final) PASS: 105 passed (21 cases x 5), 0 failed, 0 flaky (5.9 min)",
+    "ts": "2026-10-20T16:30:37.373+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build",
+    "exitCode": 0,
+    "summary": "(final) PASS: OpenNext build complete, worker saved",
+    "ts": "2026-10-20T16:39:00.792+07:00"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run --outdir <scratch>/wrangler-out",
+    "exitCode": 0,
+    "summary": "(final) PASS: Total Upload 10668.29 KiB / gzip 2221.89 KiB (limit 3072 KiB); nothing uploaded",
+    "ts": "2026-10-20T16:45:36.700+07:00"
+  }
+]

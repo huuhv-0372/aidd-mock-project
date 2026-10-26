@@ -1,0 +1,159 @@
+{
+  "score": 8,
+  "criticalCount": 0,
+  "decision": "REWORK",
+  "acceptanceCovered": [
+    "clicking the Widget on /, /awards-information and /sun-kudos opens the quick-action menu with Thể lệ, Viết KUDOS and a close button; close or Esc collapses it — components/site-shell/widget-button.tsx (open/close + useDismissable Esc/outside), wired on all 3 pages via ComposerWidget; kudos-quick-actions.spec.ts 15/15 green + repeat-each 5 (e2e-green-evidence.md)",
+    "Thể lệ opens the rules panel with Figma copy, 4 hero badges and 6 icons; Đóng closes it and Viết KUDOS in the panel opens the Viết Kudo modal — kudos-rules-dialog.tsx footer onClose + onWriteKudo→openComposer, kudos-rules-content.tsx with HeroBadge medium + public/images/kudos/rules/*; quick-actions spec green",
+    "the compose pill on /sun-kudos opens the Viết Kudo modal; a guest on / choosing Viết KUDOS is sent to /login — kudos-compose-trigger.tsx onClick=openComposer; widget-session-gate.tsx passes LOGIN_PATH for guests and the provider routes rules-panel Viết KUDOS there too; E2E green (fallback-window edge L5 noted)",
+    "the modal shows Người nhận, Danh hiệu, editor, Hashtag, Image and the anonymous checkbox (unchecked) in Figma order with Hủy and Gửi; Gửi stays disabled until recipient, title, content and at least one hashtag are filled, and each required field shows its error after blur — use-write-kudo-form.ts canSend/touched logic; write-kudo.spec.ts ID-3/4/5/6/48/50-52 green",
+    "recipient search suggests up to 10 Sunners accent-insensitively, trims input, excludes the current user, and selecting one fills the field; typing @ in the editor suggests colleagues and inserts a mention — SQL kudos_search_sunners read: unaccent+lower, btrim, p.id<>uid, limit clamped 10; recipient-picker.tsx + kudo-mention-extension.ts; E2E ID-26 green",
+    "editor toolbar applies bold, italic, strike, numbered list, quote and inserts links through the Add link dialog (Text 1-100 non-blank, Link http/https 5-2048) — kudo-rich-editor.tsx StarterKit config, add-link-validation.ts rules, serializer safeHref; write-kudo.spec Add link block + kudo-content-markdown unit tests green",
+    "hashtags come only from the DB catalog, max 5 (remaining rows disabled), chips removable; images accept jpg/png/webp up to 5 MB, max 5 with + Image hidden at 5, thumbnails removable, other formats show an invalid-format error — get-hashtag-options-action.ts reads hashtags table; hashtag-picker full→aria-disabled; image-picker hides + at 5; use-image-attachments type/size checks; E2E green",
+    "Gửi validates on the server with zod, uploads images to kudo-images under an identity-free object name owned by the sender (owner_id), calls create_kudo, removes uploaded images when the RPC fails, closes the modal on success and the new Kudo appears at the top of the /sun-kudos feed; Hủy closes and discards — create-kudo-action.ts:88 zod first, :100 getClaims before any image byte, :106 sniff/strip, :65 flat {uuid}.{ext} names (owner_id set by Storage from the JWT, checked in create_kudo migration:159-163), :118 RPC, :134/:144 removeUploaded on error; provider onSent→router.refresh + feedKey with first row id; unit create-kudo-action.test.ts:105/:125 (flat, sender-free names and URLs) + E2E write-kudo.spec.ts:425-435 assert identity-free paths (re-run status per controller, not re-run by reviewer)",
+    "create_kudo takes the sender from auth.uid(), rejects non-allowed accounts, self-recipient, out-of-range title/content, 0 or more than 5 or unknown hashtags, images outside the sender folder or not in storage, and alias when not anonymous; kudos_search_sunners never returns email; both are executable by authenticated only — migration lines 118-177: v_uid, forbidden first, recipient<>uid, title 1-100, content 1-5000 non-blank, cardinality/distinct/catalog count; 'sender folder' is now enforced as storage.objects.owner_id = auth.uid() on an anchored flat {uuid}.{jpg|png|webp} URL (migration:151-163, no path folder, no uid), duplicates/nulls refused (:153); verify B2 other_users_object/no_object/uid_folder_path/dup_url (verify:176-188); alias only when anonymous; search returns table without email; grants lines 242-246"
+  ],
+  "regressionChecked": [
+    "homepage guest render — only WidgetSessionGate leaf reads the session, inside Suspense, connection() before getIsAuthenticated try/catch; page stays public",
+    "shared fake Supabase for all authed E2E — 95 pre-existing tests stayed green in full run #2",
+    "next.config body limits — serverActions.bodySizeLimit and proxyClientMaxBodySize both 26mb; workerd 5x5MB not exercised (M1)",
+    "Worker bundle size — gzip 2217 KiB (−2 KiB), 0 Tiptap/ProseMirror in worker.js; WriteKudoDialog via next/dynamic ssr:false",
+    "All Kudos feed state after router.refresh — feedKey adds the first row id; the only router.refresh caller is the composer onSent",
+    "Dictionary type shared by all pages — kudosCompose added to vi (source type) and en (typed Dictionary); lib/validation/kudos.ts imported type-only by client files, so getSupabaseEnv never runs in the browser",
+    "migration re-run over the first version — *_own_folder policies dropped (migration:212-214); rollback drops both policy generations (rollback:20-25); bucket insert stays ON CONFLICT DO NOTHING"
+  ],
+  "contractStatus": "CHANGED — RPC kudos_search_sunners(p_query text, p_limit int default 10) became kudos_search_sunners(p_query text, p_limit int default 10, p_name_only boolean default false) on purpose (phase 07); old overload dropped (migration:61), grants moved (:266-268), the sole caller search-sunners-action.ts:30-34 and the E2E fake are updated; return shape unchanged (no email)",
+  "refuted": [],
+  "unproven": [
+    "production Cloudflare Worker (128 MB isolate) completes a 5 x 5 MB Kudo send — local workerd preview passed (raw-temper-runs 40-41) but local workerd does not enforce the isolate limit; needs one send to a deployed Worker",
+    "Storage API sets storage.objects.owner_id in the INSERT before kudo_images_insert_own WITH CHECK runs, and RLS denies select/delete of another user's object — real Supabase B7a PASS (user, 2026-10-19); B7b-d not yet seen; one real authenticated upload still needed",
+    "current migration (round-3 email match + phase-07 kudos_search_sunners(text, integer, boolean), 2-arg drop) re-run on real Supabase and verify S3/B3/B5 (plus every other row) PASS"
+  ],
+  "reachableRegressions": [],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": false
+  },
+  "findings": [
+    {
+      "severity": "Critical",
+      "category": "security/privacy",
+      "location": "supabase/migrations/20261019110000_create_kudo_write.sql:145-146",
+      "summary": "addressed — flat {uuid}.{ext} names (lib/kudos/create-kudo-action.ts:65), anchored uid-free regex + owner_id check (migration:151-163), owner_id INSERT/DELETE/SELECT policies with no UPDATE (migration:216-238), old folder policies dropped (:212-214), verify B6 asserts no sender uid in the anonymous row (verify:283-288). Original: Anonymous Kudo images live at kudo-images/{sender_uid}/...; kudos_rows returns the URLs to every viewer and the uid maps to a name via kudos_search_sunners/person JSON, so the anonymous sender is revealed.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Medium",
+      "category": "performance/ops",
+      "location": "next.config.ts:678-679",
+      "summary": "addressed — images inspected sequentially (create-kudo-action.ts:107-115), one whole-file read per image (kudo-image-file.ts:61), Blob built from kept subarrays (kudo-image-file.ts:63; strip-jpeg-metadata.ts:69); test create-kudo-action.test.ts:157-175; workerd run still unproven. Original: 26mb body plus FormData plus per-file Uint8Array copies is about 3x25MB in a 128MB isolate; never run on workerd. Run preview with 5x5MB; sniff file.slice and upload the File to avoid copies. Still open after fix round 1: PNG/WebP are zero-copy (kudo-image-file.ts:51) but JPEG reads whole (kudo-image-file.ts:52), concatenates (strip-jpeg-metadata.ts:37) and wraps in a new Blob (kudo-image-file.ts:54), all 5 concurrently (create-kudo-action.ts:106); inspect sequentially and build the Blob from the kept subarrays.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Medium",
+      "category": "security/dos",
+      "location": "lib/kudos/create-kudo-action.ts:90-103",
+      "summary": "addressed — getClaims at create-kudo-action.ts:100-104 runs before inspectKudoImage at :106; zod only reads file.size. Original: Images are read and sniffed before getClaims; a guest can POST the action to public / and make the Worker buffer and parse up to 26MB.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Medium",
+      "category": "privacy",
+      "location": "lib/kudos/kudo-image-file.ts:39-47",
+      "summary": "addressed — every format goes through a stripper (kudo-image-file.ts:38-42,61): PNG drops eXIf/tEXt/iTXt/zTXt/tIME, truncates after IEND (strip-png-metadata.ts:5,30-37); WebP drops EXIF/XMP, clears VP8X 0x08/0x04, rewrites RIFF size (strip-webp-metadata.ts:6,36-53); action test create-kudo-action.test.ts:146-153. Original: EXIF (GPS/device/artist) is published unchanged in a public bucket; can leak location and de-anonymise. Strip APP1 or re-encode. Still open after fix round 1: JPEG primary header APP1/APP13 now stripped (strip-jpeg-metadata.ts:54-61), but PNG eXIf/tEXt/iTXt and WebP EXIF/XMP chunks are uploaded byte-for-byte (kudo-image-file.ts:51); drop those chunks or refuse such files.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "ux",
+      "location": "components/kudos-compose/use-write-kudo-form.ts:87",
+      "summary": "addressed — size maps to copy.errors.imageSize (use-write-kudo-form.ts:87; messages/en/kudos-compose.ts:81, messages/vi/kudos-compose.ts:93). Original: Server images='size' is shown with the imageFormat message.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "data-integrity",
+      "location": "supabase/migrations/20261019110000_create_kudo_write.sql:147-159",
+      "summary": "addressed — count(distinct u) <> cardinality (migration:153), verify dup_url case (verify:184). Original: Duplicate image URLs are accepted (direct RPC call).",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "security",
+      "location": "supabase/migrations/20261019110000_create_kudo_write.sql:129-132",
+      "summary": "Content link targets are not checked in SQL; a direct PostgREST call bypasses zod. Safe while the board renders plain text; any future Markdown renderer must sanitise on read.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "robustness",
+      "location": "lib/kudos/kudo-content-markdown.ts:45-49",
+      "summary": "Mention id is not checked as a uuid in the serializer; a crafted paste makes the whole send fail with a generic error.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "ux",
+      "location": "app/[locale]/page.tsx:154-156",
+      "summary": "The Suspense fallback widget has no guest href; a guest clicking before the gate streams in opens the modal instead of going to /login.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Medium",
+      "category": "privacy",
+      "location": "lib/kudos/strip-jpeg-metadata.ts:36",
+      "summary": "addressed — DROPPED = APP1/APP11/APP13/COM (strip-jpeg-metadata.ts:10); output cut at first real EOI after a scan (:67-71) via nextMarkerInScan skipping FF00/RSTn/FF-fill (:19-33); tests strip-jpeg-metadata.test.ts:52-79. Original: Everything from SOS to end of file is copied verbatim, including data after the primary EOI: MPF secondary images (own APP1 Exif) and Motion Photo MP4 trailers (may carry location); COM and APP11 (JUMBF/C2PA creator) also kept. Truncate after the first unstuffed FF D9 of the scan (skip FF00/RSTn) and drop 0xFE/APP11; update strip-jpeg-metadata.test.ts:32 which locks in the pass-through.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "test-hygiene",
+      "location": "tests/e2e/write-kudo.spec.ts:413",
+      "summary": "addressed — title now flat identity-free {uuid}.{ext} (write-kudo.spec.ts:413). Original: ID-46 title still says 'uploads real files under {uid}/', contradicting its flat identity-free assertions (:425-435); rename.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "verification-gap",
+      "location": "supabase/verify/20261019110000_create_kudo_write_verify.sql:83",
+      "summary": "addressed — B7a-d (verify:299-378) as authenticated with A claims; SKIP never PASS on trigger/grant errors; not yet executed. Original: owner_id Storage policies are verified by text match only; add behavioural checks as authenticated with A's claims: DELETE/SELECT of B's object returns 0 rows, INSERT with owner_id = B raises 42501, INSERT with owner_id = A succeeds.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "privacy",
+      "location": "lib/kudos/strip-png-metadata.ts:5",
+      "summary": "addressed — caBX in DROPPED (strip-png-metadata.ts:5), C2PA in DROPPED (strip-webp-metadata.ts:6); tests strip-png-metadata.test.ts:13,27 and strip-webp-metadata.test.ts:10,40-44. Original: C2PA/JUMBF provenance kept in PNG (caBX) and WebP (C2PA) while JPEG drops APP11.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "concurrency/ux",
+      "location": "components/kudos-compose/recipient-picker.tsx:129",
+      "summary": "addressed — onBlur runs clearTimeout(timer.current); latest.current += 1 (recipient-picker.tsx:138-145); E2E write-kudo.spec.ts:263-272 asserts no list/no-match row after blur and zero searches reached the fake. Original: onBlur does not cancel the pending debounced search.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "ux/relevance",
+      "location": "supabase/migrations/20261019110000_create_kudo_write.sql:87",
+      "summary": "Email-only matches are ranked together with name matches; short domain fragments match every profile and can push real name matches out of the first 10. Fix: order name matches first; optionally match only the email local part unless the query contains @.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "verification-gap",
+      "location": "supabase/verify/20261019110000_create_kudo_write_verify.sql:274",
+      "summary": "B5 never checks the exact-email-first ordering (no fixture email contains another fixture email).",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "ux/query-efficiency",
+      "location": "components/kudos-compose/kudo-mention-extension.ts:34",
+      "summary": "allowSpaces keeps the @ suggestion active to the end of the paragraph; after an unmatched @word the no-match row follows the caret and each pause fires another search. Fix: exitSuggestion when !loading && no items && query has whitespace; E2E \"@team đã hỗ trợ…\". [controller fix after round-4 re-review: kudo-mention-extension.ts render.show exits the suggestion; E2E write-kudo.spec.ts:380 RED then GREEN — not yet re-reviewed]",
+      "disposition": "Accept"
+    }
+  ]
+}

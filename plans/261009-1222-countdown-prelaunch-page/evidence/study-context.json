@@ -1,0 +1,28 @@
+{
+  "task": "SAA 2025 countdown prelaunch gate (F001/SCR001): proxy time gate + /countdown LED countdown that redirects to /login at zero",
+  "mode": "code",
+  "acceptanceCriteria": [
+    "DEC-001",
+    "DEC-002",
+    "BR-001",
+    "BR-002",
+    "BR-003",
+    "D001",
+    "FR-103",
+    "D002",
+    "Static assets not gated"
+  ],
+  "touchpoints": [
+    "proxy.ts",
+    "lib/countdown/",
+    "lib/event/get-event-start-at.ts",
+    "components/countdown/",
+    "app/countdown/page.tsx",
+    "app/layout.tsx"
+  ],
+  "blastRadius": "every route (global proxy gate)",
+  "contracts": [
+    "selector contract in tests/e2e/countdown-prelaunch-gate.spec.ts",
+    "CountdownScreen/CountdownUnit/CountdownRow props"
+  ]
+}

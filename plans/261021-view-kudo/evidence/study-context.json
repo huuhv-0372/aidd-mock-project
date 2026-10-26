@@ -1,0 +1,30 @@
+{
+  "task": "View Kudo (VI/EN): a signed-in detail page /sun-kudos/{id} per Figma 520:18779 showing one Kudo in full with formatted content, opened from Highlight 'View details', Copy Link and the All Kudos card content; guests return to the same Kudo after login",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "a signed-in user opening /sun-kudos/{id} sees the Kudo frame with sender, recipient, time, title, the full content with its formatting, up to 5 images, hashtags, hearts, Copy Link and a Close button",
+    "an unknown or malformed Kudo id returns HTTP 404 with the existing not-found page",
+    "Close returns to the previous in-app page, or to /sun-kudos when the page was opened directly",
+    "the Highlight 'View details' link and the All Kudos card content both open the detail page",
+    "a guest opening /sun-kudos/{id} is sent to login and, after signing in, lands on the same Kudo; any other next value is ignored",
+    "the frame matches the Figma screenshots at 1440 wide and has no horizontal scroll at 375; every string switches between VI and EN; the existing unit and E2E suites stay green"
+  ],
+  "touchpoints": [
+    "app/[locale]/sun-kudos/[id]/page.tsx", "components/kudos/*", "lib/kudos/*", "lib/auth/*", "app/auth/callback/route.ts",
+    "app/[locale]/login/page.tsx", "components/login/google-login-form.tsx", "supabase/migrations/*", "supabase/rollbacks/*", "supabase/verify/*",
+    "messages/vi/kudos.ts", "messages/en/kudos.ts", "tests/e2e/*", "tests/unit/*"
+  ],
+  "blastRadius": [
+    "auth gate redirect for anonymous visitors (proxy.ts via resolveAuthRedirect)",
+    "OAuth sign-in action and callback redirect target",
+    "new security-definer RPC reading kudos (anonymity rules)",
+    "All Kudos post card markup (board specs)",
+    "Dictionary type shared by all pages"
+  ],
+  "contracts": [
+    "KudoDetailCard({ kudo, locale, copy, content })",
+    "KudoRichContent({ markdown })",
+    "kudo_detail(p_id uuid) returns setof kudo_row (0 rows when not allowed or not found)",
+    "parsePostLoginNext(value) accepts only /sun-kudos/<uuid>"
+  ]
+}

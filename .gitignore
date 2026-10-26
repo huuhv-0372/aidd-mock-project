@@ -68,9 +68,11 @@ mind.*
 # Local-only instructions (not shared with the team)
 CLAUDE.local.md
 
-# ClaudeKit
-plans/**/*
-!plans/templates/*
+# ClaudeKit plans: committed for the AIDD review (plans, clarifications, reports, evidence).
+# Screenshots stay local: about 124 MB of PNG would bloat the history.
+plans/**/*.png
+# Raw MoMorph media listings hold signed storage URLs (access key id + signature).
+plans/**/media_files.json
 
 # rebuild-spec docs layout-flip advisory lock (transient runtime artifact)
 **/.layout-flip.lock

@@ -1,0 +1,20 @@
+{
+  "task": "Login screen (MoMorph GzbNeVGJHz): Figma-exact UI with Google sign-in via Supabase Auth (PKCE server action + callback), session refresh in proxy.ts",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "anon /login renders header, language selector, hero, Google button and footer per selector contract",
+    "clicking LOGIN With Google redirects to Supabase authorize with provider=google and redirect_to=<origin>/auth/callback, button disabled with loader while pending",
+    "auth errors show only the generic message via /login?error=auth_failed",
+    "/auth/callback never open-redirects and only reads code/error",
+    "proxy refreshes session with getClaims (never getSession) after the countdown gate and redirects authenticated users away from /login",
+    "missing or invalid Supabase env or garbage auth cookie never crashes routes"
+  ],
+  "touchpoints": [
+    "proxy.ts", "lib/supabase/env.ts", "lib/supabase/server.ts", "lib/supabase/update-session.ts",
+    "lib/auth/constants.ts", "lib/auth/resolve-auth-redirect.ts", "lib/auth/sign-in-with-google.ts",
+    "lib/validation/auth-callback.ts", "app/auth/callback/route.ts", "app/login/page.tsx",
+    "components/login/*", "app/globals.css", "playwright.config.ts", "tests/e2e/login.spec.ts", "package.json"
+  ],
+  "blastRadius": ["countdown prelaunch gate on every route via proxy.ts", "global CSS tokens", "e2e webServer config shared with countdown spec", "Worker bundle size (new deps)"],
+  "contracts": ["proxy matcher unchanged", "resolveGateRedirect behaviour unchanged", "GoogleLoginButton/LoginHero/LoginErrorBanner props per phase-03 contract"]
+}

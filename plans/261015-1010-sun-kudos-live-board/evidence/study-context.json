@@ -1,0 +1,28 @@
+{
+  "task": "Sun* Kudos Live board (feature #11, VI/EN): /sun-kudos with KV banner, Highlight top-5 carousel, Spotlight Board word cloud, All Kudos infinite feed, hashtag/department filters, personal stats sidebar, 10 latest gift recipients; Supabase schema for #11/#12/#13 with RLS and read-only definer RPCs, plus demo seed",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "guest visiting /sun-kudos is redirected to /login; signed-in user sees the board with the Sun* Kudos header link marked current",
+    "Highlight shows up to 5 kudos ordered by hearts with prev/next arrows disabled at the ends and an n/m page indicator",
+    "Hashtag and department filters (from DB catalogs) filter both Highlight and All Kudos via the URL, reset the carousel to 1, and clicking a hashtag on a card sets the hashtag filter",
+    "All Kudos shows 10 cards then loads more on scroll without duplicates; empty state text 'Hiện tại chưa có Kudos nào.'",
+    "kudo cards show sender/recipient (profile links), hero badge and stars, time HH:mm - MM/DD/YYYY, title, clamped content, hashtags, images, heart count with liked/own state; Copy Link copies /sun-kudos/{id} and shows the toast",
+    "Spotlight shows the total kudos count, recipient nodes linking to kudo detail, hover tooltip, Pan/Zoom toggle and a search capped at 100 characters",
+    "sidebar shows the five personal stats and the 10 latest gift recipients, with 'Chưa có dữ liệu' when empty",
+    "every string switches between VI and EN with the language selector",
+    "migration enables RLS on every new table, grants no direct access to transactional tables, and the five read RPCs reject non-allowed accounts; existing login keeps working and the existing E2E suite stays green"
+  ],
+  "touchpoints": [
+    "app/[locale]/sun-kudos/page.tsx", "components/kudos/*", "lib/kudos/*", "lib/validation/kudos.ts", "lib/navigation/routes.ts",
+    "messages/vi/*", "messages/en/*", "app/globals.css", "public/images/kudos/**",
+    "supabase/migrations/20261015100000_create_kudos.sql", "supabase/rollbacks/*", "supabase/verify/*", "supabase/seed/*",
+    "tests/e2e/sun-kudos*.spec.ts", "tests/e2e/support/fake-supabase-server.mjs", "tests/e2e/support/kudos-*", "tests/unit/*"
+  ],
+  "blastRadius": ["FK added on public.profiles.department (sign-in trigger path)", "shared fake Supabase server used by every authed E2E spec", "Dictionary type shared by all pages"],
+  "contracts": [
+    "RPCs kudos_feed, kudos_highlight, kudos_spotlight, kudos_my_stats, kudos_latest_gift_recipients as in plans/261015-1010-sun-kudos-live-board/database-design.md",
+    "lib/kudos/kudo-types.ts row shapes (snake_case, mirror RPC JSON)",
+    "routes: kudoDetailHref(id) = /sun-kudos/{id}, profileHref(id) = /profile/{id}",
+    "filter URL params ?hashtag=<slug>&department=<code>"
+  ]
+}

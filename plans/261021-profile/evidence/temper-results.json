@@ -1,0 +1,39 @@
+{
+  "commands": [
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "final code: eslint no findings",
+      "ts": "2026-10-22T16:27:00+07:00"
+    },
+    {
+      "command": "npx tsc --noEmit -p .",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "final code: typecheck clean",
+      "ts": "2026-10-22T16:27:30+07:00"
+    },
+    {
+      "command": "npx vitest run",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "final code: 51 files, 826 tests passed",
+      "ts": "2026-10-22T16:28:00+07:00"
+    },
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "final code: next build ok; full E2E 298 passed, 0 failed (5.1m)",
+      "ts": "2026-10-22T16:35:00+07:00"
+    },
+    {
+      "command": "npx opennextjs-cloudflare build && npx wrangler deploy --dry-run",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Worker Total Upload 10879.26 KiB / gzip 2259.13 KiB (View Kudo baseline 2241 KiB; +18 KiB, no duplicated chunk, under 3 MiB)",
+      "ts": "2026-10-22T16:45:00+07:00"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "task": "Build the SAA 2025 Awards Information screen (/awards-information, MoMorph zFYDgyj_pD) Figma-exact with sticky scroll-spy award nav, Kudos block, shared site shell and SAA 404 page",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "authenticated user sees /awards-information with title, 6-item nav and 6 award cards with Figma copy (ID-0, ID-3..ID-8)",
+    "anonymous user is redirected to /login (ID-1)",
+    "header Awards Information link from / lands on the page and is the active nav item (ID-2)",
+    "nav click scrolls to the card, sets #slug and moves the single active item; scroll-spy and #slug landing activate the right item (ID-9, ID-11)",
+    "unknown hash causes no error and keeps the first item active (ID-13)",
+    "Chi tiet goes to /sun-kudos which shows the SAA 404 page with a link home (ID-12, ID-14)",
+    "mobile 375: sticky horizontally scrollable chip bar, stacked cards",
+    "Homepage unchanged after moving shared shell components to components/site-shell"
+  ],
+  "touchpoints": [
+    "app/awards-information/page.tsx", "app/not-found.tsx", "app/page.tsx",
+    "components/awards/*", "components/site-shell/*", "components/home/*",
+    "lib/awards/parse-award-hash.ts", "lib/awards/pick-active-award.ts",
+    "tests/e2e/awards-information.spec.ts", "tests/e2e/awards-information-nav.spec.ts",
+    "tests/e2e/support/authed-session.ts", "tests/e2e/support/awards-contract.ts",
+    "tests/unit/parse-award-hash.test.ts", "tests/unit/pick-active-award.test.ts"
+  ],
+  "blastRadius": ["Homepage header/footer/widget/kudos (moved files)", "proxy default-deny for new route", "global not-found for every unknown route"],
+  "contracts": ["SiteHeader({ controls, activeHref })", "useActiveAward(slugs) -> { activeSlug, select }", "AwardsNav({ items })", "section id = AWARD_SLUGS slug", "awardHref(slug) = /awards-information#slug (unchanged)"]
+}

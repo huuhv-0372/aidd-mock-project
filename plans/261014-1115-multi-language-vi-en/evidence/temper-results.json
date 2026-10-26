@@ -1,0 +1,123 @@
+{
+ "commands": [
+  {
+   "command": "npm run lint",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "eslint clean, no findings",
+   "ts": "2026-10-14T12:12:00+07:00"
+  },
+  {
+   "command": "npx tsc --noEmit",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "typecheck clean",
+   "ts": "2026-10-14T12:13:00+07:00"
+  },
+  {
+   "command": "npm test",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "vitest: 20 files, 199 tests passed, 0 failed",
+   "ts": "2026-10-14T12:15:58+07:00"
+  },
+  {
+   "command": "npx next build",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "Compiled, TypeScript ok, 19 static pages generated; 0 hits for [auth] or HANGING in build log",
+   "ts": "2026-10-14T12:16:30+07:00"
+  },
+  {
+   "command": "npx playwright test",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "68 passed, 0 failed, 0 skipped, 0 flaky (2.2m); stderr noise from forged-key getClaims test is expected",
+   "ts": "2026-10-14T12:19:00+07:00"
+  },
+  {
+   "command": "npx playwright test tests/e2e/language-switch.spec.ts --repeat-each=3",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "24 passed (8 tests x 3 repeats), 0 failed, 0 flaky",
+   "ts": "2026-10-14T12:21:00+07:00"
+  },
+  {
+   "command": "npm run lint (final, after dropdown polish)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "eslint clean on final tree",
+   "ts": "2026-10-14T05:31:50.000Z"
+  },
+  {
+   "command": "npx tsc --noEmit (final)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "typecheck clean on final tree",
+   "ts": "2026-10-14T05:31:50.000Z"
+  },
+  {
+   "command": "npx vitest run (final)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "unit suite on final tree (20 files, 199 tests)",
+   "ts": "2026-10-14T05:31:50.000Z"
+  },
+  {
+   "command": "npx next build (final)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "build ok, 2 prerendered variants per page, 0 [auth]/HANGING log hits",
+   "ts": "2026-10-14T05:31:50.000Z"
+  },
+  {
+   "command": "npx playwright test (final, after dropdown polish)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "full E2E 68/68 incl. language-switch 8/8",
+   "ts": "2026-10-14T05:31:50.000Z"
+  },
+  {
+   "command": "dropdown measure script vs Figma 525:11713",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "open list 122x124, options 110x56, bg rgb(0,7,12), border rgb(153,140,95), selected #FFEA9E/20% follows locale; screenshot matches Figma export",
+   "ts": "2026-10-14T05:31:50.000Z"
+  },
+  {
+   "command": "npm run lint (after fix round 1)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "eslint clean",
+   "ts": "2026-10-14T06:25:29.000Z"
+  },
+  {
+   "command": "npx tsc --noEmit (after fix round 1)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "typecheck clean",
+   "ts": "2026-10-14T06:25:29.000Z"
+  },
+  {
+   "command": "npx vitest run (after fix round 1)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "199/199",
+   "ts": "2026-10-14T06:25:29.000Z"
+  },
+  {
+   "command": "npx next build (after fix round 1)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "build ok, 0 [auth]/HANGING hits",
+   "ts": "2026-10-14T06:25:29.000Z"
+  },
+  {
+   "command": "npx playwright test (after fix round 1)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "full E2E 70/70 incl. new cross-tab reload + setLocale failure tests",
+   "ts": "2026-10-14T06:25:29.000Z"
+  }
+ ]
+}

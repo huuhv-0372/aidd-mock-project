@@ -1,0 +1,27 @@
+[
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "Lint passed (0 errors)"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "TypeScript check passed (0 errors)"
+  },
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "summary": "9 test files, 89 tests passed, 2.93s total"
+  },
+  {
+    "command": "npm run build",
+    "exitCode": 0,
+    "summary": "Next.js build succeeded, TypeScript 11.3s, 7/7 static pages generated"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "15 e2e tests passed (49.3s), login and countdown suites green"
+  }
+]

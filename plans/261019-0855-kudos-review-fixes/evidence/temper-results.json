@@ -1,0 +1,46 @@
+{
+  "commands": [
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "typecheck clean (whole project) after the fixture and spec edits",
+      "ts": "2026-10-19T08:52:00+07:00"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "eslint clean, no findings (whole project)",
+      "ts": "2026-10-19T08:52:30+07:00"
+    },
+    {
+      "command": "npx vitest run",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "29 files, 313 tests passed, 0 failed (incl. unit tests importing kudos-fixtures.mjs)",
+      "ts": "2026-10-19T08:53:00+07:00"
+    },
+    {
+      "command": "npx next build && npx playwright test tests/e2e/sun-kudos.spec.ts tests/e2e/sun-kudos-feed.spec.ts",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "baseline: build exit 0; 21 passed, 0 failed (incl. new ID-8 anonymous case); ports 3100-3103 clear before/after",
+      "ts": "2026-10-19T09:00:00+07:00"
+    },
+    {
+      "command": "npx next build && npx playwright test tests/e2e/sun-kudos.spec.ts tests/e2e/sun-kudos-feed.spec.ts",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "final reverted code: build exit 0; 21 passed, 0 failed, 0 flaky; git diff --stat = 7 intended files, components/lib/app untouched",
+      "ts": "2026-10-19T09:10:00+07:00"
+    },
+    {
+      "command": "npx vitest run && npx tsc --noEmit && npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "after post-review Low fixes (fixture clampLimit p_limit 0 -> 1 like SQL; unit CURSOR id in new format): 313/313 unit, tsc 0, lint 0. E2E not rerun: the app only ever sends p_limit 1..20 or 10, for which clampLimit output is unchanged",
+      "ts": "2026-10-19T09:35:00+07:00"
+    }
+  ]
+}

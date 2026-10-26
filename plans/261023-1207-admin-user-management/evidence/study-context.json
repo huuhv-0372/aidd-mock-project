@@ -1,0 +1,53 @@
+{
+  "task": "Admin module (VI/EN): /admin is reachable only by role admin and shows the Admin - User screen — a filterable, searchable, sortable, paginated user table with CSV export and a User/Admin role change — backed by a new profiles.role column and admin-only security-definer RPCs",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "profiles.role exists (not null, default 'user', check user|admin), every existing user is 'user', sign-in triggers keep working, and no authenticated user can write role through the API",
+    "only an admin (role read from the database on every request) can open /admin and /admin/users or call the admin RPCs and the CSV route; a signed-in non-admin gets HTTP 403 with no user data in the response, a guest is sent to /login, and /admin redirects an admin to /admin/users",
+    "the account menu shows a Dashboard item linking to /admin for admins only; for everyone else it keeps exactly Profile and Sign out",
+    "the Users screen matches the owner's 1440 screenshot: admin header (logo, Admin label, Overview/Review content/User/Settings tabs with User current and the other three aria-disabled, bell, language, account), title, Export button, Unit/Level/Role filters, search box, the 12 columns in Figma order, and the footer",
+    "each row shows row number, name, email, sent, received, total heart (hearts on Kudos the user sent), level (hero tier 0-4 by distinct non-anonymous senders), distinct badges opened, time the sixth distinct badge was obtained, last sign-in (dd/MM/yyyy and HH:mm, Asia/Ho_Chi_Minh, '-' when null) and role; the sent/received header totals sum the whole filtered result",
+    "Unit, Level, Role and the debounced search filter the list in SQL through validated URL parameters (search treats % and _ literally, invalid parameters fall back to defaults with HTTP 200); the seven sortable columns sort asc/desc with nulls last and aria-sort; pagination shows 20 rows per page and keeps filters and sort",
+    "the row menu changes another user's role between User and Admin after a confirmation (cancel or Esc does nothing), the row updates on success, failures show a generic message, an admin cannot change their own role (no action in the UI and 'self' from the RPC), and concurrent demotions cannot leave zero admins",
+    "Export downloads the whole filtered and sorted result as UTF-8 CSV with BOM and CRLF, fixed English headers, cells starting with = + - @ tab or CR prefixed with an apostrophe, quoting for commas, quotes and newlines, and 413 above 5000 rows",
+    "every new string switches between VI and EN; at 375 the page has no horizontal scroll (the table scrolls inside its own frame) and interactive elements are at least 44px with focus-visible styles",
+    "the existing unit and E2E suites stay green, lint and build pass, the Worker bundle grows only modestly, and the migration verify script passes on the real Supabase project"
+  ],
+  "touchpoints": [
+    "supabase/migrations/20261024100000_create_admin_users.sql",
+    "supabase/rollbacks/20261024100000_create_admin_users_down.sql",
+    "supabase/verify/20261024100000_create_admin_users_verify.sql",
+    "lib/admin/*",
+    "lib/validation/admin-users.ts",
+    "lib/navigation/routes.ts",
+    "app/[locale]/admin/**",
+    "components/admin/*",
+    "components/site-shell/account-menu.tsx",
+    "components/site-shell/signed-in-controls.tsx",
+    "components/site-shell/header-session-controls.tsx",
+    "messages/vi/*",
+    "messages/en/*",
+    "tests/unit/*admin*",
+    "tests/e2e/admin-users*.spec.ts",
+    "tests/e2e/support/*"
+  ],
+  "blastRadius": [
+    "new NOT NULL column on public.profiles, which the sign-in triggers write on every Google login",
+    "new security-definer RPCs exposing every user's email and activity, gated by is_admin()",
+    "admin_set_user_role mutates profiles.role (privilege escalation and last-admin lockout)",
+    "account menu shared by every signed-in page",
+    "i18n dictionaries (a missing key breaks the build)",
+    "locale rewrite and the [...rest] catch-all for the new /admin paths",
+    "fake Supabase server shared by every E2E spec",
+    "Worker bundle size"
+  ],
+  "contracts": [
+    "is_admin() returns boolean",
+    "admin_list_users(p_department text, p_level smallint, p_role text, p_search text, p_sort text, p_dir text, p_limit integer, p_offset integer) returns table (user_id, row_no, full_name, email, department, sent, received, hearts, level, badges, time_to_6_badges, last_sign_in_at, role, total_count, sum_sent, sum_received)",
+    "admin_set_user_role(p_user_id uuid, p_role text) returns text ('ok' | 'forbidden' | 'self' | 'invalid' | 'not_found')",
+    "setUserRole({ userId, role }) server action -> { ok: true } | { ok: false, error: 'forbidden' | 'self' | 'not_found' | 'validation' | 'server' }",
+    "GET /admin/users/export?<filters> -> text/csv attachment | 403 | 413 | 500",
+    "lib/admin/admin-user-types.ts (AdminUserFilters, AdminUserRow, AdminUsersPage, SetUserRoleResult)",
+    "URL parameters of /admin/users: unit, level, role, q, sort, dir, page"
+  ]
+}

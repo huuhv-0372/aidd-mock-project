@@ -1,0 +1,7 @@
+{
+  "mode": "single",
+  "intents": [
+    "(visitor, prelaunch gate, sees time remaining until SAA 2025 opens and cannot reach any other page until then; at launch is sent to login)"
+  ],
+  "justification": ""
+}

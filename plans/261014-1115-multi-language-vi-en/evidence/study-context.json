@@ -1,0 +1,27 @@
+{
+  "task": "Add VI/EN language switching (feature #10): header/login language dropdown switches the whole UI between Vietnamese and English, persisted in the NEXT_LOCALE cookie, public URLs unchanged via proxy rewrite to a hidden app/[locale] segment",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "default locale is vi: selector shows VN with VN flag, html lang is vi, UI text identical to before (ID-10, login default VN)",
+    "dropdown lists exactly VN and EN, each with its flag (ID-24, ID-58, dropdown spec A.1/A.2)",
+    "selecting EN switches header, footer, page content and metadata to English from MoMorph localizations, html lang en, URL unchanged (ID-25)",
+    "the choice persists across reload and navigation via the NEXT_LOCALE cookie",
+    "selecting VN switches back to Vietnamese (ID-26)",
+    "language switch works on /login for guests",
+    "invalid cookie values fall back to vi and the setLocale server action rejects anything but vi|en",
+    "countdown gate, auth redirects, Supabase session cookies and the 404 page keep working; existing E2E suite stays green"
+  ],
+  "touchpoints": [
+    "proxy.ts", "lib/supabase/update-session.ts", "lib/i18n/*", "lib/validation/locale.ts", "messages/vi/*", "messages/en/*",
+    "app/[locale]/**", "components/site-shell/*", "components/home/*", "components/awards/*", "components/login/*",
+    "components/countdown/*", "components/ui/language-selector.tsx", "lib/auth/constants.ts",
+    "tests/e2e/language-switch.spec.ts", "tests/unit/locale.test.ts"
+  ],
+  "blastRadius": ["every page route moves under app/[locale]", "proxy rewrite on every request incl. Supabase cookie propagation", "global 404 handling", "countdown gate and auth redirects"],
+  "contracts": [
+    "lib/i18n/locales.ts: LOCALES, Locale, DEFAULT_LOCALE, LOCALE_COOKIE, isLocale, resolveLocale",
+    "lib/i18n/set-locale-action.ts: setLocale(locale: string): Promise<void>",
+    "lib/i18n/get-dictionary.ts: getDictionary(locale: Locale): Dictionary",
+    "public URLs unchanged; /vi/* and /en/* typed directly return 404"
+  ]
+}

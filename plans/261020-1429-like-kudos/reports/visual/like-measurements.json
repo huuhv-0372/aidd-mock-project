@@ -1,0 +1,649 @@
+{
+  "results": {
+    "375": {
+      "greyFeed": {
+        "button": {
+          "x": 32,
+          "y": 3701.61,
+          "w": 59.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 32,
+          "y": 3707.61,
+          "w": 59.7,
+          "h": 32
+        },
+        "countText": "15",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 32,
+          "y": 3707.61,
+          "w": 23.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 59.7,
+          "y": 3707.61,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(153, 153, 153)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "false",
+        "disabled": false
+      },
+      "greyHighlight": {
+        "button": {
+          "x": 52,
+          "y": 568.67,
+          "w": 59.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 52,
+          "y": 574.67,
+          "w": 59.7,
+          "h": 32
+        },
+        "countText": "15",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 52,
+          "y": 574.67,
+          "w": 23.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 79.7,
+          "y": 574.67,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(153, 153, 153)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "false",
+        "disabled": false
+      },
+      "feedCardRect": {
+        "x": 16,
+        "y": 3133.61,
+        "w": 343,
+        "h": 634
+      },
+      "feedCopy": {
+        "x": 198.97,
+        "y": 3695.61,
+        "w": 144.03,
+        "h": 56,
+        "text": "Copy Link"
+      },
+      "highlightCardRect": {
+        "x": 24,
+        "y": 56.67,
+        "w": 327,
+        "h": 698
+      },
+      "highlightCopy": {
+        "x": 52,
+        "y": 614.67,
+        "w": 144.03,
+        "h": 56,
+        "text": "Copy Link"
+      },
+      "ownGrey": {
+        "button": {
+          "x": 32,
+          "y": 2385.61,
+          "w": 59.58,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 32,
+          "y": 2391.61,
+          "w": 59.58,
+          "h": 32
+        },
+        "countText": "12",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 32,
+          "y": 2391.61,
+          "w": 23.58,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 59.58,
+          "y": 2391.61,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(153, 153, 153)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "false",
+        "disabled": true
+      },
+      "ownCopy": {
+        "x": 32,
+        "y": 2218.61,
+        "w": 88,
+        "h": 88,
+        "text": ""
+      },
+      "hOverflow": 0,
+      "redFeed": {
+        "button": {
+          "x": 32,
+          "y": 383.61,
+          "w": 60.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 32,
+          "y": 389.61,
+          "w": 60.7,
+          "h": 32
+        },
+        "countText": "16",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 32,
+          "y": 389.61,
+          "w": 24.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 60.7,
+          "y": 389.61,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(212, 39, 29)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "true",
+        "disabled": false
+      },
+      "redHighlight": {
+        "button": {
+          "x": 52,
+          "y": -2749.33,
+          "w": 60.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 52,
+          "y": -2743.33,
+          "w": 60.7,
+          "h": 32
+        },
+        "countText": "16",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 52,
+          "y": -2743.33,
+          "w": 24.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 80.7,
+          "y": -2743.33,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(212, 39, 29)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "true",
+        "disabled": false
+      },
+      "redFeedCardRect": {
+        "x": 16,
+        "y": -184.39,
+        "w": 343,
+        "h": 634
+      },
+      "redFeedCopy": {
+        "x": 198.97,
+        "y": 377.61,
+        "w": 144.03,
+        "h": 56,
+        "text": "Copy Link"
+      },
+      "focusFeed": {
+        "button": {
+          "x": 32,
+          "y": 383.61,
+          "w": 60.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 32,
+          "y": 389.61,
+          "w": 60.7,
+          "h": 32
+        },
+        "countText": "16",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 32,
+          "y": 389.61,
+          "w": 24.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 60.7,
+          "y": 389.61,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(212, 39, 29)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": true,
+        "outline": "solid 2px rgb(255, 234, 158)",
+        "ariaPressed": "true",
+        "disabled": false
+      },
+      "focusGreyFeed": {
+        "button": {
+          "x": 32,
+          "y": 567.61,
+          "w": 59.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 32,
+          "y": 573.61,
+          "w": 59.7,
+          "h": 32
+        },
+        "countText": "15",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 32,
+          "y": 573.61,
+          "w": 23.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 59.7,
+          "y": 573.61,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(153, 153, 153)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "false",
+        "disabled": false
+      }
+    },
+    "1440": {
+      "greyFeed": {
+        "button": {
+          "x": 184,
+          "y": 3609,
+          "w": 59.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 184,
+          "y": 3615,
+          "w": 59.7,
+          "h": 32
+        },
+        "countText": "15",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 184,
+          "y": 3615,
+          "w": 23.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 211.7,
+          "y": 3615,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(153, 153, 153)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "false",
+        "disabled": false
+      },
+      "greyHighlight": {
+        "button": {
+          "x": 580,
+          "y": 651,
+          "w": 59.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 580,
+          "y": 657,
+          "w": 59.7,
+          "h": 32
+        },
+        "countText": "15",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 580,
+          "y": 657,
+          "w": 23.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 607.7,
+          "y": 657,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(153, 153, 153)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "false",
+        "disabled": false
+      },
+      "feedCardRect": {
+        "x": 144,
+        "y": 3116,
+        "w": 680,
+        "h": 559
+      },
+      "feedCopy": {
+        "x": 639.97,
+        "y": 3603,
+        "w": 144.03,
+        "h": 56,
+        "text": "Copy Link"
+      },
+      "highlightCardRect": {
+        "x": 552,
+        "y": 178,
+        "w": 528,
+        "h": 543
+      },
+      "highlightCopy": {
+        "x": 737.17,
+        "y": 645,
+        "w": 144.03,
+        "h": 56,
+        "text": "Copy Link"
+      },
+      "ownGrey": {
+        "button": {
+          "x": 184,
+          "y": 2443,
+          "w": 59.58,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 184,
+          "y": 2449,
+          "w": 59.58,
+          "h": 32
+        },
+        "countText": "12",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 184,
+          "y": 2449,
+          "w": 23.58,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 211.58,
+          "y": 2449,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(153, 153, 153)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "false",
+        "disabled": true
+      },
+      "ownCopy": {
+        "x": 184,
+        "y": 2276,
+        "w": 88,
+        "h": 88,
+        "text": ""
+      },
+      "hOverflow": 0,
+      "redFeed": {
+        "button": {
+          "x": 184,
+          "y": 428,
+          "w": 60.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 184,
+          "y": 434,
+          "w": 60.7,
+          "h": 32
+        },
+        "countText": "16",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 184,
+          "y": 434,
+          "w": 24.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 212.7,
+          "y": 434,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(212, 39, 29)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "true",
+        "disabled": false
+      },
+      "redHighlight": {
+        "button": {
+          "x": 580,
+          "y": -2530,
+          "w": 60.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 580,
+          "y": -2524,
+          "w": 60.7,
+          "h": 32
+        },
+        "countText": "16",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 580,
+          "y": -2524,
+          "w": 24.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 608.7,
+          "y": -2524,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(212, 39, 29)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "true",
+        "disabled": false
+      },
+      "redFeedCardRect": {
+        "x": 144,
+        "y": -65,
+        "w": 680,
+        "h": 559
+      },
+      "redFeedCopy": {
+        "x": 639.97,
+        "y": 422,
+        "w": 144.03,
+        "h": 56,
+        "text": "Copy Link"
+      },
+      "focusFeed": {
+        "button": {
+          "x": 184,
+          "y": 428,
+          "w": 60.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 184,
+          "y": 434,
+          "w": 60.7,
+          "h": 32
+        },
+        "countText": "16",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 184,
+          "y": 434,
+          "w": 24.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 212.7,
+          "y": 434,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(212, 39, 29)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": true,
+        "outline": "solid 2px rgb(255, 234, 158)",
+        "ariaPressed": "true",
+        "disabled": false
+      },
+      "focusGreyFeed": {
+        "button": {
+          "x": 184,
+          "y": 493,
+          "w": 59.7,
+          "h": 44
+        },
+        "contentUnion": {
+          "x": 184,
+          "y": 499,
+          "w": 59.7,
+          "h": 32
+        },
+        "countText": "15",
+        "countFontSize": "24px",
+        "countFontWeight": "700",
+        "countLineHeight": "32px",
+        "countRect": {
+          "x": 184,
+          "y": 499,
+          "w": 23.7,
+          "h": 32
+        },
+        "iconRect": {
+          "x": 211.7,
+          "y": 499,
+          "w": 32,
+          "h": 32
+        },
+        "iconColor": "rgb(153, 153, 153)",
+        "gap": "4px",
+        "paddingY": "6px",
+        "marginY": "-6px",
+        "countColor": "rgb(0, 16, 26)",
+        "focusVisible": false,
+        "outline": "none 3px rgb(23, 23, 23)",
+        "ariaPressed": "false",
+        "disabled": false
+      }
+    }
+  },
+  "consoleErrors": []
+}

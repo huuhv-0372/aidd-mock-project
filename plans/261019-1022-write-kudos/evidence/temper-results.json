@@ -1,0 +1,60 @@
+{
+  "commands": [
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "PASS: eslint clean (fix-round 261020, final)",
+      "ts": "2026-10-20T12:42:29+07:00"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "PASS: no type errors (fix-round 261020, final)",
+      "ts": "2026-10-20T12:42:55+07:00"
+    },
+    {
+      "command": "npx vitest run",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "PASS: 39 files, 538 tests passed, 0 failed, 13.07 s (fix-round 261020, final)",
+      "ts": "2026-10-20T12:43:26+07:00"
+    },
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "PASS: next build + Playwright 195 passed, 0 failed, 0 flaky, 6.8 m (fix-round 261020, final)",
+      "ts": "2026-10-20T12:51:26+07:00"
+    },
+    {
+      "command": "npx playwright test tests/e2e/write-kudo.spec.ts tests/e2e/write-kudo-resilience.spec.ts --repeat-each=5",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "PASS: 425 passed (85 x 5), 0 failed, 0 flaky, 15.4 m (fix-round 261020, final)",
+      "ts": "2026-10-20T13:07:16+07:00"
+    },
+    {
+      "command": "npx opennextjs-cloudflare build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "PASS: OpenNext build complete (fix-round 261020, final)",
+      "ts": "2026-10-20T13:11:46+07:00"
+    },
+    {
+      "command": "npx wrangler deploy --dry-run --outdir <scratch>",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "PASS: Total Upload 10662.59 KiB / gzip 2220.64 KiB (limit 3072); 0 @tiptap/prosemirror in worker.js (fix-round 261020, final)",
+      "ts": "2026-10-20T13:12:21+07:00"
+    },
+    {
+      "command": "netstat ports 3100-3109 + git status env files after final runs",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "no listeners, no .env/.dev.vars in git status (fix-round 261020, final)",
+      "ts": "2026-10-20T13:12:21+07:00"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+
+Running 6 tests using 2 workers
+
+  ok 1 [chromium] › tests\e2e\zz-visual-edit-kudo-r2.spec.ts:69:7 › edit public 1440 (5.6s)
+  ok 2 [chromium] › tests\e2e\zz-visual-edit-kudo-r2.spec.ts:94:7 › edit anon alias 1440 (4.3s)
+  ok 3 [chromium] › tests\e2e\zz-visual-edit-kudo-r2.spec.ts:118:7 › write modal alias 1440 (3.5s)
+  ok 4 [chromium] › tests\e2e\zz-visual-edit-kudo-r2.spec.ts:69:7 › edit public 375 (2.8s)
+  ok 5 [chromium] › tests\e2e\zz-visual-edit-kudo-r2.spec.ts:94:7 › edit anon alias 375 (2.6s)
+  ok 6 [chromium] › tests\e2e\zz-visual-edit-kudo-r2.spec.ts:118:7 › write modal alias 375 (2.6s)
+
+  6 passed (36.0s)
+EXIT=0

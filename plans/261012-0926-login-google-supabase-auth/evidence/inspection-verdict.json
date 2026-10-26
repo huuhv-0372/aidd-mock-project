@@ -1,0 +1,35 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "anon /login renders header, language selector, hero, Google button and footer per selector contract",
+    "clicking LOGIN With Google redirects to Supabase authorize with provider=google and redirect_to=<origin>/auth/callback, button disabled with loader while pending",
+    "auth errors show only the generic message via /login?error=auth_failed",
+    "/auth/callback never open-redirects and only reads code/error",
+    "proxy refreshes session with getClaims (never getSession) after the countdown gate and redirects authenticated users away from /login",
+    "missing or invalid Supabase env or garbage auth cookie never crashes routes"
+  ],
+  "regressionChecked": [
+    "countdown gate order and early return unchanged in proxy.ts; matcher unchanged",
+    "countdown e2e 8/8 green",
+    "tsc --noEmit clean after fix",
+    "eslint clean on the 5 touched files",
+    "orchestrator e2e 15/15 and unit 81/81 after fix",
+    "supabase-js storage-key derivation sb-<hostname first label>-auth-token matches sb-127-auth-token used by test-7",
+    "sign-in-with-google.ts: 'use server' exports only async fn; redirect() outside try/catch; invalid Origin falls back to /login?error=auth_failed",
+    "language-selector focus-visible outline distinct from aria-selected bg"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {"severity": "Medium", "category": "test-coverage", "location": "tests/e2e/login.spec.ts:183-198", "summary": "test-7 cookie now uses real key sb-127-auth-token; garbage-cookie path exercised", "disposition": "Reject"},
+    {"severity": "Low", "category": "input-validation", "location": "lib/auth/sign-in-with-google.ts:16-25", "summary": "Origin now zod-validated via lib/validation/request-origin.ts; invalid Origin redirects to generic auth_failed with server log", "disposition": "Reject"},
+    {"severity": "Low", "category": "a11y", "location": "components/login/language-selector.tsx:137", "summary": "focus-visible white outline now distinct from selected bg", "disposition": "Reject"},
+    {"severity": "Low", "category": "observability", "location": "lib/supabase/update-session.ts:43-45", "summary": "malformed but parseable session cookie (AuthInvalidJwtError) logs console.error on every request and is never cleared", "disposition": "Defer"},
+    {"severity": "Low", "category": "docs", "location": "plans/261012-0926-login-google-supabase-auth/plan.md:4", "summary": "plan and phase statuses still pending; changelog/roadmap and Worker env var setup not documented", "disposition": "Defer"}
+  ],
+  "riskGate": {"touchesSensitiveArea": true, "signoffRequired": true}
+}

@@ -1,0 +1,46 @@
+
+Running 12 tests using 2 workers
+
+  ok  1 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:18:7 › Sun* Kudos: All Kudos feed › ID-6 (9dfda316) feed starts at 10 cards, infinite scroll adds pages with no duplicates until data ends (11.3s)
+  ok  3 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:42:7 › Sun* Kudos: All Kudos feed › ID-9 (d662780b, 926d92a5) a user with no data sees both empty states and zero counts (1.4s)
+  ok  4 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:58:7 › Sun* Kudos: card links, hearts and sharing › ID-8 (8c0d1781, 31693bb7, 2cd77a0c, 630f42a3) View Details, Spotlight node and profile links carry the right href (2.3s)
+  ok  5 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:75:7 › Sun* Kudos: card links, hearts and sharing › ID-8 an anonymous kudo shows its alias, never the sender's name or profile link (2.0s)
+  ok  6 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:89:7 › Sun* Kudos: card links, hearts and sharing › ID-9 hearts are toggle buttons with aria-pressed, liked and own state from the data (1.6s)
+  x   2 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:32:7 › Sun* Kudos: All Kudos feed › ID-7 (0adfd7ce) Copy Link writes {origin}/sun-kudos/{id} to the clipboard and shows the toast (9.2s)
+  ok  7 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:109:7 › Sun* Kudos: card links, hearts and sharing › ID-9 card shows the Vietnam-time label and the danh hiệu title (1.0s)
+  ok  8 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:133:7 › Sun* Kudos: sidebar, Spotlight and language › ID-11 (ddf67e52) Spotlight total, one node per recipient, and the search is capped at 100 characters (5.0s)
+  ok  9 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:121:7 › Sun* Kudos: sidebar, Spotlight and language › ID-10 sidebar shows the five personal numbers and the 10 latest gift recipients (3.3s)
+  ok 10 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:144:7 › Sun* Kudos: sidebar, Spotlight and language › ID-11 (ddf67e52) searching a name marks the matching node data-match=true (5.8s)
+  ok 11 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:153:7 › Sun* Kudos: sidebar, Spotlight and language › ID-11 (cac4b7a3) Pan/Zoom toggles aria-pressed (3.4s)
+  ok 12 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:160:7 › Sun* Kudos: sidebar, Spotlight and language › ID-12 switching to EN changes the Vietnamese headings (EN strings land in phase 07) (2.7s)
+
+
+  1) [chromium] › tests\e2e\sun-kudos-feed.spec.ts:32:7 › Sun* Kudos: All Kudos feed › ID-7 (0adfd7ce) Copy Link writes {origin}/sun-kudos/{id} to the clipboard and shows the toast 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('status')
+    Expected substring: "Link copied — ready to share!"
+    Error: strict mode violation: getByRole('status') resolved to 2 elements:
+        1) <div role="status" class="sr-only"></div> aka getByTestId('profile-search').getByRole('status')
+        2) <p role="status" class="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg border border-home-border bg-kudos-panel px-6 py-3 text-base leading-6 font-bold text-white shadow-[0_4px_4px_rgb(0_0_0/0.25),0_0_6px_#fae287]">Link copied — ready to share!</p> aka getByText('Link copied — ready to share!')
+
+    Call log:
+      - Expect "toContainText" getByRole('status') with timeout 5000ms
+      - waiting for getByRole('status')
+
+
+      36 |     const id = await card.getAttribute("data-kudo-id");
+      37 |     await card.getByRole("button", { name: TXT.copyLink }).click();
+    > 38 |     await expect(page.getByRole("status")).toContainText(TXT.toast);
+         |                                            ^
+      39 |     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(`${AUTHED}/sun-kudos/${id}`);
+      40 |   });
+      41 |
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-feed.spec.ts:38:44
+
+    Error Context: test-results\sun-kudos-feed-Sun-Kudos-A-427e7-ipboard-and-shows-the-toast-chromium\error-context.md
+
+  1 failed
+    [chromium] › tests\e2e\sun-kudos-feed.spec.ts:32:7 › Sun* Kudos: All Kudos feed › ID-7 (0adfd7ce) Copy Link writes {origin}/sun-kudos/{id} to the clipboard and shows the toast 
+  11 passed (57.4s)

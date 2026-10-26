@@ -1,0 +1,42 @@
+[
+  {
+    "command": "npm run test:e2e -- tests/e2e/login.spec.ts",
+    "exitCode": 0,
+    "summary": "Login E2E spec: 7/7 tests PASSED (was 6 RED in phase 02, now all GREEN)"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "Full E2E suite: 15/15 tests PASSED (8 countdown + 7 login; no regressions)"
+  },
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "summary": "Unit tests: 74/74 tests PASSED across 7 test files (auth tests included)"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "ESLint: 0 errors, 0 warnings (clean code style)"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "TypeScript: 0 errors (strict type checking passes)"
+  },
+  {
+    "command": "npm run build",
+    "exitCode": 0,
+    "summary": "Production build: SUCCESS (route table validates cache components + partial prefetch)"
+  },
+  {
+    "command": "git grep -n 'getSession\\|SUPABASE_SECRET' -- ':!docs/*' ':!plans/*' ':!.claude/*'",
+    "exitCode": 0,
+    "summary": "Security scan: 0 forbidden patterns in code (no getSession, no SUPABASE_SECRET outside safe locations)"
+  },
+  {
+    "command": "Visual validation at 1440x1024 and 375x812 (Playwright screenshot capture)",
+    "exitCode": 0,
+    "summary": "Desktop MATCH design frame; mobile responsive CORRECT; background crop delta is acceptable trade-off"
+  }
+]

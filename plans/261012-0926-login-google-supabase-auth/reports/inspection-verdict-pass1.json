@@ -1,0 +1,8 @@
+{"score":9,"criticalCount":0,"decision":"SEALED","contractStatus":"OK","refuted":[],"unproven":[],"reachableRegressions":[],
+"findings":[
+{"severity":"Medium","category":"test-coverage","location":"tests/e2e/login.spec.ts:183-196","summary":"test-7 cookie named sb_test-auth-token never matches the real storage key sb-127-auth-token, so the garbage-cookie path goes untested","disposition":"Accept"},
+{"severity":"Low","category":"input-validation","location":"lib/auth/sign-in-with-google.ts:16-25","summary":"Origin header used in redirectTo without zod URL validation; Origin 'null' produces an invalid redirectTo and a silent login failure","disposition":"Accept"},
+{"severity":"Low","category":"observability","location":"lib/supabase/update-session.ts:43-45","summary":"malformed but parseable session cookie (AuthInvalidJwtError) logs console.error on every request and is never cleared","disposition":"Defer"},
+{"severity":"Low","category":"a11y","location":"components/login/language-selector.tsx:137","summary":"focus-visible and aria-selected share the same bg, so the focused option is indistinguishable from the selected one","disposition":"Accept"},
+{"severity":"Low","category":"docs","location":"plans/261012-0926-login-google-supabase-auth/plan.md:4","summary":"plan and phase statuses still pending; changelog/roadmap and Worker env var setup not documented","disposition":"Defer"}],
+"riskGate":{"signoffRequired":true,"reason":"Authentication flow (safety-critical): live Google OAuth, code exchange, Supabase redirect-URL allowlist and production Worker env are not E2E-testable and need the user's phase-05 live checklist sign-off."}}

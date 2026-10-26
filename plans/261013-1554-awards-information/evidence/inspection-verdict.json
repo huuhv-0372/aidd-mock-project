@@ -1,0 +1,27 @@
+{ "score": 8, "criticalCount": 0, "decision": "SEALED",
+  "acceptanceCovered": [
+    "authenticated user sees /awards-information with title, 6-item nav and 6 award cards with Figma copy (ID-0, ID-3..ID-8) — tests/e2e/awards-information.spec.ts: ID-0 title (line 25), ID-3/ID-4 layout (46,64), ID-5 six nav items in order with hrefs (73), ID-6 per-award title/quantity/prize x6 (82), ID-7 image 336x336 (94), ID-8 Kudos banner (103)",
+    "anonymous user is redirected to /login (ID-1) — tests/e2e/awards-information.spec.ts:20 'ID-1 anonymous visitor on /awards-information goes to /login'",
+    "header Awards Information link from / lands on the page and is the active nav item (ID-2) — landing: tests/e2e/awards-information.spec.ts:30 ID-2; active state by code: app/awards-information/page.tsx:21 passes activeHref, components/site-shell/site-header.tsx:32 sets aria-current=\"page\" (no E2E assertion of the awards-page header active state; see Low finding)",
+    "nav click scrolls to the card, sets #slug and moves the single active item; scroll-spy and #slug landing activate the right item (ID-9, ID-11) — tests/e2e/awards-information-nav.spec.ts: ID-9 (24), ID-11 (34), scroll-spy (43), #best-manager landing (54), Homepage card soft-nav landing (65)",
+    "unknown hash causes no error and keeps the first item active (ID-13) — tests/e2e/awards-information-nav.spec.ts:75 'ID-13 unknown hash'",
+    "Chi tiet goes to /sun-kudos which shows the SAA 404 page with a link home (ID-12, ID-14) — tests/e2e/awards-information-nav.spec.ts:86 'ID-12/14' (HTTP 404, heading, Về trang chủ link to /)",
+    "mobile 375: sticky horizontally scrollable chip bar, stacked cards — tests/e2e/awards-information-nav.spec.ts:116 ID-3 chip bar scrolls horizontally, :128 sticky after 1000px scroll, :136 active chip visible in bar, :148 cards stack in one column",
+    "Homepage unchanged after moving shared shell components to components/site-shell — full E2E 118 passed exit 0 incl. tests/e2e/homepage.spec.ts, homepage-guest.spec.ts, homepage-account-menu.spec.ts (evidence/temper-results.json); reports/visual-check.md home-1440 shows nothing visibly broken"
+  ],
+  "regressionChecked": ["awards-nav chip effect cannot move document scroll or cancel select() smooth scroll", "offsetLeft relative to sticky nav (offsetParent)", "lg layout early-return (overflow visible)", "use-active-award.ts unchanged and matches the reviewed version", "tsc and eslint clean on touched files"],
+  "contractStatus": "OK", "refuted": [], "unproven": [], "reachableRegressions": [],
+  "findings": [
+    { "severity": "Medium", "category": "Logic", "location": "components/awards/use-active-award.ts:101-106", "summary": "settle() un-pauses the spy without re-measuring; an interrupted smooth scroll leaves a stale active item until the next band crossing. Deferred: affects only users who interrupt a smooth scroll, self-corrects on the next band crossing; an rAF re-measure was tried and made ID-9 flaky (1/10), so it was reverted. Alternative later: settle plus measure on wheel/touchstart.", "disposition": "Defer" },
+    { "severity": "Medium", "category": "UX", "location": "components/awards/awards-nav.tsx:29-36", "summary": "Active chip scrolled into view in the chip bar via nav.scrollTo (resolved; test at tests/e2e/awards-information-nav.spec.ts:136-146)", "disposition": "Reject" },
+    { "severity": "Medium", "category": "Test", "location": "tests/e2e/awards-information-nav.spec.ts:65-73", "summary": "Homepage award card soft-navigation hash landing now asserted (resolved)", "disposition": "Reject" },
+    { "severity": "Low", "category": "Test", "location": "tests/e2e/awards-information.spec.ts:30-38", "summary": "ID-2 asserts landing and h1 but not that the header 'Awards Information' link has aria-current=\"page\" on the awards page", "disposition": "Defer" },
+    { "severity": "Low", "category": "Logic", "location": "components/awards/use-active-award.ts:81", "summary": "Mount always jumps to #slug; reload after manual scroll snaps back", "disposition": "Defer" },
+    { "severity": "Low", "category": "Types", "location": "components/awards/use-active-award.ts:37", "summary": "Empty slugs gives activeSlug undefined typed as AwardSlug (unreachable today)", "disposition": "Defer" },
+    { "severity": "Low", "category": "Performance", "location": "components/awards/use-active-award.ts:84", "summary": "resize recreates the IntersectionObserver on every event without throttling", "disposition": "Defer" },
+    { "severity": "Low", "category": "Maintainability", "location": "components/awards/award-tile.tsx:2", "summary": "Awards feature imports AWARD_CARDS from components/home", "disposition": "Defer" },
+    { "severity": "Low", "category": "A11y", "location": "components/awards/award-tile.tsx:24", "summary": "Background image alt repeats the adjacent h2 title", "disposition": "Defer" },
+    { "severity": "Low", "category": "Types", "location": "components/site-shell/site-header.tsx:18", "summary": "activeHref typed as string", "disposition": "Defer" },
+    { "severity": "Low", "category": "Test", "location": "tests/e2e/support/awards-contract.ts:29-31", "summary": "Signature/MVP quantity regex does not assert the unit", "disposition": "Defer" },
+    { "severity": "Low", "category": "UX", "location": "components/awards/awards-nav.tsx:29-36", "summary": "Chip bar is not re-centred after a resize across the lg breakpoint until the next active change (cosmetic)", "disposition": "Defer" }
+  ] }

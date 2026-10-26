@@ -1,0 +1,5 @@
+{
+  "mode": "single",
+  "intents": ["Establish a deployable, secure technical foundation (Next.js on Cloudflare Workers + Supabase) with coding/responsive conventions documented for future feature work"],
+  "justification": "Sub-areas (deploy tooling, Supabase clients, security headers, responsive conventions, smoke test) are components of one infrastructure intent, not independent user-facing features with their own screens/APIs — kept SINGLE rather than decomposed into a feature-list."
+}

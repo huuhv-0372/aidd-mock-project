@@ -1,0 +1,38 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "migration creates public.profiles with RLS enabled, authenticated SELECT only, no client writes, anon revoked",
+    "trigger syncs email from auth.users and full_name/avatar_url from the Google identity on sign-in and never touches department",
+    "existing auth users are backfilled and the migration is idempotent and transactional",
+    "rollback file removes trigger, function, policy and table without touching auth.users",
+    "getCurrentProfile reads the signed-in user's row via getClaims (never getSession), validates with zod, and returns null on any failure without throwing",
+    "only @sun-asterisk.com accounts can sign in (DB gate, domain-scoped RLS, domain-only backfill, callback check)"
+  ],
+  "regressionChecked": [
+    "gate admits legitimate Google @sun-asterisk.com signup: GoTrue sets raw_app_meta_data.provider before tx.Create(user)",
+    "provider stays 'google' for Google-born accounts: UpdateAppMetaDataProviders uses providers[0] ordered by created_at asc",
+    "AFTER sync triggers cannot raise: total is_allowed_account, guarded ON CONFLICT upserts, FK satisfied",
+    "rollback order: triggers -> trigger functions -> table (drops policy) -> is_allowed_account -> is_allowed_email; all if-exists",
+    "verify check 9 step f persists nothing (savepoint sub-block, outer begin...rollback)",
+    "runbook rollback criteria narrow; N3 permission note present",
+    "orchestrator gates: lint 0, tsc 0, vitest 104/104, e2e 15/15",
+    "all touched files < 200 lines"
+  ],
+  "contractStatus": "CHANGED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {"severity": "Medium", "category": "authz-data-integrity", "location": "supabase/migrations/20261012133000_create_profiles.sql:48-56", "summary": "N1 resolved: gate, RLS, sync and backfill require domain email AND app_metadata.provider = google", "disposition": "Reject"},
+    {"severity": "Medium", "category": "verification-process", "location": "plans/261012-1330-user-profiles-supabase/phase-03-apply-and-verify.md:13-48", "summary": "N2 resolved: runbook matches rewritten SQL", "disposition": "Reject"},
+    {"severity": "Low", "category": "deploy", "location": "plans/261012-1330-user-profiles-supabase/phase-03-apply-and-verify.md:34", "summary": "N3 resolved: TRIGGER-privilege failure documented as atomic abort", "disposition": "Reject"},
+    {"severity": "Low", "category": "authz-consistency", "location": "app/auth/callback/route.ts:33", "summary": "Callback admits any domain email while DB rule is domain + Google; pre-existing domain non-Google accounts get a session but null profile; mitigated by gate, Email provider off, runbook cleanup", "disposition": "Accept"},
+    {"severity": "Low", "category": "verification-process", "location": "plans/261012-1330-user-profiles-supabase/phase-03-apply-and-verify.md:44", "summary": "Step 3a should require a never-signed-in account so the gate's positive path is exercised live", "disposition": "Defer"},
+    {"severity": "Low", "category": "session-handling", "location": "app/auth/callback/route.ts:36-38", "summary": "R1: signOut failure leaves session cookie; RLS still denies", "disposition": "Accept"},
+    {"severity": "Low", "category": "parity", "location": "lib/auth/is-allowed-email.ts:9-12", "summary": "R2: JS vs PG trim/lower parity; DB is stricter", "disposition": "Accept"},
+    {"severity": "Low", "category": "bundle-safety", "location": "lib/profiles/get-current-profile.ts:1", "summary": "F11: no server-only guard", "disposition": "Defer"}
+  ],
+  "riskGate": {"touchesSensitiveArea": true, "signoffRequired": true}
+}

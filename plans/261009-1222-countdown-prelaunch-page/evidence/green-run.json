@@ -1,0 +1,55 @@
+{
+  "command": "npm run test:e2e",
+  "exitCode": 0,
+  "summary": "All 8 E2E tests passed (test-1 through test-8)",
+  "stage": "green",
+  "testResults": {
+    "totalTests": 8,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "tests": [
+      {
+        "name": "test-1: routes before launch redirect to /countdown with 307",
+        "status": "passed",
+        "duration": "8.9s"
+      },
+      {
+        "name": "test-2: static assets on /countdown return 200 (not gated)",
+        "status": "passed",
+        "duration": "9.1s"
+      },
+      {
+        "name": "test-3: countdown units display correct computed values at assert time",
+        "status": "passed",
+        "duration": "5.3s"
+      },
+      {
+        "name": "test-4: countdown values identical with America/New_York timezone",
+        "status": "passed",
+        "duration": "5.4s"
+      },
+      {
+        "name": "test-5: minutes decrease by one after fastForward 01:00",
+        "status": "passed",
+        "duration": "5.3s"
+      },
+      {
+        "name": "test-6: fastForward past target triggers /login redirect",
+        "status": "passed",
+        "duration": "4.7s"
+      },
+      {
+        "name": "test-7: past server redirects /countdown to /login, heading never rendered",
+        "status": "passed",
+        "duration": "4.2s"
+      },
+      {
+        "name": "test-8: invalid server root not redirected; /countdown ends at /login",
+        "status": "passed",
+        "duration": "5.9s"
+      }
+    ],
+    "totalDuration": "1m 36s"
+  }
+}

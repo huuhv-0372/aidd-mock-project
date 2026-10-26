@@ -1,0 +1,60 @@
+{
+ "commands": [
+  {
+   "command": "npx vitest run (GREEN 3, final code)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "63 files, 1054/1054 passed (GREEN 2 was 1053; +1 repeated-userId export case); 0 failed, 0 skipped",
+   "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+   "command": "npx tsc --noEmit (GREEN 3)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "typecheck clean, no diagnostics",
+   "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+   "command": "npm run lint (GREEN 3)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "eslint clean, no errors or warnings reported",
+   "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+   "command": "npm run build (GREEN 3, attempt 2 retry)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "Compiled successfully; 24/24 static pages; admin routes /[locale]/admin/users and export listed as dynamic; Proxy (Middleware) built (attempt 1 stopped on the Next 16.4.0 SecurityFatalError nudge, no compile error; history in raw-temper-runs.json)",
+   "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+   "command": "npx playwright test tests/e2e/admin-users-actions.spec.ts --repeat-each=10 (GREEN 3)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "50 passed (5 tests x 10), 0 failed, 0 flaky (2.3m)",
+   "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+   "command": "npx playwright test tests/e2e/admin-users --repeat-each=3 (GREEN 3)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "117 passed (39 tests x 3), 0 failed, 0 flaky (2.3m)",
+   "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+   "command": "npx playwright test (full E2E, GREEN 3)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "356 passed, 0 failed, 0 flaky, 0 skipped (6.9m); matches expected 356",
+   "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+   "command": "supabase/verify/20261024100000_create_admin_users_verify.sql on the real Supabase project (owner, SQL Editor)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "24/24 PASS (reports/sql-verify-261023-run2-pass-1.png, -2.png); isolation read committed, no overrides (reports/sql-isolation-261023.png)",
+   "ts": "2026-10-23T10:03:00.000Z"
+  }
+ ]
+}

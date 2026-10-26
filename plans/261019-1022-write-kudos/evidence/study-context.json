@@ -1,0 +1,39 @@
+{
+  "task": "Viết Kudos (feature #12, VI/EN): Widget quick-action menu and Thể lệ panel on Homepage, Awards Information and Sun* Kudos; Viết Kudo modal (recipient autocomplete, Danh hiệu, rich-text editor with Add link and @mention, hashtag picker, image upload, anonymous) backed by create_kudo and kudos_search_sunners RPCs and a kudo-images Storage bucket",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "clicking the Widget on /, /awards-information and /sun-kudos opens the quick-action menu with Thể lệ, Viết KUDOS and a close button; close or Esc collapses it",
+    "Thể lệ opens the rules panel with Figma copy, 4 hero badges and 6 icons; Đóng closes it and Viết KUDOS in the panel opens the Viết Kudo modal",
+    "the compose pill on /sun-kudos opens the Viết Kudo modal; a guest on / choosing Viết KUDOS is sent to /login",
+    "the modal shows Người nhận, Danh hiệu, editor, Hashtag, Image and the anonymous checkbox (unchecked) in Figma order with Hủy and Gửi; Gửi stays disabled until recipient, title, content and at least one hashtag are filled, and each required field shows its error after blur",
+    "recipient search suggests up to 10 Sunners accent-insensitively, trims input, excludes the current user, and selecting one fills the field; typing @ in the editor suggests colleagues and inserts a mention",
+    "editor toolbar applies bold, italic, strike, numbered list, quote and inserts links through the Add link dialog (Text 1-100 non-blank, Link http/https 5-2048)",
+    "hashtags come only from the DB catalog, max 5 (remaining rows disabled), chips removable; images accept jpg/png/webp up to 5 MB, max 5 with + Image hidden at 5, thumbnails removable, other formats show an invalid-format error",
+    "Gửi validates on the server with zod, uploads images to kudo-images under an identity-free object name owned by the sender (owner_id), calls create_kudo, removes uploaded images when the RPC fails, closes the modal on success and the new Kudo appears at the top of the /sun-kudos feed; Hủy closes and discards",
+    "create_kudo takes the sender from auth.uid(), rejects non-allowed accounts, self-recipient, out-of-range title/content, 0 or more than 5 or unknown hashtags, images outside the sender folder or not in storage, and alias when not anonymous; kudos_search_sunners never returns email; both are executable by authenticated only",
+    "every new string switches between VI and EN; the existing unit and E2E suites stay green"
+  ],
+  "touchpoints": [
+    "app/[locale]/page.tsx", "app/[locale]/awards-information/page.tsx", "app/[locale]/sun-kudos/page.tsx",
+    "components/site-shell/widget-button.tsx", "components/kudos/kudos-compose-trigger.tsx", "components/kudos-compose/*",
+    "lib/kudos/*", "lib/validation/write-kudo.ts", "next.config.ts", "package.json", "package-lock.json",
+    "messages/vi/*", "messages/en/*", "public/images/kudos/rules/*",
+    "supabase/migrations/20261019110000_create_kudo_write.sql", "supabase/rollbacks/*", "supabase/verify/*",
+    "tests/e2e/write-kudo.spec.ts", "tests/e2e/kudos-quick-actions.spec.ts", "tests/e2e/support/*", "tests/unit/*"
+  ],
+  "blastRadius": [
+    "homepage is public: reading the session for the widget must not break guest rendering",
+    "shared fake Supabase server used by every authed E2E spec",
+    "Server Action body size limit and proxy body limit in next.config.ts",
+    "Worker bundle size (Tiptap must stay client-only)",
+    "All Kudos feed client state after router.refresh",
+    "Dictionary type shared by all pages"
+  ],
+  "contracts": [
+    "RPC create_kudo(p_recipient_id uuid, p_title text, p_content text, p_hashtag_slugs text[], p_image_urls text[], p_is_anonymous boolean, p_anonymous_name text) returns uuid",
+    "RPC kudos_search_sunners(p_query text, p_limit int default 10) returns setof (id, full_name, avatar_url, department)",
+    "Storage bucket kudo-images, object path {uuid}.{jpg|png|webp} (no sender id in the path), ownership via storage.objects.owner_id",
+    "kudos.content Markdown subset: **b** _i_ ~~s~~ 1. > [t](https://...) @[Name](uuid)",
+    "existing read RPCs kudos_feed / kudos_highlight / kudos_spotlight unchanged"
+  ]
+}

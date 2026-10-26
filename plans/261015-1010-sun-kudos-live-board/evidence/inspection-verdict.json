@@ -1,0 +1,95 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "guest visiting /sun-kudos is redirected to /login; signed-in user sees the board with the Sun* Kudos header link marked current — proxy default-deny (lib/auth/resolve-auth-redirect.ts, /sun-kudos not in PUBLIC_PATHS); page passes activeHref=SUN_KUDOS_PATH; E2E sun-kudos.spec.ts ID-1 + aria-current=page case green",
+    "Highlight shows up to 5 kudos ordered by hearts with prev/next arrows disabled at the ends and an n/m page indicator — kudos_highlight limit 5 order heart_count desc, created_at desc, id desc (migration:415-428); highlight-carousel.tsx disabled={atStart/atEnd}, n/m in data-testid=highlight-page; E2E ID-3 green; verify B5 asserts non-increasing order",
+    "Hashtag and department filters (from DB catalogs) filter both Highlight and All Kudos via the URL, reset the carousel to 1, and clicking a hashtag on a card sets the hashtag filter — catalogs read from hashtags/departments tables, parseKudosFilters drops unknown values, both RPCs apply the same inline EXISTS filters (migration:377-383, 420-426), carousel/feed keyed by hashtag|department; kudo-hashtag-list links via buildKudosFilterHref; E2E ID-4 x3 + ID-5 green",
+    "All Kudos shows 10 cards then loads more on scroll without duplicates; empty state text 'Hiện tại chưa có Kudos nào.' — KUDOS_PAGE_SIZE=10, keyset cursor kept as exact ISO string, IntersectionObserver + inFlight guard, id dedupe in kudos-feed-list.tsx; messages/vi/kudos.ts:6; E2E ID-6 (Set size == length) and ID-9 empty user green",
+    "kudo cards show sender/recipient (profile links), hero badge and stars, time HH:mm - MM/DD/YYYY, title, clamped content, hashtags, images, heart count with liked/own state; Copy Link copies /sun-kudos/{id} and shows the toast — kudo-person.tsx (profileHref, heroTier/starCount), format-kudo-time.ts (Asia/Ho_Chi_Minh, h23), line-clamp-3/5, kudo-image-gallery, kudo-hearts data-liked/data-own; copy-kudo-link-button writes origin+kudoDetailHref; E2E ID-7/8/9 green",
+    "Spotlight shows the total kudos count, recipient nodes linking to kudo detail, hover tooltip, Pan/Zoom toggle and a search capped at 100 characters — kudos_spotlight total/recipients/last_kudo_id; now streamed: page.tsx:36 starts fetchKudosSpotlight un-awaited, spotlight-section.tsx:35-36 awaits it inside Suspense(SpotlightSkeleton) page.tsx:64-66; spotlight-node href=kudoDetailHref(last_kudo_id) with group-hover tooltip; aria-pressed toggle; input maxLength=100; label placement now clears the total/search/ticker/Pan-Zoom overlays at every board width 288-735 (below md) and 672-1157 (md+) — spotlight-layout.ts:35-95 union zones, exhaustive per-width re-check 0 intersections, unit 22/22; E2E ID-11 x3 green",
+    "sidebar shows the five personal stats and the 10 latest gift recipients, with 'Chưa có dữ liệu' when empty — kudos_my_stats 5 columns rendered in kudos-stats-panel; kudos_latest_gift_recipients p_limit 10; gifts empty string messages/vi/kudos.ts:117; E2E ID-10 and ID-9 empty user green",
+    "every string switches between VI and EN with the language selector — all copy comes from dict.kudos; messages/en/kudos.ts typed as Dictionary (a missing key fails the build, tsc exit 0); hashtag names switch via name_en/name_vi; E2E ID-12 green",
+    "migration enables RLS on every new table, grants no direct access to transactional tables, and the five read RPCs reject non-allowed accounts; existing login keeps working and the existing E2E suite stays green — migration:221-237 RLS on 10 tables + revoke all, catalogs only get select+policy; each RPC checks is_allowed_account first and returns empty/null (migration:368,411,446,495,526); helper kudo_matches_filters dropped (migration:312), S5 helper list updated (verify:29-30); anonymous senders excluded from distinct_senders (migration:301-303) with verify B11; sign-in triggers never write department so the FK cannot fire on login; verify S1-S6/B6/B8/B9/B11 encode this; E2E 94/94 green (real-DB run pending user)"
+  ],
+  "regressionChecked": [
+    "sign-in triggers (handle_auth_user_profile / handle_auth_identity_profile) vs new profiles_department_fkey",
+    "profiles verify script department value change (valid with and without FK)",
+    "awards-information-nav ID-12/14 rewrite; 404 page still covered in awards-information.spec.ts",
+    "routes.ts additive exports + unit tests",
+    "messages index (Dictionary shape) for vi/en",
+    "globals.css additive @theme tokens",
+    "fake-supabase-server additive /rest/v1 routes and mint sub override",
+    "rollback completeness and drop order",
+    "migration re-run idempotency",
+    "server action auth path (proxy redirect + anon revoke)"
+  ],
+  "contractStatus": "CHANGED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": true
+  },
+  "findings": [
+    {
+      "severity": "Critical",
+      "category": "Security",
+      "location": "supabase/migrations/20261015100000_create_kudos.sql:297-298",
+      "summary": "addressed — distinct_senders counts anonymous senders; the count lets viewers infer an anonymous sender via feed/highlight/gifts person JSON; fake fixture excludes them (kudos-fixtures.mjs:121) so E2E cannot catch it; fix: count(distinct sender_id) filter (where not is_anonymous) + verify assertion",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Medium",
+      "category": "Logic",
+      "location": "app/[locale]/sun-kudos/page.tsx:33-61",
+      "summary": "addressed — Spotlight Suspense fallback never renders (data awaited once at page level); spec B.7 loading state unmet and whole board blocks on slowest of 7 reads; stream the spotlight block via a promise or use loading.tsx",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Medium",
+      "category": "Performance",
+      "location": "supabase/migrations/20261015100000_create_kudos.sql:304-318",
+      "summary": "addressed — kudo_matches_filters has SET search_path so it is never inlined; per-row function call and full scan under selective filters",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "Performance",
+      "location": "supabase/migrations/20261015100000_create_kudos.sql:445-458",
+      "summary": "kudos_spotlight recipients array unbounded; payload grows with all recipients",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "Accessibility",
+      "location": "components/kudos/kudos-filter-dropdown.tsx:115-127",
+      "summary": "addressed — every listbox option is a Tab stop; use roving tabindex (tabIndex=-1) since arrow keys already work",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "Performance",
+      "location": "lib/kudos/kudo-plain-text.ts:19-22",
+      "summary": "lazy regexes O(n^2) on long lines; bounded by 5000-char DB constraint",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "Logic",
+      "location": "lib/kudos/spotlight-layout.ts:19",
+      "summary": "addressed — TICKER_HEIGHT = 5*24 and its comment assume the nested text-base span makes 24px lines, but spotlight-ticker.tsx:44 now sets leading-[19px] on that span; the zone over-reserves ~25px (conservative, no overlap); set 5*19 and fix the comment, or document the headroom (now documented as deliberate headroom at spotlight-layout.ts:17-21)",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "Logic",
+      "location": "tests/unit/spotlight-layout.test.ts:53",
+      "summary": "stale comment and TICKER_ROW = 24 (line 57) claim the ticker rows render 24px because the nested text-base span resets line height; spotlight-ticker.tsx:44 sets leading-[19px] and spotlight-layout.ts:17-21 says 19px; the test models a 120px ticker vs the real 95px (conservative, passes); fix: TICKER_ROW = 19 and reword the comment, the zone's 24px headroom still covers it",
+      "disposition": "Accept"
+    }
+  ]
+}

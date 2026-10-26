@@ -1,0 +1,8 @@
+[
+  {"command":"npm run lint","exitCode":0,"summary":"eslint clean, no findings","ts":"2026-10-14T12:12:00+07:00"},
+  {"command":"npx tsc --noEmit","exitCode":0,"summary":"typecheck clean","ts":"2026-10-14T12:13:00+07:00"},
+  {"command":"npm test","exitCode":0,"summary":"vitest: 20 files, 199 tests passed, 0 failed","ts":"2026-10-14T12:15:58+07:00"},
+  {"command":"npx next build","exitCode":0,"summary":"Compiled, TypeScript ok, 19 static pages generated; 0 hits for [auth] or HANGING in build log","ts":"2026-10-14T12:16:30+07:00"},
+  {"command":"npx playwright test","exitCode":0,"summary":"68 passed, 0 failed, 0 skipped, 0 flaky (2.2m); stderr noise from forged-key getClaims test is expected","ts":"2026-10-14T12:19:00+07:00"},
+  {"command":"npx playwright test tests/e2e/language-switch.spec.ts --repeat-each=3","exitCode":0,"summary":"24 passed (8 tests x 3 repeats), 0 failed, 0 flaky","ts":"2026-10-14T12:21:00+07:00"}
+]

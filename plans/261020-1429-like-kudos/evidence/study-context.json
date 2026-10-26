@@ -1,0 +1,35 @@
+{
+  "task": "Like Kudos (feature #13, VI/EN): the heart on Highlight and All Kudos cards becomes a button that likes / unlikes a Kudo through the set_kudo_heart RPC, keeps both cards of the same Kudo in sync, updates optimistically and rolls back on error; hearts are credited to the Kudo sender (x2 on special days via the existing trigger)",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "clicking the heart of another Sunner's Kudo turns it red and adds 1 to the count; clicking again turns it grey and subtracts 1",
+    "each user has at most one heart per Kudo; repeated or rapid clicks never add a second heart",
+    "the heart of a Kudo the viewer sent is disabled and never calls the server",
+    "each heart credits 1 heart to the Kudo sender, 2 on an admin-configured special day, and removing the heart takes back exactly the hearts it credited",
+    "two cards of the same Kudo (Highlight and All Kudos) update together right away",
+    "a server error restores the previous heart state and shows a generic message without internal details",
+    "hearts are written only through set_kudo_heart, executable by authenticated allowed accounts only; kudo_hearts stays unreadable and unwritable directly",
+    "every new string switches between VI and EN; the existing unit and E2E suites stay green"
+  ],
+  "touchpoints": [
+    "supabase/migrations/20261020150000_create_kudo_heart_rpc.sql", "supabase/rollbacks/*", "supabase/verify/*",
+    "lib/validation/kudos.ts", "lib/kudos/set-kudo-heart-action.ts",
+    "components/kudos/kudo-hearts.tsx", "components/kudos/kudo-hearts-store.tsx", "components/kudos/kudo-post-card.tsx",
+    "components/kudos/kudo-highlight-card.tsx", "components/kudos/copy-kudo-link-button.tsx", "components/ui/status-toast.tsx",
+    "app/[locale]/sun-kudos/page.tsx", "messages/vi/kudos.ts", "messages/en/kudos.ts",
+    "tests/e2e/kudo-hearts.spec.ts", "tests/e2e/sun-kudos-feed.spec.ts", "tests/e2e/support/*", "tests/unit/set-kudo-heart-action.test.ts"
+  ],
+  "blastRadius": [
+    "Highlight carousel and All Kudos feed cards (server-rendered cards gain a client leaf)",
+    "Copy Link toast (extracted into a shared component)",
+    "infinite scroll cards loaded by the client",
+    "shared fake Supabase server used by every authed E2E spec",
+    "kudos_my_stats hearts_received of the sender"
+  ],
+  "contracts": [
+    "RPC set_kudo_heart(p_kudo_id uuid, p_liked boolean) returns table (liked boolean, heart_count integer); errors SQLSTATE 22023 forbidden | not_found | own_kudo",
+    "Server Action setKudoHeart({kudoId, liked}) returns {ok:true, liked, heartCount} | {ok:false, error:'own'|'generic'}",
+    "kudo_hearts.hearts_awarded set only by the existing trigger (1 or 2)",
+    "existing read RPCs kudos_feed / kudos_highlight / kudos_my_stats unchanged"
+  ]
+}

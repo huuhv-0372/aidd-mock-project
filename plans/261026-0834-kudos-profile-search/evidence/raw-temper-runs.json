@@ -1,0 +1,262 @@
+[
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "TypeScript check clean (before first RED)"
+  },
+  {
+    "command": "npx eslint <touched e2e files>",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "touched files lint clean (before first RED)"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (run 1)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "build stopped at Next.js 16.4.0 SecurityFatalError upgrade nudge; infra stop, not RED. Log: evidence/e2e-red-run.log.nudge-attempt1.txt"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (run 2)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "RED on the pre-edit spec: 18 failed at the combobox assertion. Superseded by a spec edit (case 7 fixed wait replaced). Log: evidence/e2e-red-run.superseded-pre-edit.txt"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (run 3)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "build stopped at the same SecurityFatalError nudge after the spec edit; infra stop, not RED. Log: evidence/e2e-red-run.nudge-attempt2.txt"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (run 4, FINAL RED)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "RED valid: 18 failed, 0 passed; all 18 at openProfileSearch (17) or the EN check (1): getByRole(combobox, name Tìm kiếm profile Sunner) element(s) not found. Log: evidence/e2e-red-run.log"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "75 passed (3.0m) with the failSearch fake change. Log: evidence/write-kudo-regression.log"
+  },
+  {
+    "command": "npx tsc --noEmit (after final spec edit)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "TypeScript check clean"
+  },
+  {
+    "command": "npx eslint <touched e2e files> (after final spec edit)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "touched files lint clean"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "full repo eslint clean (run before the final spec edit; the edited file was re-linted after)"
+  },
+  {
+    "command": "npx tsc --noEmit (temper, final code before E2E)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "TypeScript check clean. Log: evidence/temper-tsc.log"
+  },
+  {
+    "command": "npm run lint (temper)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "full repo eslint clean. Log: evidence/temper-lint.log"
+  },
+  {
+    "command": "npx vitest run (temper, full unit)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "64 files, 1067 tests passed, 0 failed. Log: evidence/temper-unit.log"
+  },
+  {
+    "command": "npm run build (attempt 1)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "stopped at Next.js 16.4.3 SecurityFatalError upgrade nudge; infra stop, not a code failure; retried without upgrading. Log: evidence/temper-build.nudge-attempt1.log"
+  },
+  {
+    "command": "npm run build (attempt 2, retry)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "Compiled successfully in 20.9s; routes built. Log: evidence/temper-build.log. Worker gzip size not printed by npm run build, not measured"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (GREEN run 1, attempt 1)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "stopped at SecurityFatalError nudge during next build; infra stop. Log: evidence/green-run-1.nudge-attempt1.log"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (GREEN run 1, retry)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "SUPERSEDED by spec selector alignment: 16 passed, 2 failed on getByRole(alert) matching the empty Next.js route announcer (not a UI error). Log: evidence/green-run-1.log"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (GREEN run 2, attempt 1)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "stopped at SecurityFatalError nudge during next build; infra stop. Log: evidence/green-run-2.nudge-attempt1.log"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (GREEN run 2, retry, after alert filter edit)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "18 passed, 0 failed. Log: evidence/green-run-2.log"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (GREEN run 3)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "18 passed, 0 failed. Log: evidence/green-run-3.log"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/sun-kudos-profile-search (GREEN run 4)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "18 passed, 0 failed. Log: evidence/green-run-4.log"
+  },
+  {
+    "command": "npx playwright test tests/e2e/sun-kudos-profile-search --repeat-each=5",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "90 passed = 18 cases (10 + 8) x 5 repeats, 0 failed, 0 flaky. Log: evidence/repeat5-run.log"
+  },
+  {
+    "command": "npx playwright test (FULL E2E suite)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "SUPERSEDED by round 1 full run (GREEN 2, exit 0). Original: 373 passed, 1 failed of 374: sun-kudos-feed.spec.ts:32 ID-7 strict mode (getByRole(status) matched 2). Log: evidence/full-e2e-run.log"
+  },
+  {
+    "command": "npx playwright test tests/e2e/sun-kudos-feed.spec.ts (rerun to test determinism)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "same single failure reproduced: 11 passed, 1 failed (ID-7 strict mode). Log: evidence/feed-spec-rerun.log"
+  },
+  {
+    "command": "npx eslint tests/e2e/sun-kudos-profile-search.spec.ts tests/e2e/sun-kudos-profile-search-keyboard.spec.ts tests/e2e/support/kudos-contract.ts",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "touched E2E files lint clean. Log: evidence/temper-lint-e2e-final.log"
+  },
+  {
+    "command": "npx tsc --noEmit (after spec edit)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "TypeScript check clean. Log: evidence/temper-tsc-final.log"
+  },
+  {
+    "command": "npx tsc --noEmit (round 1, final code)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "TypeScript check clean. Log: evidence/round1-tsc.log"
+  },
+  {
+    "command": "npm run lint (round 1, final code)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "full repo eslint clean. Log: evidence/round1-lint.log"
+  },
+  {
+    "command": "npx vitest run (round 1, final code)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "64 files, 1067 tests passed, 0 failed. Log: evidence/round1-vitest.log"
+  },
+  {
+    "command": "npm run build (round 1 attempt 1)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "stopped at Next.js 16.4.3 SecurityFatalError upgrade nudge; infra stop, not a code failure; retried without upgrading. Log: evidence/round1-build-attempt1.log"
+  },
+  {
+    "command": "npm run build (round 1 attempt 2, retry)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "build clean, 0 warnings in output. Log: evidence/round1-build-attempt2.log"
+  },
+  {
+    "command": "node measure-profile-search.cjs (pill + input at 375 and 1440, idle, against next start -p 3103)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "375: pill 343x58, input 56, overflow 0px; 1440: pill 381.34x72, input 70, overflow 0px. Screenshots: reports/visual/375-profile-search-round1.png, 1440-profile-search-round1.png"
+  },
+  {
+    "command": "npx tsc --noEmit (round 1c, FINAL test code)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "TypeScript check clean. Log: evidence/round1c-tsc.log"
+  },
+  {
+    "command": "npx eslint <touched e2e files> (round 1c, FINAL)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "touched E2E specs lint clean. Log: evidence/round1c-eslint-e2e.log"
+  },
+  {
+    "command": "npm run lint (round 1c, FINAL)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "full repo eslint clean. Log: evidence/round1c-lint.log"
+  },
+  {
+    "command": "npx playwright test tests/e2e/sun-kudos-profile-search --repeat-each=5 (round 1 run A, before the finished() edit)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "SUPERSEDED: 105 passed (21 x 5), 0 failed. Log: evidence/round1-repeat5-run.superseded-before-finished-wait.log"
+  },
+  {
+    "command": "npx playwright test (FULL E2E suite, round 1 run A, before the finished() edit)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "SUPERSEDED: 377 passed, 0 failed. Log: evidence/round1-full-e2e-run.superseded-before-finished-wait.log"
+  },
+  {
+    "command": "npx playwright test tests/e2e/sun-kudos-profile-search --repeat-each=5 (round 1 run B, Response.finished() version)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "SUPERSEDED: 102 passed, 3 failed (exit 1): the stale-answer cases timed out at 30 s on Response.finished() in 3 of 10 repeats. Log: evidence/round1-repeat5-run.superseded-finished-hang.log"
+  },
+  {
+    "command": "npx playwright test (FULL E2E suite, round 1 run B, Response.finished() version)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "SUPERSEDED: 377 passed, 0 failed (it passed by luck; the same version failed repeat-5). Log: evidence/round1-full-e2e-run.superseded-finished-hang.log"
+  },
+  {
+    "command": "npx playwright test tests/e2e/sun-kudos-profile-search --repeat-each=5 (round 1 run C, FINAL: await answered + flushUi 500 ms)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "105 passed = 21 cases x 5 repeats, 0 failed, 0 flaky. Log: evidence/round1-repeat5-run.log"
+  },
+  {
+    "command": "npx playwright test (FULL E2E suite, round 1 run C, FINAL: await answered + flushUi 500 ms)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "377 passed, 0 failed (374 before + 3 new cases). Log: evidence/round1-full-e2e-run.log"
+  },
+  {
+    "command": "npx playwright test tests/e2e/sun-kudos-profile-search.spec.ts -g \"slow answer after\" (MUTANT: guard at use-profile-search.ts:54 commented out; controller check)",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "EXPECTED-FAIL mutation check: 2 failed — listbox toHaveCount(0) received 1; proves the stale cases discriminate. Hook restored afterwards. Log: evidence/mutant-guard-removed-run.log",
+    "ts": "2026-10-26T03:50:31.801Z"
+  },
+  {
+    "command": "npm run build (controller rebuild on restored code after mutation check)",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "build clean on the frozen code",
+    "ts": "2026-10-26T03:50:31.801Z"
+  }
+]

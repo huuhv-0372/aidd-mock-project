@@ -1,0 +1,44 @@
+{
+  "viewport": {
+    "width": 375,
+    "height": 812
+  },
+  "dialog": {
+    "x": 8,
+    "y": 16,
+    "w": 359,
+    "h": 780
+  },
+  "heading": {
+    "box": {
+      "x": 28,
+      "y": 36,
+      "w": 319,
+      "h": 64
+    },
+    "fontSize": "24px"
+  },
+  "chipFirst": {
+    "x": 28,
+    "y": 884,
+    "w": 204,
+    "h": 40
+  },
+  "save": {
+    "x": 158,
+    "y": 1288,
+    "w": 189,
+    "h": 60
+  },
+  "cancel": {
+    "x": 28,
+    "y": 1288,
+    "w": 114,
+    "h": 60
+  },
+  "hasAliasRow": false,
+  "overflow": {
+    "scrollW": 375,
+    "clientW": 375
+  }
+}

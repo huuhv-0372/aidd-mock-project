@@ -1,0 +1,53 @@
+{
+  "commands": [
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) PASS: eslint clean, no findings (frozen tree after review fix)",
+      "ts": "2026-10-20T16:08:58.261+07:00"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) PASS: no type errors",
+      "ts": "2026-10-20T16:09:44.490+07:00"
+    },
+    {
+      "command": "npx vitest run",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) PASS: 40 files, 559 tests passed, 0 failed",
+      "ts": "2026-10-20T16:12:09.976+07:00"
+    },
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) PASS: next build + Playwright full suite: 204 passed, 0 failed, 0 flaky, 0 skipped (9.1 min)",
+      "ts": "2026-10-20T16:24:14.541+07:00"
+    },
+    {
+      "command": "npx playwright test tests/e2e/kudo-hearts.spec.ts tests/e2e/sun-kudos-feed.spec.ts --repeat-each=5",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) PASS: 105 passed (21 cases x 5), 0 failed, 0 flaky (5.9 min)",
+      "ts": "2026-10-20T16:30:37.373+07:00"
+    },
+    {
+      "command": "npx opennextjs-cloudflare build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) PASS: OpenNext build complete, worker saved",
+      "ts": "2026-10-20T16:39:00.792+07:00"
+    },
+    {
+      "command": "npx wrangler deploy --dry-run --outdir <scratch>/wrangler-out",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) PASS: Total Upload 10668.29 KiB / gzip 2221.89 KiB (limit 3072 KiB); nothing uploaded",
+      "ts": "2026-10-20T16:45:36.700+07:00"
+    }
+  ]
+}

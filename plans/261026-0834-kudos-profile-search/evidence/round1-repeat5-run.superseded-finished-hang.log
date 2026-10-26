@@ -1,0 +1,197 @@
+
+Running 105 tests using 2 workers
+
+  ok   1 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 (3.9s)
+  ok   2 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion (2.7s)
+  ok   3 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 (2.4s)
+  ok   4 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick (2.7s)
+  ok   5 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion (2.2s)
+  ok   6 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too (2.1s)
+  ok   7 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px (2.0s)
+  ok   8 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:103:7 › Tìm kiếm profile Sunner: keyboard › 1440px: the combobox is at least 44px tall and fills the pill (inside its 1px border) (1.3s)
+  ok  10 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled (1.7s)
+  ok   9 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:111:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) (2.8s)
+  ok  11 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent (2.3s)
+  ok  12 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches (1.5s)
+  ok  13 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner (1.7s)
+  ok  14 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate (1.9s)
+  ok  15 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error (2.5s)
+  ok  16 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent (2.6s)
+  x   17 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after the box was cleared is dropped: no listbox, no status line; the box still works (30.2s)
+  x   18 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works (30.3s)
+  ok  19 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:135:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one (5.1s)
+  ok  20 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:161:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie (2.1s)
+[WebServer] [kudos] kudos_search_sunners failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected search failure boom-secret-detail'
+[WebServer] }
+  ok  21 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:149:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again (2.9s)
+  ok  22 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 (3.6s)
+  ok  24 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 (2.2s)
+  ok  23 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion (6.5s)
+  ok  25 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick (1.9s)
+  ok  26 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion (2.0s)
+  ok  27 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too (2.1s)
+  ok  28 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px (2.7s)
+  ok  29 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:103:7 › Tìm kiếm profile Sunner: keyboard › 1440px: the combobox is at least 44px tall and fills the pill (inside its 1px border) (1.7s)
+  ok  31 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled (1.5s)
+  ok  30 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:111:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) (2.8s)
+  ok  32 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent (2.6s)
+  ok  33 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches (1.5s)
+  ok  34 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner (1.8s)
+  ok  35 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate (2.1s)
+  ok  36 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error (2.3s)
+  ok  37 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent (2.4s)
+  ok  38 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after the box was cleared is dropped: no listbox, no status line; the box still works (3.6s)
+  ok  40 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:135:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one (3.4s)
+[WebServer] [kudos] kudos_search_sunners failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected search failure boom-secret-detail'
+[WebServer] }
+  ok  41 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:149:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again (1.3s)
+  ok  42 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:161:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie (995ms)
+  ok  43 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion (3.0s)
+  ok  44 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 (2.8s)
+  ok  45 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 (1.6s)
+  ok  46 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick (1.5s)
+  ok  47 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion (1.2s)
+  ok  48 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too (1.5s)
+  ok  49 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px (1.4s)
+  ok  50 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:103:7 › Tìm kiếm profile Sunner: keyboard › 1440px: the combobox is at least 44px tall and fills the pill (inside its 1px border) (955ms)
+  ok  51 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:111:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) (2.8s)
+  ok  52 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled (1.9s)
+  ok  53 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent (3.0s)
+  ok  54 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches (2.2s)
+  ok  55 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner (2.0s)
+  ok  56 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate (2.2s)
+  ok  57 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error (2.2s)
+  ok  58 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent (3.0s)
+  x   39 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works (30.5s)
+  ok  59 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after the box was cleared is dropped: no listbox, no status line; the box still works (4.4s)
+  ok  60 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:135:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one (4.1s)
+[WebServer] [kudos] kudos_search_sunners failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected search failure boom-secret-detail'
+[WebServer] }
+  ok  62 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:149:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again (1.8s)
+  ok  61 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works (5.2s)
+  ok  63 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:161:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie (1.3s)
+  ok  64 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 (5.2s)
+  ok  65 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion (5.9s)
+  ok  66 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 (3.1s)
+  ok  67 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick (2.1s)
+  ok  68 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion (2.6s)
+  ok  69 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too (4.4s)
+  ok  70 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px (3.3s)
+  ok  71 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:103:7 › Tìm kiếm profile Sunner: keyboard › 1440px: the combobox is at least 44px tall and fills the pill (inside its 1px border) (1.5s)
+  ok  73 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled (1.8s)
+  ok  72 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:111:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) (3.1s)
+  ok  75 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches (2.0s)
+  ok  74 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent (2.9s)
+  ok  76 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner (2.0s)
+  ok  77 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate (2.3s)
+  ok  78 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error (2.2s)
+  ok  79 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent (2.8s)
+  ok  80 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after the box was cleared is dropped: no listbox, no status line; the box still works (3.9s)
+  ok  81 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works (4.0s)
+[WebServer] [kudos] kudos_search_sunners failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected search failure boom-secret-detail'
+[WebServer] }
+  ok  83 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:149:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again (1.4s)
+  ok  82 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:135:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one (3.3s)
+  ok  84 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:161:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie (1.5s)
+  ok  85 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion (2.8s)
+  ok  86 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 (1.9s)
+  ok  87 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick (2.7s)
+  ok  89 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion (3.7s)
+  ok  88 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 (3.9s)
+  ok  90 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too (2.3s)
+  ok  91 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px (2.0s)
+  ok  92 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:103:7 › Tìm kiếm profile Sunner: keyboard › 1440px: the combobox is at least 44px tall and fills the pill (inside its 1px border) (1.4s)
+  ok  94 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled (1.7s)
+  ok  93 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:111:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) (3.1s)
+  ok  96 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches (1.5s)
+  ok  95 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent (2.5s)
+  ok  97 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner (1.6s)
+  ok  98 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate (1.8s)
+  ok  99 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error (2.4s)
+  ok 100 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent (2.5s)
+  ok 101 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after the box was cleared is dropped: no listbox, no status line; the box still works (3.9s)
+  ok 102 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works (4.1s)
+[WebServer] [kudos] kudos_search_sunners failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected search failure boom-secret-detail'
+[WebServer] }
+  ok 104 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:149:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again (1.8s)
+  ok 105 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:161:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie (1.0s)
+  ok 103 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:135:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one (3.4s)
+
+
+  1) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after the box was cleared is dropped: no listbox, no status line; the box still works 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: Test timeout of 30000ms exceeded.
+
+      123 |       await expect.poll(async () => (await searches(request, sub)).some((c) => c.p_query === "Sunner Tester")).toBe(true); // in flight
+      124 |       await leave(page);
+    > 125 |       await (await answered).finished(); // the held answer's body is fully read by the page (nothing aborts a server action here)
+          |                              ^
+      126 |       await flushUi(page); // then one commit of React state, so a late render would already be on screen
+      127 |       await expect(listbox(page)).toHaveCount(0);
+      128 |       await expect(status(page)).toBeEmpty();
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:125:30
+
+    Error Context: test-results\sun-kudos-profile-search-T-5ad18-us-line-the-box-still-works-chromium\error-context.md
+
+  2) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: Test timeout of 30000ms exceeded.
+
+      123 |       await expect.poll(async () => (await searches(request, sub)).some((c) => c.p_query === "Sunner Tester")).toBe(true); // in flight
+      124 |       await leave(page);
+    > 125 |       await (await answered).finished(); // the held answer's body is fully read by the page (nothing aborts a server action here)
+          |                              ^
+      126 |       await flushUi(page); // then one commit of React state, so a late render would already be on screen
+      127 |       await expect(listbox(page)).toHaveCount(0);
+      128 |       await expect(status(page)).toBeEmpty();
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:125:30
+
+    Error Context: test-results\sun-kudos-profile-search-T-cddb3-us-line-the-box-still-works-chromium\error-context.md
+
+  3) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: Test timeout of 30000ms exceeded.
+
+      123 |       await expect.poll(async () => (await searches(request, sub)).some((c) => c.p_query === "Sunner Tester")).toBe(true); // in flight
+      124 |       await leave(page);
+    > 125 |       await (await answered).finished(); // the held answer's body is fully read by the page (nothing aborts a server action here)
+          |                              ^
+      126 |       await flushUi(page); // then one commit of React state, so a late render would already be on screen
+      127 |       await expect(listbox(page)).toHaveCount(0);
+      128 |       await expect(status(page)).toBeEmpty();
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:125:30
+
+    Error Context: test-results\sun-kudos-profile-search-T-cddb3-us-line-the-box-still-works-chromium-repeat1\error-context.md
+
+  3 failed
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after the box was cleared is dropped: no listbox, no status line; the box still works 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works 
+  102 passed (4.0m)
+repeat5 exit=1

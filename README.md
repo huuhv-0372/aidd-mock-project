@@ -673,7 +673,7 @@ Triển khai lên **Cloudflare Workers** qua `@opennextjs/cloudflare`: `wrangler
 
 Lưu ý:
 
-- **Giới hạn kích thước Worker:** 3 MiB (gói free) hoặc 10 MiB (gói trả phí), tính sau gzip. Đo ngày 2026-10-26: 2350.57 KiB; cân nhắc kỹ khi thêm thư viện nặng.
+- **Giới hạn kích thước Worker:** 3 MiB (gói free) hoặc 10 MiB (gói trả phí), tính sau gzip. Đo ngày 2026-10-26: 1976.33 KiB; cân nhắc kỹ khi thêm thư viện nặng.
 - `cacheComponents` và `partialPrefetching` đang tắt trong `next.config.ts` (bật thì route có `<Suspense>` động bị treo trên Workers, lỗi 1101). Chỉ bật lại khi OpenNext có bản sửa và đã thử bằng `npm run preview`.
 - `patches/@opennextjs+cloudflare+*.patch` vá lỗi `preview-props.json` của Next 16.4; xoá patch khi upstream có bản sửa.
 - Header bảo mật: route động đặt qua `next.config.ts`, asset tĩnh qua `public/_headers`; hai cơ chế không thay thế nhau. Rate limiting dùng Cloudflare Rate Limiting Rules, cấu hình trên Cloudflare.

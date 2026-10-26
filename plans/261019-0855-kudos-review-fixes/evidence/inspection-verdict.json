@@ -1,0 +1,31 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "README, codebase-summary, project-changelog and permissions docs state the kudos migration ran on real Supabase on 2026-10-15 with verify 20/20 PASS, and none of the files changed in this round links into plans/261015-1010-sun-kudos-live-board/ — proof: README.md:59, docs/codebase-summary.md:134, docs/project-changelog.md:16 and docs/system/permissions.md:34 match plans/261015-1010-sun-kudos-live-board/reports/db-verify-result.md (2026-10-15, 20/20 PASS); grep for 261015-1010 over all 8 changed files returns nothing",
+    "an E2E case proves an anonymous kudo card shows the alias, never the sender's name, and every /profile link on it is the recipient's — proof: tests/e2e/sun-kudos-feed.spec.ts:75-87 (alias text, SPAN tag, sender name absent, href set == {recipient}); mutation run turned it red at :80",
+    "the fake kudos RPCs mirror the SQL: spotlight recipients ordered kudos_count desc, last_received_at desc, id; hearts_received sums hearts_awarded; gift limit clamped 1..20; cursor applied only with both halves; feed ordered created_at desc, id desc — proof: kudos-fixtures.mjs:214-216 vs SQL kudos_spotlight order by; :144 + :118 vs kudos_my_stats sum(h.hearts_awarded) and set_awarded trigger; :176/:225 vs least(greatest(coalesce(p_limit,10),1),20); :180 vs 'p_cursor_created_at is null or p_cursor_id is null'; :174/:187 vs 'order by k.created_at desc, k.id desc'",
+    "the fixture has a created_at tie at the first-page boundary so ID-6 exercises the id tie-break, and non-RFC-4122 ids like the seed — proof: kudos-fixtures.mjs:102 TIED_WITH {10:9} puts index 10 (id …011) last on page 1 so index 9 needs the id tie-break (mutation: ID-6 expected 28 received 27); :98-99 version/variant nibbles 0, accepted by z.guid() at lib/validation/kudos.ts:20",
+    "all kudos E2E specs and unit tests pass; lint and tsc clean — proof: evidence/temper-results.json: E2E 21/21 0 flaky (09:10), vitest 313/313 + tsc 0 + lint 0 after the Low fixes (09:35); E2E not needed again because clampLimit output is unchanged for every p_limit the app sends (10 or 1..20)"
+  ],
+  "regressionChecked": [
+    "tests/e2e/sun-kudos.spec.ts fixture usage (no dependence on KUDOS order or spotlight order)",
+    "tests/e2e/sun-kudos-feed.spec.ts ID-6/ID-9/ID-10/ID-11 against tie, hearts_awarded and spotlight sort",
+    "tests/unit/get-kudos-board-data.test.ts (counts, filters, nextCursor from items[9])",
+    "tests/unit/kudos-validation.test.ts (schema parse, p_limit 20 and 1)",
+    "tests/unit/load-more-kudos-action.test.ts (new CURSOR id gives the same rows)",
+    "clampLimit old vs new identical for undefined, null and 1..20",
+    "no app source or SQL changed (git diff --stat: 8 test/doc files)"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    { "severity": "Low", "category": "API contracts", "location": "tests/e2e/support/kudos-fixtures.mjs:176", "summary": "clampLimit treated explicit p_limit 0 as the default; fixed this round to return 1 like the SQL", "disposition": "Accept" },
+    { "severity": "Low", "category": "test hygiene", "location": "tests/unit/load-more-kudos-action.test.ts:6", "summary": "CURSOR id used the old v4-style fixture id format; fixed this round to c1000000-0000-0000-0000-000000000003", "disposition": "Accept" },
+    { "severity": "Low", "category": "docs accuracy", "location": "supabase/migrations/20261015100000_create_kudos.sql:7", "summary": "tracked files outside this round still link into gitignored plans/261015-1010-sun-kudos-live-board (migration lines 7 and 44, messages/en/kudos.ts:6); out of scope (no SQL/app-source change)", "disposition": "Defer" },
+    { "severity": "Low", "category": "data leakage (test coverage)", "location": "tests/e2e/sun-kudos-feed.spec.ts:75", "summary": "anonymous case cannot catch removal of only the UI guard (kudo-post-card.tsx:37) because the fixture correctly sends sender null; highlight card guard (kudo-highlight-card.tsx:39) not covered", "disposition": "Defer" }
+  ]
+}

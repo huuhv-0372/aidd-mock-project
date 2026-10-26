@@ -1,0 +1,52 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "a guest and a signed-in Sunner can both open /tieu-chuan-chung without being redirected to /login",
+    "the page shows the ROOT FURTHER key visual, the Tiêu chuẩn cộng đồng section with its intro and exactly 10 numbered rules, a divider, and the Tiêu chuẩn bảo mật section with its statement, 2 bullet points and the support contact line, with the Figma copy",
+    "the Tiêu chuẩn cộng đồng link in the Viết Kudo toolbar opens this page in a new tab and the footer Tiêu chuẩn chung link navigates to it; on this page the footer link is marked as the current page",
+    "the layout matches the Figma 1161:8944 export at 1440 wide and stays readable without horizontal scroll at 375 wide",
+    "every string of the page switches between VI and EN; the existing unit and E2E suites stay green"
+  ],
+  "regressionChecked": [
+    "PUBLIC_PATHS exact match: /tieu-chuan-chung/x, /en/tieu-chuan-chung, /vi/tieu-chuan-chung remain gated",
+    "SiteFooter callers without activeHref (/, /awards-information, /sun-kudos) render unchanged; homepage footer has no aria-current (E2E)",
+    "footer xl:gap-x-0 verified one-row at 1440 on all four path/locale combinations",
+    "HeaderSessionControls guest path renders LoginLink with no session data on a public page",
+    "spec :44 pageHeading change strengthens (EN h1 asserted), no assertion weakened",
+    "full suites: vitest 562, E2E 218/218 (temper-results.json)"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "Low",
+      "category": "maintainability",
+      "location": "components/standards/standards-content.tsx:20",
+      "summary": "xl:-mb-[53px] implicitly offsets SiteFooter xl:mt-[125px]; drifts silently if footer margin changes",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "visual-fidelity",
+      "location": "components/standards/standards-hero.tsx:20",
+      "summary": "Hero artwork composition approximates the Figma export (Figma MCP unavailable); geometry/fade/height match",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "visual-fidelity",
+      "location": "components/site-shell/site-footer.tsx:25",
+      "summary": "Pre-existing: shared footer wraps below ~1433px; improved at 1440 by this change",
+      "disposition": "Defer"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": true
+  }
+}
