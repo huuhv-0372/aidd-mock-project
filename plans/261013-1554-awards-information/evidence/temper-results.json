@@ -1,0 +1,11 @@
+{
+  "commands": [
+    { "command": "npm run lint", "exitCode": 0, "status": "pass", "summary": "eslint clean after review fix round 1 (orchestrator run)", "ts": "2026-10-13T10:30:23.000Z" },
+    { "command": "npx tsc --noEmit", "exitCode": 0, "status": "pass", "summary": "typecheck clean after fix round 1 (orchestrator run)", "ts": "2026-10-13T10:30:23.000Z" },
+    { "command": "npm test", "exitCode": 0, "status": "pass", "summary": "vitest 153/153 across 16 files incl. parse-award-hash + pick-active-award", "ts": "2026-10-13T10:30:23.000Z" },
+    { "command": "npm run build", "exitCode": 0, "status": "pass", "summary": "build ok; /awards-information Partial Prerender, /_not-found static, no [auth]/HANGING prerender logs", "ts": "2026-10-13T10:30:23.000Z" },
+    { "command": "npx playwright test tests/e2e/awards-information-nav.spec.ts -g \"#mvp scrolls the chip bar\" (chip fix disabled)", "exitCode": 1, "status": "skipped", "summary": "intentional RED proof of the new chip-visibility regression test against pre-fix code: failed on 'active chip within the visible bar'; fix restored afterwards", "ts": "2026-10-13T10:30:23.000Z" },
+    { "command": "npx playwright test tests/e2e/awards-information-nav.spec.ts --repeat-each=5", "exitCode": 0, "status": "pass", "summary": "nav spec 60/60 (12 tests x5) incl. Homepage card soft-nav and #mvp chip tests; scroll/active timing stable", "ts": "2026-10-13T10:30:23.000Z" },
+    { "command": "npm run test:e2e -- --repeat-each=2", "exitCode": 0, "status": "pass", "summary": "full E2E 118 passed (59 tests x2): awards 26, homepage/login/countdown regression green", "ts": "2026-10-13T10:30:23.000Z" }
+  ]
+}

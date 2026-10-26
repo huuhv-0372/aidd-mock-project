@@ -1,0 +1,10 @@
+[
+  {"command": "npm run test:e2e -- tests/e2e/homepage.spec.ts tests/e2e/homepage-account-menu.spec.ts", "exitCode": 1, "summary": "Run 1 after pre-approved copy edits: 14 passed, 2 failed (scroll-to-top app defect; award-card loop spec-flow defect)"},
+  {"command": "npx playwright test tests/e2e/homepage.spec.ts -g \"award cards|scrolled\"", "exitCode": 1, "summary": "Diagnostic after award-card spec-flow fix: 1 passed (award cards), 1 failed (scroll-to-top)"},
+  {"command": "npm run test:e2e -- tests/e2e/homepage.spec.ts tests/e2e/homepage-account-menu.spec.ts", "exitCode": 1, "summary": "Run 2 (same redCommand): 15 passed, 1 failed - homepage.spec.ts:143 scrollY expected 0 received 3581; app defect in home-header/home-footer Links"},
+  {"command": "npm run test:e2e", "exitCode": 1, "summary": "Full E2E: 30 passed, 1 failed (same scroll-to-top test); login and countdown specs all pass; build OK, / is Partial Prerender"},
+  {"command": "npx playwright test tests/e2e/homepage.spec.ts tests/e2e/homepage-account-menu.spec.ts --repeat-each=2", "exitCode": 1, "summary": "Flake check: 30 passed, 2 failed (scroll-to-top in both repeats, deterministic); no other flakes"},
+  {"command": "npm test", "exitCode": 0, "summary": "Vitest: 12 files, 125 tests passed"},
+  {"command": "npm run lint", "exitCode": 0, "summary": "ESLint clean"},
+  {"command": "npx tsc --noEmit", "exitCode": 0, "summary": "Typecheck clean"}
+]

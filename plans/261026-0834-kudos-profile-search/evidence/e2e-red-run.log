@@ -1,0 +1,637 @@
+
+> aidd-mockproject@0.1.0 test:e2e
+> next build && playwright test tests/e2e/sun-kudos-profile-search
+
+▲ Next.js 16.4.0 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 137ms
+- Experiments (use with caution):
+  ✓ agentFeedback
+  ✓ authInterrupts
+  · proxyClientMaxBodySize: "26mb"
+  · serverActions
+
+  Creating an optimized production build ...
+⚠ Your version of Next.js is affected by a known security vulnerability. This command is continuing after the upgrade reminder.
+Reference: https://registry.npmjs.org/-/npm/v1/security/advisories/bulk
+✓ Compiled successfully in 16.5s
+  Running TypeScript ...
+  Finished TypeScript in 22.2s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/24) ...
+  Generating static pages using 3 workers (6/24) 
+  Generating static pages using 3 workers (12/24) 
+  Generating static pages using 3 workers (18/24) 
+✓ Generating static pages using 3 workers (24/24) in 3.1s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/[...rest]
+├ ƒ /[locale]/403
+├ ƒ /[locale]/admin
+├ ƒ /[locale]/admin/users
+├ ƒ /[locale]/admin/users/export
+├ ƒ /[locale]/awards-information
+├ ƒ /[locale]/countdown
+├ ƒ /[locale]/login
+├ ƒ /[locale]/profile
+├ ƒ /[locale]/profile/[id]
+├ ƒ /[locale]/sun-kudos
+├ ƒ /[locale]/sun-kudos/[id]
+├ ƒ /[locale]/tieu-chuan-chung
+└ ƒ /auth/callback
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+Running 18 tests using 2 workers
+
+  x   2 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 (9.2s)
+  x   1 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion (9.4s)
+  x   3 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 (6.6s)
+  x   4 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick (6.3s)
+  x   5 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion (7.8s)
+  x   6 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too (7.2s)
+  x   7 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px (7.0s)
+  x   8 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:101:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) (7.6s)
+  x   9 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled (7.1s)
+  x  10 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent (7.9s)
+  x  11 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches (7.6s)
+  x  12 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner (7.8s)
+  x  13 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate (7.3s)
+  x  14 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error (7.2s)
+  x  15 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent (7.4s)
+  x  16 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:103:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one (7.4s)
+  x  17 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again (9.2s)
+  x  18 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:129:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie (8.3s)
+
+
+  1) [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at openTesters (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:21:3)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:28:5
+
+    Error Context: test-results\sun-kudos-profile-search-k-6042e--opens-the-first-suggestion-chromium\error-context.md
+
+  2) [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at openTesters (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:21:3)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:34:5
+
+    Error Context: test-results\sun-kudos-profile-search-k-3672c-Down-then-Enter-opens-row-1-chromium\error-context.md
+
+  3) [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at openTesters (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:21:3)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:41:5
+
+    Error Context: test-results\sun-kudos-profile-search-k-e4579-wice-then-Enter-opens-row-2-chromium\error-context.md
+
+  4) [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at openTesters (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:21:3)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:49:5
+
+    Error Context: test-results\sun-kudos-profile-search-k-ecba9--first-aria-tracks-the-pick-chromium\error-context.md
+
+  5) [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at openTesters (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:21:3)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:65:5
+
+    Error Context: test-results\sun-kudos-profile-search-k-84180--opens-the-first-suggestion-chromium\error-context.md
+
+  6) [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:71:5
+
+    Error Context: test-results\sun-kudos-profile-search-k-7177d--the-text-Tab-closes-it-too-chromium\error-context.md
+
+  7) [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:85:5
+
+    Error Context: test-results\sun-kudos-profile-search-k-c258f-and-magnifier-at-least-44px-chromium\error-context.md
+
+  8) [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:101:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at openTesters (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:21:3)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:103:7
+
+    Error Context: test-results\sun-kudos-profile-search-k-daa25-t-banner-does-not-cover-it--chromium\error-context.md
+
+  9) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:23:5
+
+    Error Context: test-results\sun-kudos-profile-search-T-7e085-lder-pill-A-1-stays-enabled-chromium\error-context.md
+
+  10) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:31:5
+
+    Error Context: test-results\sun-kudos-profile-search-T-1db7e-excluded-trimmed-query-sent-chromium\error-context.md
+
+  11) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:48:5
+
+    Error Context: test-results\sun-kudos-profile-search-T-021e6-ggestions-out-of-12-matches-chromium\error-context.md
+
+  12) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:54:5
+
+    Error Context: test-results\sun-kudos-profile-search-T-9a267-s-profile-id-of-that-Sunner-chromium\error-context.md
+
+  13) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:61:5
+
+    Error Context: test-results\sun-kudos-profile-search-T-810d2-ons-Enter-does-not-navigate-chromium\error-context.md
+
+  14) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:73:5
+
+    Error Context: test-results\sun-kudos-profile-search-T-56c76-s-searched-without-an-error-chromium\error-context.md
+
+  15) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:86:5
+
+    Error Context: test-results\sun-kudos-profile-search-T-5e9f5-hing-no-empty-query-is-sent-chromium\error-context.md
+
+  16) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:103:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:105:5
+
+    Error Context: test-results\sun-kudos-profile-search-T-0a1b0-ever-replaces-the-newer-one-chromium\error-context.md
+
+  17) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again 
+
+    Error: profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner' getByRole('combobox', { name: 'Tìm kiếm profile Sunner' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Tìm kiếm profile Sunner' })
+
+
+       at support\kudos-contract.ts:237
+
+      235 | export async function openProfileSearch(page: Page, request: APIRequestContext, opts: { width?: number; sub?: string } = {}) {
+      236 |   await openKudos(page, request, opts);
+    > 237 |   await expect(profileSearch.box(page), "profile search: the pill must be a combobox named 'Tìm kiếm profile Sunner'").toBeVisible();
+          |                                                                                                                        ^
+      238 | }
+      239 |
+      240 | /** While on, the next kudos_search_sunners answers 500 with a marker that must never reach the page. */
+        at openProfileSearch (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\support\kudos-contract.ts:237:120)
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:119:5
+
+    Error Context: test-results\sun-kudos-profile-search-T-174b3-age-and-the-box-works-again-chromium\error-context.md
+
+  18) [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:129:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie 
+
+    Error: EN: the search combobox must be named 'Search for Sunner profile'
+
+    expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: 'Search for Sunner profile' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - EN: the search combobox must be named 'Search for Sunner profile' getByRole('combobox', { name: 'Search for Sunner profile' }) with timeout 5000ms
+      - waiting for getByRole('combobox', { name: 'Search for Sunner profile' })
+
+
+      131 |     await openKudos(page, request, { sub: randomUUID() });
+      132 |     const en = page.getByRole("combobox", { name: PROFILE_SEARCH.placeholderEn });
+    > 133 |     await expect(en, "EN: the search combobox must be named 'Search for Sunner profile'").toBeVisible();
+          |                                                                                           ^
+      134 |     await en.fill("zzzz");
+      135 |     await expect(status(page)).toContainText(PROFILE_SEARCH.noResultEn);
+      136 |   });
+        at C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\tests\e2e\sun-kudos-profile-search.spec.ts:133:91
+
+    Error Context: test-results\sun-kudos-profile-search-T-90b96-llow-the-NEXT-LOCALE-cookie-chromium\error-context.md
+
+  18 failed
+    [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion 
+    [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 
+    [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 
+    [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick 
+    [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion 
+    [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too 
+    [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px 
+    [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:101:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:103:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again 
+    [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:129:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie 
+EXIT=1

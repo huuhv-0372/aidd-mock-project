@@ -1,0 +1,67 @@
+{
+  "commands": [
+    {
+      "command": "npx vitest run (round 1, final code)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "64 files, 1067 tests passed, 0 failed. Log: evidence/round1-vitest.log",
+      "ts": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "command": "npm run build (round 1 attempt 2, retry)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "build clean, 0 warnings in output. Log: evidence/round1-build-attempt2.log",
+      "ts": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "command": "node measure-profile-search.cjs (pill + input at 375 and 1440, idle, against next start -p 3103)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "375: pill 343x58, input 56, overflow 0px; 1440: pill 381.34x72, input 70, overflow 0px. Screenshots: reports/visual/375-profile-search-round1.png, 1440-profile-search-round1.png",
+      "ts": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "command": "npx tsc --noEmit (round 1c, FINAL test code)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "TypeScript check clean. Log: evidence/round1c-tsc.log",
+      "ts": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "command": "npx eslint <touched e2e files> (round 1c, FINAL)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "touched E2E specs lint clean. Log: evidence/round1c-eslint-e2e.log",
+      "ts": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "command": "npm run lint (round 1c, FINAL)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "full repo eslint clean. Log: evidence/round1c-lint.log",
+      "ts": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "command": "npx playwright test tests/e2e/sun-kudos-profile-search --repeat-each=5 (round 1 run C, FINAL: await answered + flushUi 500 ms)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "105 passed = 21 cases x 5 repeats, 0 failed, 0 flaky. Log: evidence/round1-repeat5-run.log",
+      "ts": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "command": "npx playwright test (FULL E2E suite, round 1 run C, FINAL: await answered + flushUi 500 ms)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "377 passed, 0 failed (374 before + 3 new cases). Log: evidence/round1-full-e2e-run.log",
+      "ts": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "command": "npm run build (controller rebuild on restored code after mutation check)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "build clean on the frozen code",
+      "ts": "2026-10-26T03:50:31.801Z"
+    }
+  ]
+}

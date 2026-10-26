@@ -1,6 +1,6 @@
 # Codebase summary
 
-Tóm tắt cấu trúc mã hiện có. Quy ước viết code nằm ở `CLAUDE.md`; cách chạy lệnh nằm ở `README.md`.
+Tóm tắt cấu trúc mã hiện có. Quy ước viết code nằm ở `CLAUDE.md`; cách chạy lệnh nằm ở `README.md` (chạy nhanh) và `docs/technical-overview.md` (tra cứu kỹ thuật).
 
 ## Cấu trúc
 

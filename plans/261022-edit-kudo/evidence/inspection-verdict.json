@@ -1,0 +1,117 @@
+{
+ "score": 9,
+ "criticalCount": 0,
+ "decision": "SEALED",
+ "acceptanceCovered": [
+  "the pencil shows only on a Kudo the viewer sent (board feed and profile), is a 44px keyboard-reachable button, and opens the modal titled 'Chỉnh sửa bài viết của bạn'",
+  "the modal pre-fills the title, the content with its formatting, mentions and links, the hashtags, the images in order and the anonymous alias; the recipient and the anonymous state are shown but locked",
+  "saving sends title, content, hashtags, alias, kept and new images; Lưu stays disabled until title, content and at least one hashtag are set; field errors behave as in Write Kudo",
+  "after a successful save the modal closes and the card shows the new title, content, hashtags and images in place, keeping its hearts, time and feed position; Hủy or Esc discards every change",
+  "update_kudo refuses anyone but the sender with the same not_found as a missing Kudo, keeps recipient, anonymity, created_at and hearts, replaces hashtags and images, and the removed images are deleted from Storage only after a successful update",
+  "the character counter shows N/5.000 under the editor in both Write and Edit; every string switches between VI and EN; the modal matches the owner's screenshot at 1440 and has no horizontal scroll at 375; the existing unit and E2E suites stay green"
+ ],
+ "regressionChecked": [
+  "createKudo refactor to upload-kudo-images / fieldOfRpcError: same behaviour and FormData",
+  "KudosFeedList now requires KudosComposerProvider: all render sites (sun-kudos AllKudosSection, profile/page, profile/[id]) are inside KudosComposer",
+  "KudoPostCard pencil: is_mine only; KudoHearts keyed by kudo.id so the hearts state survives the row swap",
+  "use-image-attachments: kept URLs never revoked; count limit includes kept images",
+  "Write Kudo counter switched to code points: matches zod 4 (code points) and Postgres char_length",
+  "CRLF normalization in the shared content schema: create and update store LF; length counted on LF",
+  "fake fixtures: rowOf is_mine sender-based; create path unchanged; full E2E 317/317"
+ ],
+ "contractStatus": "CHANGED",
+ "refuted": [],
+ "unproven": [],
+ "reachableRegressions": [],
+ "findings": [
+  {
+   "severity": "Medium",
+   "category": "Logic",
+   "location": "lib/kudos/kudo-content-editor-json.ts:35",
+   "disposition": "Accept",
+   "summary": "addressed — LINK label excludes '[', so a linked mention ([x @[N](id)](url)) was rewritten to escaped literal text and lost its link on an unchanged save; the fuzz test excluded this case"
+  },
+  {
+   "severity": "Low",
+   "category": "Security",
+   "location": "lib/kudos/update-kudo-action.ts:66",
+   "disposition": "Accept",
+   "summary": "addressed — keepImages and removed URLs are now pinned to the Supabase origin (update-kudo-action.ts:101, :68)"
+  },
+  {
+   "severity": "Low",
+   "category": "Logic",
+   "location": "lib/kudos/kudo-content-editor-json.ts:17-28",
+   "disposition": "Defer",
+   "summary": "literal U+E000-U+E008 characters in stored content are turned into escapable markdown characters on save"
+  },
+  {
+   "severity": "Low",
+   "category": "Logic",
+   "location": "components/kudos-compose/use-write-kudo-form.ts:116",
+   "disposition": "Defer",
+   "summary": "addressed — invalid_images for a stale kept image now shows the generic invalid text in edit mode (use-write-kudo-form.ts:125-126)"
+  },
+  {
+   "severity": "Low",
+   "category": "Concurrency",
+   "location": "supabase/migrations/20261023100000_create_update_kudo_rpc.sql:60",
+   "disposition": "Defer",
+   "summary": "last-write-wins between tabs; a short window between commit and Storage delete can leave the same user's re-referenced image broken (only the user's own data); row lock serialises edits of one Kudo"
+  },
+  {
+   "severity": "Low",
+   "category": "Logic",
+   "location": "components/kudos/kudos-feed-list.tsx:102",
+   "disposition": "Defer",
+   "summary": "savedKudos overlay never expires; can mask fresher rows (heart_count, filtered-feed membership)"
+  },
+  {
+   "severity": "Low",
+   "category": "Performance",
+   "location": "supabase/migrations/20261023100000_create_update_kudo_rpc.sql:136",
+   "disposition": "Defer",
+   "summary": "kudo_images.image_url unindexed; per-dropped-URL scan, fine at current scale"
+  },
+  {
+   "severity": "Low",
+   "category": "Accessibility",
+   "location": "components/kudos-compose/kudo-rich-editor.tsx:121-126",
+   "disposition": "Defer",
+   "summary": "content counter not referenced by the editor's aria-describedby"
+  },
+  {
+   "severity": "Low",
+   "category": "Performance",
+   "location": "components/kudos-compose/kudos-composer-provider.tsx:10",
+   "disposition": "Defer",
+   "summary": "addressed — converter is now imported only by use-write-kudo-form.ts:5, inside the lazily loaded dialog chunk"
+  },
+  {
+   "severity": "Low",
+   "category": "Tests",
+   "location": "tests/e2e/support/write-kudo-fixtures.mjs",
+   "disposition": "Defer",
+   "summary": "fake update_kudo returns every dropped URL (no other-Kudo filter) and answers forbidden as 42501 vs SQL 22023; only SQL verify U4 proves the filter"
+  },
+  {
+   "severity": "Low",
+   "category": "Security",
+   "location": "lib/validation/write-kudo.ts:36",
+   "disposition": "Defer",
+   "summary": "hasOnlySafeLinks does not inspect the target of a link whose label holds a mention; pre-existing, not exploitable (reader and converter both refuse non-http targets)"
+  },
+  {
+   "severity": "Low",
+   "category": "Logic",
+   "location": "lib/kudos/update-kudo-action.ts:68",
+   "disposition": "Defer",
+   "summary": "origin pin compares normalised origin but removed-vs-kept matches by raw string; a same-origin variant of the caller's own object can delete the canonical object; own data only"
+  }
+ ],
+ "riskGate": {
+  "touchesSensitiveArea": true,
+  "signoffRequired": true,
+  "humanSignedOff": true
+ }
+}

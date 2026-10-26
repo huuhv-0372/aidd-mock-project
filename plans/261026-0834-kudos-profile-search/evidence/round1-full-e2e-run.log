@@ -1,0 +1,615 @@
+
+Running 377 tests using 2 workers
+
+  ok   1 [chromium] › tests\e2e\admin-users-actions.spec.ts:27:7 › Admin - User: row actions (ca 7) › the row menu opens with Enter, moves with the arrow key, and Escape returns focus to its button (4.1s)
+  ok   2 [chromium] › tests\e2e\admin-users-actions.spec.ts:41:7 › Admin - User: row actions (ca 7) › Escape and Cancel close the confirm dialog and never call the role RPC (4.7s)
+  ok   4 [chromium] › tests\e2e\admin-users-actions.spec.ts:70:7 › Admin - User: row actions (ca 7) › the viewer's own row has a disabled action button and no menu (1.8s)
+  ok   3 [chromium] › tests\e2e\admin-users-actions.spec.ts:57:7 › Admin - User: row actions (ca 7) › Confirm changes the role in place, shows a status, and the menu now offers the way back (3.0s)
+[WebServer] [admin] admin_set_user_role refused forbidden
+[WebServer] [admin] admin_set_user_role refused not_found
+[WebServer] [admin] admin_set_user_role failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected role failure boom-secret-detail'
+[WebServer] }
+  ok   6 [chromium] › tests\e2e\admin-users-export.spec.ts:21:7 › Admin - User: CSV export (ca 8) › Export downloads users-YYYYMMDD.csv with a UTF-8 BOM, the fixed header and one line per filtered row (1.8s)
+  ok   5 [chromium] › tests\e2e\admin-users-actions.spec.ts:78:7 › Admin - User: row actions (ca 7) › refusals and a 500 show one generic message, keep the row, and leak no server detail (2.3s)
+  ok   7 [chromium] › tests\e2e\admin-users-export.spec.ts:33:7 › Admin - User: CSV export (ca 8) › export follows the filters in the URL (1.1s)
+  ok   9 [chromium] › tests\e2e\admin-users-export.spec.ts:48:7 › Admin - User: CSV export (ca 8) › a signed-in user who opens the export URL directly gets 403 (389ms)
+  ok   8 [chromium] › tests\e2e\admin-users-export.spec.ts:39:7 › Admin - User: CSV export (ca 8) › formula-looking cells get an apostrophe, and commas and quotes are wrapped and doubled (1.6s)
+  ok  10 [chromium] › tests\e2e\admin-users-export.spec.ts:55:7 › Admin - User: CSV export (ca 8) › a guest who opens the export URL is sent to /login (1.2s)
+  ok  11 [chromium] › tests\e2e\admin-users-filter.spec.ts:16:7 › Admin - User: filters and search (ca 5) › Unit filter: picking a unit puts it in the URL and narrows the total (1.4s)
+  ok  12 [chromium] › tests\e2e\admin-users-filter.spec.ts:24:7 › Admin - User: filters and search (ca 5) › Level filter: every visible row shows that level (1.5s)
+  ok  13 [chromium] › tests\e2e\admin-users-filter.spec.ts:32:7 › Admin - User: filters and search (ca 5) › Role filter: Admin lists the two admins only (2.1s)
+  ok  14 [chromium] › tests\e2e\admin-users-filter.spec.ts:41:7 › Admin - User: filters and search (ca 5) › clearing every filter and the search returns to the bare URL and the full list (2.3s)
+  ok  15 [chromium] › tests\e2e\admin-users-filter.spec.ts:51:7 › Admin - User: filters and search (ca 5) › search matches name or email; the final URL and result are what count (1.4s)
+  ok  17 [chromium] › tests\e2e\admin-users-filter.spec.ts:72:7 › Admin - User: filters and search (ca 5) › invalid URL values are dropped or clamped, and the page still answers 200 (915ms)
+  ok  16 [chromium] › tests\e2e\admin-users-filter.spec.ts:58:7 › Admin - User: filters and search (ca 5) › % and _ in the search are plain characters, not wildcards (1.7s)
+  ok  18 [chromium] › tests\e2e\admin-users-filter.spec.ts:80:7 › Admin - User: filters and search (ca 5) › a search longer than the limit is clamped to the limit (607ms)
+  ok  19 [chromium] › tests\e2e\admin-users-pagination.spec.ts:10:7 › Admin - User: pagination (ca 6) › page 1 holds rows 1-20; previous is unavailable; the page links show 1, 2 and 3 (1.1s)
+  ok  20 [chromium] › tests\e2e\admin-users-pagination.spec.ts:21:7 › Admin - User: pagination (ca 6) › next walks page 2 (rows 21-40) to page 3 (rows 41-45), where next is unavailable (1.7s)
+  ok  21 [chromium] › tests\e2e\admin-users-pagination.spec.ts:35:7 › Admin - User: pagination (ca 6) › paging keeps the sort in the URL and in the header (1.2s)
+  ok  22 [chromium] › tests\e2e\admin-users-pagination.spec.ts:44:7 › Admin - User: pagination (ca 6) › a page past the end is an empty state with a link back to page 1 (1.5s)
+  ok  23 [chromium] › tests\e2e\admin-users-shell.spec.ts:11:7 › Admin - User: account menu (ca 9) › an admin sees Dashboard between Profile and Sign out, and it opens the Users screen (2.2s)
+  ok  24 [chromium] › tests\e2e\admin-users-shell.spec.ts:26:7 › Admin - User: English (ca 10) › labels follow NEXT_LOCALE; the column headers stay in English in both (1.5s)
+  ok  25 [chromium] › tests\e2e\admin-users-shell.spec.ts:50:7 › Admin - User: 375 px (ca 11) › no sideways page scroll, the table scrolls in its own box, filters stack, targets are at least 44 px (987ms)
+  ok  26 [chromium] › tests\e2e\admin-users-sort.spec.ts:10:7 › Admin - User: sort (ca 4) › default order is created_at ascending: the viewer's own row is first and no sort is active (982ms)
+  ok  28 [chromium] › tests\e2e\admin-users-sort.spec.ts:35:7 › Admin - User: sort (ca 4) › empty dates sort last in both directions (time to 6 badges, last logged in) (2.5s)
+  ok  27 [chromium] › tests\e2e\admin-users-sort.spec.ts:17:7 › Admin - User: sort (ca 4) › first click sorts sent descending, second click ascending, order holds on every page (3.3s)
+  ok  29 [chromium] › tests\e2e\admin-users-sort.spec.ts:52:7 › Admin - User: sort (ca 4) › a sort click goes back to page 1 and keeps the sort (1.5s)
+  ok  31 [chromium] › tests\e2e\admin-users.spec.ts:15:7 › Admin - User: access (ca 1) › guest on /admin and /admin/users is sent to /login (1.3s)
+  ok  30 [chromium] › tests\e2e\admin-users-sort.spec.ts:61:7 › Admin - User: sort (ca 4) › tied values keep one stable order: every user appears once across pages, same order on every read (2.6s)
+  ok  33 [chromium] › tests\e2e\admin-users.spec.ts:33:7 › Admin - User: access (ca 1) › admin on /admin is redirected to the Users screen (1.1s)
+  ok  32 [chromium] › tests\e2e\admin-users.spec.ts:22:7 › Admin - User: access (ca 1) › signed-in user gets HTTP 403 on /admin and /admin/users, with no user data in the HTML (1.6s)
+  ok  34 [chromium] › tests\e2e\admin-users.spec.ts:41:7 › Admin - User: frame (ca 2) › header tabs: User is current, the other three are disabled and do not navigate (1.2s)
+  ok  35 [chromium] › tests\e2e\admin-users.spec.ts:58:7 › Admin - User: frame (ca 2) › title, Export link, three filters with placeholders, search, footer (1.2s)
+  ok  36 [chromium] › tests\e2e\admin-users.spec.ts:79:7 › Admin - User: frame (ca 2) › 12 columns in Figma order, sum headers equal the whole filtered result, total is 45 (916ms)
+  ok  37 [chromium] › tests\e2e\admin-users.spec.ts:100:7 › Admin - User: row data (ca 3) › 20 rows on page 1, ID is the row number, dates in Vietnam time, '-' when empty (1.1s)
+[WebServer] [admin] admin_list_users failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected list failure boom-secret-detail'
+[WebServer] }
+  ok  38 [chromium] › tests\e2e\admin-users.spec.ts:126:7 › Admin - User: row data (ca 3) › Total Heart is red, role reads Admin or User, the viewer's own row is row 1 (1.1s)
+  ok  39 [chromium] › tests\e2e\admin-users.spec.ts:139:7 › Admin - User: row data (ca 3) › a failed list read shows one generic alert, no table, and no server detail (1.0s)
+  ok  41 [chromium] › tests\e2e\awards-information-nav.spec.ts:34:7 › Awards Information: navigation (authenticated, 1440) › ID-11 Top Talent then MVP: only the clicked item is active (2.6s)
+  ok  40 [chromium] › tests\e2e\awards-information-nav.spec.ts:24:7 › Awards Information: navigation (authenticated, 1440) › ID-9 each nav click scrolls to its section, sets the hash, and only that item is active (3.1s)
+  ok  42 [chromium] › tests\e2e\awards-information-nav.spec.ts:43:7 › Awards Information: navigation (authenticated, 1440) › scroll-spy: scrolling to a card makes its nav item the active one (1.1s)
+  ok  43 [chromium] › tests\e2e\awards-information-nav.spec.ts:54:7 › Awards Information: navigation (authenticated, 1440) › scroll-spy: an instant jump that leaves the spy line between two cards still updates the active item (1.4s)
+  ok  44 [chromium] › tests\e2e\awards-information-nav.spec.ts:73:7 › Awards Information: navigation (authenticated, 1440) › landing on #best-manager (from Homepage) scrolls the card into view and activates its item (1.2s)
+  ok  45 [chromium] › tests\e2e\awards-information-nav.spec.ts:84:7 › Awards Information: navigation (authenticated, 1440) › Homepage award card (client-side Link) lands on its card with its nav item active (1.4s)
+  ok  46 [chromium] › tests\e2e\awards-information-nav.spec.ts:94:7 › Awards Information: navigation (authenticated, 1440) › ID-13 unknown hash: no page error, stays at the top, first item stays active (1.6s)
+  ok  48 [chromium] › tests\e2e\awards-information-nav.spec.ts:129:9 › Awards Information: navigation (authenticated, 1440) › reduced motion › a nav click still lands on its section, without waiting on a smooth scroll (1.6s)
+  ok  47 [chromium] › tests\e2e\awards-information-nav.spec.ts:115:7 › Awards Information: navigation (authenticated, 1440) › ID-12/14 'Chi tiết' opens the live /sun-kudos board (HTTP 200), header link goes back home (2.6s)
+  ok  49 [chromium] › tests\e2e\awards-information-nav.spec.ts:144:7 › Awards Information: mobile (375px) › ID-3 chip bar sits above the cards and scrolls horizontally (1.6s)
+  ok  50 [chromium] › tests\e2e\awards-information-nav.spec.ts:156:7 › Awards Information: mobile (375px) › chip bar stays sticky under the header after scrolling 1000px (1.5s)
+  ok  51 [chromium] › tests\e2e\awards-information-nav.spec.ts:164:7 › Awards Information: mobile (375px) › landing on #mvp scrolls the chip bar so the active MVP chip is visible (1.2s)
+  ok  53 [chromium] › tests\e2e\awards-information.spec.ts:20:7 › Awards Information: access › ID-1 anonymous visitor on /awards-information goes to /login (737ms)
+  ok  52 [chromium] › tests\e2e\awards-information-nav.spec.ts:176:7 › Awards Information: mobile (375px) › award cards stack in one column with the image above the content (1.9s)
+  ok  54 [chromium] › tests\e2e\awards-information.spec.ts:25:7 › Awards Information: access › ID-0 authenticated direct URL renders the page title (1.2s)
+  ok  55 [chromium] › tests\e2e\awards-information.spec.ts:30:7 › Awards Information: access › ID-2 header 'Awards Information' from / lands on the page with its h1 (1.4s)
+  ok  57 [chromium] › tests\e2e\awards-information.spec.ts:64:7 › Awards Information: layout and content (authenticated, 1440) › ID-4 small muted subtitle above a larger h1 (1.2s)
+  ok  56 [chromium] › tests\e2e\awards-information.spec.ts:46:7 › Awards Information: layout and content (authenticated, 1440) › ID-3 regions top to bottom; nav sits left of the cards (1.5s)
+  ok  58 [chromium] › tests\e2e\awards-information.spec.ts:73:7 › Awards Information: layout and content (authenticated, 1440) › ID-5 nav lists the 6 categories in order, each linking to its section (1.1s)
+  ok  59 [chromium] › tests\e2e\awards-information.spec.ts:82:9 › Awards Information: layout and content (authenticated, 1440) › ID-6 top-talent: title, quantity and prize (1.3s)
+  ok  60 [chromium] › tests\e2e\awards-information.spec.ts:82:9 › Awards Information: layout and content (authenticated, 1440) › ID-6 top-project: title, quantity and prize (1.2s)
+  ok  61 [chromium] › tests\e2e\awards-information.spec.ts:82:9 › Awards Information: layout and content (authenticated, 1440) › ID-6 top-project-leader: title, quantity and prize (2.0s)
+  ok  62 [chromium] › tests\e2e\awards-information.spec.ts:82:9 › Awards Information: layout and content (authenticated, 1440) › ID-6 best-manager: title, quantity and prize (1.5s)
+  ok  64 [chromium] › tests\e2e\awards-information.spec.ts:82:9 › Awards Information: layout and content (authenticated, 1440) › ID-6 mvp: title, quantity and prize (1.0s)
+  ok  63 [chromium] › tests\e2e\awards-information.spec.ts:82:9 › Awards Information: layout and content (authenticated, 1440) › ID-6 signature-2025-creator: title, quantity and prize (1.4s)
+  ok  66 [chromium] › tests\e2e\awards-information.spec.ts:103:7 › Awards Information: layout and content (authenticated, 1440) › ID-8 Sun* Kudos banner: label, title and 'Chi tiết' CTA to /sun-kudos (1.1s)
+  ok  65 [chromium] › tests\e2e\awards-information.spec.ts:94:7 › Awards Information: layout and content (authenticated, 1440) › ID-7 each award image renders 336x336 at 1440px (1.3s)
+  ok  68 [chromium] › tests\e2e\countdown-prelaunch-gate.spec.ts:45:7 › Countdown Prelaunch Gate › test-2: static assets on /countdown return 200 (not gated) (1.8s)
+  ok  67 [chromium] › tests\e2e\countdown-prelaunch-gate.spec.ts:37:7 › Countdown Prelaunch Gate › test-1: routes before launch redirect to /countdown with 307 (3.2s)
+  ok  69 [chromium] › tests\e2e\countdown-prelaunch-gate.spec.ts:71:7 › Countdown Prelaunch Gate › test-3: countdown units display correct computed values at assert time (1.6s)
+  ok  70 [chromium] › tests\e2e\countdown-prelaunch-gate.spec.ts:86:7 › Countdown Prelaunch Gate › test-4: countdown values identical with America/New_York timezone (1.2s)
+  ok  71 [chromium] › tests\e2e\countdown-prelaunch-gate.spec.ts:98:7 › Countdown Prelaunch Gate › test-5: minutes decrease by one after fastForward 01:00 (1.7s)
+  ok  72 [chromium] › tests\e2e\countdown-prelaunch-gate.spec.ts:115:7 › Countdown Prelaunch Gate › test-6: fastForward past target triggers /login redirect (1.6s)
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+  ok  73 [chromium] › tests\e2e\countdown-prelaunch-gate.spec.ts:140:7 › Countdown Prelaunch Gate › test-7: past server redirects /countdown to /login, heading never rendered (1.0s)
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+[WebServer] [countdown-gate] EVENT_START_AT missing or invalid
+  ok  75 [chromium] › tests\e2e\edit-kudo.spec.ts:76:7 › Sửa Kudo: lối vào bút chì › bút chì chỉ có trên Kudo tôi gửi; bấm mở hộp thoại Chỉnh sửa bài viết của bạn (2.3s)
+  ok  74 [chromium] › tests\e2e\countdown-prelaunch-gate.spec.ts:147:7 › Countdown Prelaunch Gate › test-8: invalid server root not redirected; /countdown ends at /login (3.2s)
+  ok  76 [chromium] › tests\e2e\edit-kudo.spec.ts:86:7 › Sửa Kudo: lối vào bút chì › the pencil is a 44px button: Tab-reachable, Enter opens the dialog (2.3s)
+  ok  77 [chromium] › tests\e2e\edit-kudo.spec.ts:98:7 › Sửa Kudo: lối vào bút chì › Đã gửi on the profile: the pencil on each Kudo I sent, none on Đã nhận (2.3s)
+  ok  78 [chromium] › tests\e2e\edit-kudo.spec.ts:113:7 › Sửa Kudo: điền sẵn › title, content with bold / italic / mention / link, hashtags, images in order; recipient and anonymous state locked (2.1s)
+  ok  79 [chromium] › tests\e2e\edit-kudo.spec.ts:144:7 › Sửa Kudo: điền sẵn › anonymous Kudo: checkbox checked and locked, alias pre-filled; Lưu without a change sends the same alias (2.8s)
+  ok  80 [chromium] › tests\e2e\edit-kudo.spec.ts:156:7 › Sửa Kudo: lưu › title, content, one hashtag swapped, one image removed and one added: update_kudo gets them, the card changes in place (4.2s)
+  ok  81 [chromium] › tests\e2e\edit-kudo.spec.ts:206:7 › Sửa Kudo: lưu › open then Lưu with no change: the Markdown content, title, hashtags and images reach update_kudo byte for byte (3.0s)
+  ok  82 [chromium] › tests\e2e\edit-kudo.spec.ts:239:9 › Sửa Kudo: lưu › Lưu disabled while title is empty; leaving it shows the required line; nothing is sent (2.7s)
+  ok  83 [chromium] › tests\e2e\edit-kudo.spec.ts:239:9 › Sửa Kudo: lưu › Lưu disabled while content is empty; leaving it shows the required line; nothing is sent (2.6s)
+  ok  84 [chromium] › tests\e2e\edit-kudo.spec.ts:239:9 › Sửa Kudo: lưu › Lưu disabled while hashtags is empty; leaving it shows the required line; nothing is sent (2.8s)
+  ok  85 [chromium] › tests\e2e\edit-kudo.spec.ts:253:9 › Sửa Kudo: lưu › Hủy discards the edit: reopening shows the saved values and no update_kudo was sent (2.9s)
+  ok  86 [chromium] › tests\e2e\edit-kudo.spec.ts:253:9 › Sửa Kudo: lưu › Esc discards the edit: reopening shows the saved values and no update_kudo was sent (3.2s)
+[WebServer] [kudos] update_kudo failed { code: '22023', details: null, hint: null, message: 'not_found' }
+  ok  87 [chromium] › tests\e2e\edit-kudo.spec.ts:270:9 › Sửa Kudo: lưu › not_found (the Kudo is not the caller's): the generic line shows in the dialog, it stays open, the new upload is deleted and the removed image is kept (3.4s)
+[WebServer] [kudos] update_kudo failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected update failure boom-secret-detail'
+[WebServer] }
+  ok  88 [chromium] › tests\e2e\edit-kudo.spec.ts:270:9 › Sửa Kudo: lưu › a generic server failure: the generic line shows in the dialog, it stays open, the new upload is deleted and the removed image is kept (2.6s)
+  ok  89 [chromium] › tests\e2e\edit-kudo.spec.ts:288:7 › Sửa Kudo: bộ đếm, ngôn ngữ, bố cục › Viết Kudo counter: 0/5.000 when empty, then the typed Markdown length (2.3s)
+  ok  91 [chromium] › tests\e2e\edit-kudo.spec.ts:307:7 › Sửa Kudo: bộ đếm, ngôn ngữ, bố cục › EN: 'Edit your Kudo', Lưu reads 'Save', the counter uses the comma (N/5,000) (2.0s)
+  ok  90 [chromium] › tests\e2e\edit-kudo.spec.ts:297:7 › Sửa Kudo: bộ đếm, ngôn ngữ, bố cục › Sửa counter: the saved Markdown length, and it follows the typing (2.7s)
+  ok  93 [chromium] › tests\e2e\error-pages.spec.ts:99:7 › 404 page › guest GET unknown path: redirected to /login (default-deny), no 404 page (1.4s)
+  ok  92 [chromium] › tests\e2e\edit-kudo.spec.ts:314:7 › Sửa Kudo: bộ đếm, ngôn ngữ, bố cục › 375px: the edit dialog has no horizontal scroll (2.4s)
+  ok  94 [chromium] › tests\e2e\error-pages.spec.ts:105:7 › 404 page › signed-in GET unknown path: HTTP 404 with VI copy, robot illustration, home link (760ms)
+  ok  96 [chromium] › tests\e2e\error-pages.spec.ts:116:7 › 404 page › 'Về trang chủ' click lands on '/' (1.0s)
+  ok  95 [chromium] › tests\e2e\error-pages.spec.ts:111:7 › 404 page › VI heading is rendered uppercase by CSS, text stays 'Không tìm thấy trang' (1.3s)
+  ok  97 [chromium] › tests\e2e\error-pages.spec.ts:124:7 › 404 page › EN: 'NOT FOUND' heading, EN description with curly apostrophes, 'Back to home', EN title (758ms)
+  ok  98 [chromium] › tests\e2e\error-pages.spec.ts:133:7 › 404 page › background 'error-bg' is present and the page does not scroll sideways at 375px (944ms)
+  ok  99 [chromium] › tests\e2e\error-pages.spec.ts:145:7 › 403 page › guest GET /403: HTTP 403 and stays on /403 (no redirect to /login) (602ms)
+  ok 100 [chromium] › tests\e2e\error-pages.spec.ts:151:7 › 403 page › signed-in GET /403: HTTP 403 with VI copy, monitor illustration, home link (981ms)
+  ok 101 [chromium] › tests\e2e\error-pages.spec.ts:157:7 › 403 page › 'Về trang chủ' click lands on '/' (977ms)
+  ok 102 [chromium] › tests\e2e\error-pages.spec.ts:166:7 › 403 page › EN: 'Access Denied' heading, 'You don’t have permission…' description, 'Back to home', EN title (1.0s)
+  ok 103 [chromium] › tests\e2e\error-pages.spec.ts:175:7 › 403 page › background 'error-bg' is present and the page does not scroll sideways at 375px (940ms)
+  ok 104 [chromium] › tests\e2e\homepage-account-menu.spec.ts:31:7 › Homepage: header menus (authenticated) › bell opens the empty notification panel (ID-27) (1.7s)
+  ok 105 [chromium] › tests\e2e\homepage-account-menu.spec.ts:42:7 › Homepage: header menus (authenticated) › account menu: click toggle, outside click, Esc (ID-30,31,32,35) (2.6s)
+  ok 106 [chromium] › tests\e2e\homepage-account-menu.spec.ts:68:7 › Homepage: header menus (authenticated) › account menu opens with Enter and Space from keyboard focus (ID-33,34) (1.5s)
+  ok 107 [chromium] › tests\e2e\homepage-account-menu.spec.ts:81:7 › Homepage: header menus (authenticated) › account menu items are Profile + Sign out only (ID-6,36,38) (1.5s)
+  ok 108 [chromium] › tests\e2e\homepage-account-menu.spec.ts:93:7 › Homepage: header menus (authenticated) › language selector offers VN and EN only (ID-24,58) (1.3s)
+  ok 109 [chromium] › tests\e2e\homepage-account-menu.spec.ts:104:7 › Homepage: sign out (authenticated) › Sign out -> /login, Supabase logout called, session cleared (1.9s)
+  ok 110 [chromium] › tests\e2e\homepage-account-menu.spec.ts:124:7 › Homepage: hover states (authenticated) › nav link, CTA and award card change style on hover (ID-23,46,51) (2.1s)
+  ok 111 [chromium] › tests\e2e\homepage-guest.spec.ts:39:7 › Homepage: guest (ID-0) › anonymous / stays on / with banner, hero, awards, footer and the guest header (1.6s)
+  ok 112 [chromium] › tests\e2e\homepage-guest.spec.ts:45:7 › Homepage: guest (ID-0) › guest 'Đăng nhập' link -> /login (1.6s)
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [auth] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at aU.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\ssr\_0fwnit0ttd6ez._.js:14:47168)
+[WebServer]     at async c (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\ssr\_1h60ksxkfati6._.js:1:3137)
+[WebServer]     at async l (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\ssr\_1h60ksxkfati6._.js:1:777) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [auth] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at aU.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\ssr\_0fwnit0ttd6ez._.js:14:47168)
+[WebServer]     at async c (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\ssr\_1h60ksxkfati6._.js:1:3137)
+[WebServer]     at async x (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\ssr\_1amaq3sq53z_k._.js:1:4868) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+  ok 113 [chromium] › tests\e2e\homepage-guest.spec.ts:56:7 › Homepage: protection › unknown path -> /login; /login and /auth/callback stay reachable (2.0s)
+[WebServer] [supabase] getClaims failed Error [AuthInvalidJwtError]: Invalid JWT signature
+[WebServer]     at a$.getClaims (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:31:46980)
+[WebServer]     at async pE (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:6492)
+[WebServer]     at async pR (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:7473)
+[WebServer]     at async handler (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:107:8920)
+[WebServer]     at async (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:41251)
+[WebServer]     at async ri (C:\Users\hoang.van.huu\Downloads\AI\AIDD\aidd-mockproject\.next\server\chunks\[root-of-the-server]__1j_8jwnbzo9fu._.js:8:37428) {
+[WebServer]   __isAuthError: true,
+[WebServer]   status: 400,
+[WebServer]   code: 'invalid_jwt'
+[WebServer] }
+  ok 114 [chromium] › tests\e2e\homepage-guest.spec.ts:65:7 › Homepage: protection › forged-key session cookie is not trusted: / renders as guest, protected path -> /login (1.8s)
+  ok 115 [chromium] › tests\e2e\homepage-guest.spec.ts:74:7 › Homepage: protection › authenticated /login -> / (1.1s)
+  ok 116 [chromium] › tests\e2e\homepage.spec.ts:54:9 › Homepage: render (authenticated, launched event) › regions in order, ceremony countdown, footer at 1440px (ID-1,7,8,12,13,14,17,43) (2.0s)
+  ok 117 [chromium] › tests\e2e\homepage.spec.ts:54:9 › Homepage: render (authenticated, launched event) › regions in order, ceremony countdown, footer at 375px (ID-1,7,8,12,13,14,17,43) (1.5s)
+  ok 118 [chromium] › tests\e2e\homepage.spec.ts:102:7 › Homepage: render (authenticated, launched event) › header: active nav, language VN, bell without badge (ID-9,10,11,29) (931ms)
+  ok 120 [chromium] › tests\e2e\homepage.spec.ts:135:7 › Homepage: navigation (authenticated) › header, CTA, kudos and footer links reach their routes (ID-21,22,44,45,53,55) (6.3s)
+  ok 119 [chromium] › tests\e2e\homepage.spec.ts:118:7 › Homepage: navigation (authenticated) › logo, footer logo, About SAA from a scrolled position -> / at scrollY 0 (ID-2..4,18..20) (6.8s)
+  ok 122 [chromium] › tests\e2e\kudo-detail-hardening.spec.ts:25:7 › View Kudo: untrusted content (T1) › javascript / data / vbscript links and raw HTML stay inert text (1.2s)
+  ok 123 [chromium] › tests\e2e\kudo-detail-hardening.spec.ts:46:7 › View Kudo: uuid ids (T2) › an upper-case id of an existing Kudo opens it (Postgres uuids ignore case) (1.3s)
+  ok 124 [chromium] › tests\e2e\kudo-detail-hardening.spec.ts:54:7 › View Kudo: uuid ids (T2) › a malformed id is the 404 page, whatever the database would say (1.2s)
+  ok 125 [chromium] › tests\e2e\kudo-detail-hardening.spec.ts:62:7 › View Kudo: Đóng keeps where the viewer came from (T3) › from a filtered board: Đóng returns to the same filtered board (3.4s)
+  ok 126 [chromium] › tests\e2e\kudo-detail-hardening.spec.ts:73:7 › View Kudo: Đóng keeps where the viewer came from (T3) › previous page on another origin: Đóng goes to /sun-kudos (3.0s)
+  ok 127 [chromium] › tests\e2e\kudo-detail-hardening.spec.ts:83:7 › View Kudo: anonymous sender (T5) › an anonymous Kudo shows the alias and the real sender is nowhere in the page (1.3s)
+  ok 128 [chromium] › tests\e2e\kudo-detail-hardening.spec.ts:93:7 › View Kudo: anonymous sender (T5) › even when the RPC leaks a populated sender, the page still hides it (1.4s)
+  ok 129 [chromium] › tests\e2e\kudo-detail-hardening.spec.ts:100:7 › View Kudo: anonymous sender (T5) › own anonymous Kudo: alias shown and the heart is disabled (1.3s)
+  ok 130 [chromium] › tests\e2e\kudo-detail-login-next.spec.ts:27:7 › View Kudo: signed in on /login?next= › a Kudo path lands on that Kudo (id case is normalised) (895ms)
+  ok 121 [chromium] › tests\e2e\homepage.spec.ts:155:7 › Homepage: navigation (authenticated) › award cards: one anchor each, grid 3/2/2 columns, image/title/Chi tiết navigate (ID-15,16,47..50,52) (17.5s)
+  ok 131 [chromium] › tests\e2e\kudo-detail-login-next.spec.ts:37:7 › View Kudo: signed in on /login?next= › every other shape ends on / of the same origin (2.4s)
+  ok 132 [chromium] › tests\e2e\kudo-detail-login-next.spec.ts:66:7 › View Kudo: guest sign-in carries the target in a cookie › authorize gets a constant redirect_to; the cookie holds the path, httpOnly, Lax (1.0s)
+  ok 133 [chromium] › tests\e2e\kudo-detail-login-next.spec.ts:78:7 › View Kudo: guest sign-in carries the target in a cookie › callback with the cookie: signed in on the Kudo and the cookie no longer holds it (2.4s)
+  ok 134 [chromium] › tests\e2e\kudo-detail-login-next.spec.ts:86:7 › View Kudo: guest sign-in carries the target in a cookie › callback with a tampered cookie: ends on / of the same origin (2.2s)
+  ok 135 [chromium] › tests\e2e\kudo-detail-login-next.spec.ts:98:7 › View Kudo: guest sign-in carries the target in a cookie › signing in without a next deletes a stale post-login cookie (1.4s)
+  ok 136 [chromium] › tests\e2e\kudo-detail-visual-contract.spec.ts:23:9 › View Kudo: focus ring contrast (B4) › detail card: content link ring is at least 3:1 on its surface (1.5s)
+  ok 137 [chromium] › tests\e2e\kudo-detail-visual-contract.spec.ts:23:9 › View Kudo: focus ring contrast (B4) › detail card: Đóng ring is at least 3:1 on its surface (1.7s)
+  ok 138 [chromium] › tests\e2e\kudo-detail-visual-contract.spec.ts:23:9 › View Kudo: focus ring contrast (B4) › detail card: Copy Link ring is at least 3:1 on its surface (1.9s)
+  ok 139 [chromium] › tests\e2e\kudo-detail-visual-contract.spec.ts:23:9 › View Kudo: focus ring contrast (B4) › detail card: heart ring is at least 3:1 on its surface (1.3s)
+  ok 140 [chromium] › tests\e2e\kudo-detail-visual-contract.spec.ts:23:9 › View Kudo: focus ring contrast (B4) › detail card: hashtag ring is at least 3:1 on its surface (1.2s)
+  ok 142 [chromium] › tests\e2e\kudo-detail-visual-contract.spec.ts:37:7 › View Kudo: bold weights (Montserrat 800 / 900) › the page declares Montserrat faces for 800 and 900 (1.3s)
+  ok 141 [chromium] › tests\e2e\kudo-detail-visual-contract.spec.ts:29:7 › View Kudo: focus ring contrast (B4) › All Kudos card: the content link ring is at least 3:1 on its surface (2.2s)
+  ok 143 [chromium] › tests\e2e\kudo-detail-visual-contract.spec.ts:54:7 › View Kudo: bold weights (Montserrat 800 / 900) › <strong> in the 700 content block computes to 800 or heavier (1.1s)
+  ok 144 [chromium] › tests\e2e\kudo-detail.spec.ts:38:7 › View Kudo: page and access › signed in: 200, title, header 'Sun* Kudos' is current, no footer, frame visible (1.4s)
+  ok 145 [chromium] › tests\e2e\kudo-detail.spec.ts:47:7 › View Kudo: page and access › unknown id answers HTTP 404 with the not-found page (1.1s)
+  ok 146 [chromium] › tests\e2e\kudo-detail.spec.ts:53:7 › View Kudo: page and access › malformed id answers HTTP 404 with the not-found page (1.1s)
+  ok 147 [chromium] › tests\e2e\kudo-detail.spec.ts:61:7 › View Kudo: frame content › sender, recipient, time, title and the full content (no line clamp) (1.7s)
+  ok 148 [chromium] › tests\e2e\kudo-detail.spec.ts:73:7 › View Kudo: frame content › formatted content: bold, italic, strike, list, quote, safe link, mention, escaped asterisks, no javascript link (1.7s)
+  ok 149 [chromium] › tests\e2e\kudo-detail.spec.ts:96:7 › View Kudo: frame content › image thumbnails, hashtag filter links, heart with count, Copy Link and Đóng (915ms)
+  ok 150 [chromium] › tests\e2e\kudo-detail.spec.ts:109:7 › View Kudo: close and entry points › Highlight 'Xem chi tiết' opens the detail; Đóng returns to /sun-kudos (2.2s)
+  ok 151 [chromium] › tests\e2e\kudo-detail.spec.ts:117:7 › View Kudo: close and entry points › opened directly (no history): Đóng goes to /sun-kudos (2.1s)
+  ok 152 [chromium] › tests\e2e\kudo-detail.spec.ts:125:7 › View Kudo: close and entry points › arrived from the login page: Đóng goes to /sun-kudos, not back to /login (2.1s)
+  ok 153 [chromium] › tests\e2e\kudo-detail.spec.ts:134:7 › View Kudo: close and entry points › All Kudos card: the content block opens the detail (1.8s)
+  ok 154 [chromium] › tests\e2e\kudo-detail.spec.ts:144:7 › View Kudo: guest › guest goes to /login?next=/sun-kudos/{id}; the next value is not printed (1.2s)
+  ok 155 [chromium] › tests\e2e\kudo-detail.spec.ts:155:7 › View Kudo: guest › guest /login?next=<external URL> renders the login page; no redirect off-site (1.2s)
+  ok 156 [chromium] › tests\e2e\kudo-detail.spec.ts:167:7 › View Kudo: locale, layout and hearts › EN: title, Close button and html lang (1.4s)
+  ok 157 [chromium] › tests\e2e\kudo-detail.spec.ts:174:7 › View Kudo: locale, layout and hearts › 375x812: no horizontal scroll and the frame is visible (1.5s)
+  ok 158 [chromium] › tests\e2e\kudo-detail.spec.ts:181:7 › View Kudo: locale, layout and hearts › heart: like, reload keeps it, unlike; one RPC per click (1.8s)
+  ok 159 [chromium] › tests\e2e\kudo-detail.spec.ts:204:7 › View Kudo: locale, layout and hearts › own Kudo: the heart is disabled and a click sends nothing (1.9s)
+  ok 160 [chromium] › tests\e2e\kudo-hearts.spec.ts:23:7 › Sun* Kudos: heart toggle › 7a7ec63e like then unlike: colour and count move, exactly one RPC per click with the exact payload (2.0s)
+  ok 161 [chromium] › tests\e2e\kudo-hearts.spec.ts:53:7 › Sun* Kudos: heart toggle › 91e102ba the like survives a reload (the fake stored it, not the page) (3.1s)
+  ok 162 [chromium] › tests\e2e\kudo-hearts.spec.ts:68:7 › Sun* Kudos: heart toggle › sync: a Kudo shown in Highlight and in the feed changes in both places at once (2.3s)
+  ok 163 [chromium] › tests\e2e\kudo-hearts.spec.ts:91:7 › Sun* Kudos: heart guards › 63645b03 own Kudo: the heart is disabled and a click sends no RPC (2.5s)
+  ok 164 [chromium] › tests\e2e\kudo-hearts.spec.ts:101:7 › Sun* Kudos: heart guards › rapid double click on an unliked Kudo sends one RPC; the button stays locked until the answer (3.6s)
+[WebServer] [kudos] set_kudo_heart failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected heart failure boom-secret-detail'
+[WebServer] }
+  ok 165 [chromium] › tests\e2e\kudo-hearts.spec.ts:114:9 › Sun* Kudos: heart guards › server refusal (500) rolls the heart back, shows the toast and re-enables the button (2.4s)
+[WebServer] [kudos] set_kudo_heart failed { code: '22023', details: null, hint: null, message: 'not_found' }
+  ok 167 [chromium] › tests\e2e\kudo-hearts.spec.ts:139:7 › Sun* Kudos: heart guards › a Kudo loaded by infinite scroll can be liked (1.7s)
+  ok 166 [chromium] › tests\e2e\kudo-hearts.spec.ts:114:9 › Sun* Kudos: heart guards › server refusal (not_found) rolls the heart back, shows the toast and re-enables the button (2.4s)
+  ok 168 [chromium] › tests\e2e\kudo-hearts.spec.ts:153:7 › Sun* Kudos: heart guards › keyboard: the heart takes focus, Space likes and Enter unlikes (2.3s)
+  ok 169 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:22:9 › Widget quick actions on / › ID-54 widget opens the menu (Thể lệ, Viết KUDOS); red ✕ and Esc close it (2.7s)
+  ok 170 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:40:9 › Widget quick actions on / › FAB B (ID-0, ID-2) "Viết KUDOS" opens the Viết Kudo modal and stays on the page (1.9s)
+  ok 171 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:49:9 › Widget quick actions on / › FAB A / TC_THELE_FUN_003, FUN_004 Thể lệ opens; "Đóng" closes it; "Viết KUDOS" closes it and opens the modal (2.3s)
+  ok 172 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:22:9 › Widget quick actions on /awards-information › ID-54 widget opens the menu (Thể lệ, Viết KUDOS); red ✕ and Esc close it (1.2s)
+  ok 173 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:40:9 › Widget quick actions on /awards-information › FAB B (ID-0, ID-2) "Viết KUDOS" opens the Viết Kudo modal and stays on the page (1.7s)
+  ok 174 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:49:9 › Widget quick actions on /awards-information › FAB A / TC_THELE_FUN_003, FUN_004 Thể lệ opens; "Đóng" closes it; "Viết KUDOS" closes it and opens the modal (2.0s)
+  ok 175 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:22:9 › Widget quick actions on /sun-kudos › ID-54 widget opens the menu (Thể lệ, Viết KUDOS); red ✕ and Esc close it (1.6s)
+  ok 176 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:40:9 › Widget quick actions on /sun-kudos › FAB B (ID-0, ID-2) "Viết KUDOS" opens the Viết Kudo modal and stays on the page (2.6s)
+  ok 177 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:49:9 › Widget quick actions on /sun-kudos › FAB A / TC_THELE_FUN_003, FUN_004 Thể lệ opens; "Đóng" closes it; "Viết KUDOS" closes it and opens the modal (3.2s)
+  ok 178 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:66:7 › Thể lệ panel › TC_THELE_GUI_001 panel shows title, description, reward list, 6 badges and the Đóng + Viết KUDOS footer (2.0s)
+  ok 179 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:76:7 › Thể lệ panel › TC_THELE_FUN_001 content taller than the panel scrolls to its end and back (2.1s)
+  ok 180 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:90:7 › Thể lệ panel › TC_THELE_FUN_002 content shorter than the panel does not scroll (2.0s)
+  ok 182 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:110:7 › Guest on the public Homepage (ID-1) › widget shows the menu; 'Viết KUDOS' is a link to /login and goes there (1.5s)
+  ok 181 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:99:7 › Pill A.1 on /sun-kudos › clicking 'Hôm nay, bạn muốn gửi lời cảm ơn…' opens the Viết Kudo modal directly (2.1s)
+  ok 183 [chromium] › tests\e2e\kudos-quick-actions.spec.ts:119:7 › Guest on the public Homepage (ID-1) › guest can open Thể lệ and close it (1.8s)
+  ok 184 [chromium] › tests\e2e\language-switch-authed.spec.ts:15:7 › Language switch: signed-in user › NEXT_LOCALE=en cookie renders /awards-information in English (1.4s)
+  ok 186 [chromium] › tests\e2e\language-switch-authed.spec.ts:52:7 › Language switch: signed-in user › unknown path in EN: 404 with English copy and title, never a Vietnamese title (1.1s)
+  ok 187 [chromium] › tests\e2e\language-switch.spec.ts:28:7 › Language switch: guest homepage › ID-10: default is VN with the Vietnamese UI on / (1.1s)
+  ok 185 [chromium] › tests\e2e\language-switch-authed.spec.ts:25:7 › Language switch: signed-in user › EN chosen in the signed-in header survives a client-side nav to Awards (2.3s)
+  ok 188 [chromium] › tests\e2e\language-switch.spec.ts:36:7 › Language switch: guest homepage › ID-24/ID-58: dropdown lists exactly VN and EN, each with a flag (1.1s)
+  ok 189 [chromium] › tests\e2e\language-switch.spec.ts:47:7 › Language switch: guest homepage › ID-25: choosing EN keeps the URL, switches UI strings and html lang (2.2s)
+  ok 190 [chromium] › tests\e2e\language-switch.spec.ts:61:7 › Language switch: guest homepage › EN survives reload on / (2.1s)
+  ok 191 [chromium] › tests\e2e\language-switch.spec.ts:72:7 › Language switch: guest homepage › ID-26: choosing VN again restores the Vietnamese UI (3.0s)
+  ok 192 [chromium] › tests\e2e\language-switch.spec.ts:86:7 › Language switch: other tabs › a switch in one tab reloads the other tab into the new locale with a single tree (3.7s)
+  ok 193 [chromium] › tests\e2e\language-switch.spec.ts:106:7 › Language switch: failure › a failed setLocale call keeps the page, closes the menu and logs a generic error (1.7s)
+  ok 194 [chromium] › tests\e2e\language-switch.spec.ts:131:7 › Language switch: login (guest) › choosing EN on /login switches the page language (1.2s)
+  ok 195 [chromium] › tests\e2e\language-switch.spec.ts:141:7 › Language switch: cookie › choosing EN writes an httpOnly, SameSite=Lax NEXT_LOCALE=en cookie (1.5s)
+  ok 197 [chromium] › tests\e2e\language-switch.spec.ts:185:7 › Language switch: keyboard › Tab closes the menu without choosing (1.3s)
+  ok 196 [chromium] › tests\e2e\language-switch.spec.ts:156:7 › Language switch: keyboard › ArrowDown opens on the selected option, Escape closes to the trigger, Enter picks EN (1.9s)
+  ok 199 [chromium] › tests\e2e\login.spec.ts:67:7 › Login: Google via Supabase Auth › test-2: language default VN + flag + chevron; click opens listbox (1.3s)
+  ok 198 [chromium] › tests\e2e\login.spec.ts:28:7 › Login: Google via Supabase Auth › test-1: anon /login renders all regions; logo/language positions; non-interactive (1.6s)
+  ok 201 [chromium] › tests\e2e\login.spec.ts:110:7 › Login: Google via Supabase Auth › test-4: click login routes to auth/v1/authorize with correct params (1.6s)
+  ok 200 [chromium] › tests\e2e\login.spec.ts:87:7 › Login: Google via Supabase Auth › test-3: footer stays in viewport after scroll; hero visible; button shadow changes (1.7s)
+  ok 202 [chromium] › tests\e2e\login.spec.ts:146:7 › Login: Google via Supabase Auth › test-5: /login?error shows alert; plain /login shows none (997ms)
+  ok 203 [chromium] › tests\e2e\login.spec.ts:159:7 › Login: Google via Supabase Auth › test-6: /auth/callback redirects to /login?error with same-origin check (1.1s)
+  ok 204 [chromium] › tests\e2e\login.spec.ts:180:7 › Login: Google via Supabase Auth › test-7: garbage sb-*-auth-token cookie does not crash /login (1.1s)
+  ok 205 [chromium] › tests\e2e\profile.spec.ts:80:7 › Profile: routes and guards › signed in: /profile is the self view; header and footer 'Sun* Kudos' are current; no Write-KUDOS widget (1.2s)
+  ok 206 [chromium] › tests\e2e\profile.spec.ts:89:7 › Profile: routes and guards › another Sunner: /profile/<id> is that profile, with its title; header and footer are current (1.1s)
+  ok 207 [chromium] › tests\e2e\profile.spec.ts:97:7 › Profile: routes and guards › /profile/<own sub> redirects to /profile and shows the self view (1.3s)
+  ok 208 [chromium] › tests\e2e\profile.spec.ts:105:7 › Profile: routes and guards › an unknown guid answers 404 with the not-found heading (969ms)
+  ok 209 [chromium] › tests\e2e\profile.spec.ts:111:7 › Profile: routes and guards › malformed ids answer 404 (1.7s)
+  ok 210 [chromium] › tests\e2e\profile.spec.ts:119:7 › Profile: routes and guards › guest on /profile or /profile/<id> lands on /login with no next, and no profile renders (1.9s)
+  ok 211 [chromium] › tests\e2e\profile.spec.ts:133:7 › Profile: my own page › hero: avatar, name, department and the New Hero badge; no stars below 10 Kudos (1.7s)
+  ok 212 [chromium] › tests\e2e\profile.spec.ts:142:7 › Profile: my own page › icons: six grey slots under the first-person heading (1.4s)
+  ok 213 [chromium] › tests\e2e\profile.spec.ts:149:7 › Profile: my own page › statistics: my five counters; Mở Secret Box stays aria-disabled and opens nothing (1.6s)
+  ok 214 [chromium] › tests\e2e\profile.spec.ts:162:7 › Profile: my own page › KUDOS: eyebrow, heading, and the dropdown reads Đã nhận (3) with Đã gửi (2) as its other option (1.6s)
+  ok 215 [chromium] › tests\e2e\profile.spec.ts:174:7 › Profile: my own page › Đã gửi lists only my sent Kudos; Đã nhận restores the received list (1.9s)
+  ok 216 [chromium] › tests\e2e\profile.spec.ts:185:7 › Profile: my own page › re-picking the active option closes the list and changes nothing (1.9s)
+  ok 217 [chromium] › tests\e2e\profile.spec.ts:200:7 › Profile: my own page › no write bar on my own profile: the statistics card takes its place (821ms)
+  ok 218 [chromium] › tests\e2e\profile.spec.ts:206:7 › Profile: my own page › a card links as on the board: name links to the profile, hashtag to the board filter, content to the Kudo (1.6s)
+  ok 219 [chromium] › tests\e2e\profile.spec.ts:218:7 › Profile: my own page › Copy Link writes the Kudo's link to the clipboard and shows the board toast (1.7s)
+  ok 220 [chromium] › tests\e2e\profile.spec.ts:226:7 › Profile: my own page › heart: like, reload keeps it, unlike; one set_kudo_heart call per click (2.5s)
+  ok 221 [chromium] › tests\e2e\profile.spec.ts:249:7 › Profile: my own page › a Kudo I sent: its heart is disabled and a click sends nothing (2.9s)
+  ok 222 [chromium] › tests\e2e\profile.spec.ts:261:7 › Profile: my own page › the title pencil shows only on Kudos I sent: none on Đã nhận, one per card on Đã gửi and on my board card (1.9s)
+  ok 223 [chromium] › tests\e2e\profile.spec.ts:275:7 › Profile: my own page › 375x812: no horizontal scroll (1.2s)
+  ok 224 [chromium] › tests\e2e\profile.spec.ts:281:7 › Profile: my own page › EN: title, icons heading, and the Received / Sent labels (1.3s)
+  ok 225 [chromium] › tests\e2e\profile.spec.ts:290:7 › Profile: my own page › no Kudos yet: zero counts, the received empty line, then the sent empty line (1.4s)
+  ok 226 [chromium] › tests\e2e\profile.spec.ts:301:7 › Profile: my own page › EN: the empty Sent line (1.3s)
+  ok 227 [chromium] › tests\e2e\profile.spec.ts:309:7 › Profile: another Sunner › hero and icons: name, department, New Hero badge, six slots; no statistics card (1.3s)
+  ok 228 [chromium] › tests\e2e\profile.spec.ts:321:7 › Profile: another Sunner › stars follow Kudos received: 13 received gives Super Hero and one star (1.3s)
+  ok 229 [chromium] › tests\e2e\profile.spec.ts:329:7 › Profile: another Sunner › write bar opens Viết Kudo with this Sunner in the recipient box, and no suggestion list (2.0s)
+  ok 230 [chromium] › tests\e2e\profile.spec.ts:339:7 › Profile: another Sunner › KUDOS: a static received count, no direction dropdown, and 'Đã gửi' is nowhere on the page (1.6s)
+  ok 231 [chromium] › tests\e2e\profile.spec.ts:348:7 › Profile: another Sunner › a received anonymous Kudo shows the alias, never the sender's name (1.6s)
+  ok 232 [chromium] › tests\e2e\profile.spec.ts:356:7 › Profile: another Sunner › infinite scroll: 10 cards, then all 13 in order with no duplicates, then the end line (1.9s)
+  ok 233 [chromium] › tests\e2e\profile.spec.ts:369:7 › Profile: another Sunner › a Sunner with no avatar, department or Kudos renders without broken pieces (1.3s)
+  ok 234 [chromium] › tests\e2e\profile.spec.ts:380:7 › Profile: another Sunner › 375x812: no horizontal scroll (1.4s)
+  ok 235 [chromium] › tests\e2e\profile.spec.ts:386:7 › Profile: another Sunner › EN: title, possessive icons heading, write bar and static count; no 'Sent' anywhere in KUDOS (1.5s)
+  ok 236 [chromium] › tests\e2e\standards.spec.ts:56:7 › Tiêu chuẩn chung: guest access › anonymous GET /tieu-chuan-chung: 200, stays on the page, header shows the login link (995ms)
+  ok 237 [chromium] › tests\e2e\standards.spec.ts:64:7 › Tiêu chuẩn chung: guest access › signed-in user also opens /tieu-chuan-chung (1.1s)
+  ok 238 [chromium] › tests\e2e\standards.spec.ts:72:7 › Tiêu chuẩn chung: content (VI) › document title and visually hidden h1, keyvisual logo, both section headings (1.1s)
+  ok 239 [chromium] › tests\e2e\standards.spec.ts:81:7 › Tiêu chuẩn chung: content (VI) › community standards: gold intro, white notice and an <ol> of exactly 10 items in order (1.1s)
+  ok 240 [chromium] › tests\e2e\standards.spec.ts:90:7 › Tiêu chuẩn chung: content (VI) › security standards: statement, <ul> of exactly 2 items and the contact line (1.4s)
+  ok 241 [chromium] › tests\e2e\standards.spec.ts:101:7 › Tiêu chuẩn chung: footer and entry points › footer 'Tiêu chuẩn chung' is aria-current on this page; other footer links carry none (1.3s)
+  ok 242 [chromium] › tests\e2e\standards.spec.ts:109:7 › Tiêu chuẩn chung: footer and entry points › homepage footer has no aria-current; clicking it lands on /tieu-chuan-chung and marks it current (1.6s)
+  ok 244 [chromium] › tests\e2e\standards.spec.ts:132:7 › Tiêu chuẩn chung: English › EN switch shows the English headings and the same item counts (1.3s)
+  ok 243 [chromium] › tests\e2e\standards.spec.ts:119:7 › Tiêu chuẩn chung: footer and entry points › Viết Kudo toolbar 'Tiêu chuẩn cộng đồng' opens the page in a new tab; the modal stays open (3.4s)
+  ok 245 [chromium] › tests\e2e\standards.spec.ts:145:7 › Tiêu chuẩn chung: mobile › 375px wide: no horizontal scroll (993ms)
+  ok 247 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:32:7 › Sun* Kudos: All Kudos feed › ID-7 (0adfd7ce) Copy Link writes {origin}/sun-kudos/{id} to the clipboard and shows the toast (1.5s)
+  ok 246 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:18:7 › Sun* Kudos: All Kudos feed › ID-6 (9dfda316) feed starts at 10 cards, infinite scroll adds pages with no duplicates until data ends (2.7s)
+  ok 248 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:42:7 › Sun* Kudos: All Kudos feed › ID-9 (d662780b, 926d92a5) a user with no data sees both empty states and zero counts (1.9s)
+  ok 249 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:58:7 › Sun* Kudos: card links, hearts and sharing › ID-8 (8c0d1781, 31693bb7, 2cd77a0c, 630f42a3) View Details, Spotlight node and profile links carry the right href (2.2s)
+  ok 250 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:75:7 › Sun* Kudos: card links, hearts and sharing › ID-8 an anonymous kudo shows its alias, never the sender's name or profile link (1.7s)
+  ok 251 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:89:7 › Sun* Kudos: card links, hearts and sharing › ID-9 hearts are toggle buttons with aria-pressed, liked and own state from the data (1.5s)
+  ok 252 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:109:7 › Sun* Kudos: card links, hearts and sharing › ID-9 card shows the Vietnam-time label and the danh hiệu title (1.3s)
+  ok 253 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:121:7 › Sun* Kudos: sidebar, Spotlight and language › ID-10 sidebar shows the five personal numbers and the 10 latest gift recipients (1.3s)
+  ok 255 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:144:7 › Sun* Kudos: sidebar, Spotlight and language › ID-11 (ddf67e52) searching a name marks the matching node data-match=true (1.9s)
+  ok 254 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:133:7 › Sun* Kudos: sidebar, Spotlight and language › ID-11 (ddf67e52) Spotlight total, one node per recipient, and the search is capped at 100 characters (4.0s)
+  ok 256 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:153:7 › Sun* Kudos: sidebar, Spotlight and language › ID-11 (cac4b7a3) Pan/Zoom toggles aria-pressed (1.6s)
+  ok 257 [chromium] › tests\e2e\sun-kudos-feed.spec.ts:160:7 › Sun* Kudos: sidebar, Spotlight and language › ID-12 switching to EN changes the Vietnamese headings (EN strings land in phase 07) (2.3s)
+  ok 258 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion (2.1s)
+  ok 259 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 (1.6s)
+  ok 260 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 (2.1s)
+  ok 261 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick (1.8s)
+  ok 262 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion (2.1s)
+  ok 263 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too (2.7s)
+  ok 264 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px (2.0s)
+  ok 265 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:103:7 › Tìm kiếm profile Sunner: keyboard › 1440px: the combobox is at least 44px tall and fills the pill (inside its 1px border) (1.2s)
+  ok 267 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled (1.6s)
+  ok 266 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:111:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) (2.9s)
+  ok 269 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches (1.7s)
+  ok 268 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent (2.6s)
+  ok 270 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner (1.8s)
+  ok 271 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate (2.0s)
+  ok 272 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error (2.3s)
+  ok 273 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent (2.8s)
+  ok 274 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after the box was cleared is dropped: no listbox, no status line; the box still works (3.9s)
+  ok 275 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:9 › Tìm kiếm profile Sunner: type-ahead › a slow answer after focus left the box (Tab) is dropped: no listbox, no status line; the box still works (4.4s)
+[WebServer] [kudos] kudos_search_sunners failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected search failure boom-secret-detail'
+[WebServer] }
+  ok 277 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:149:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again (1.3s)
+  ok 276 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:135:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one (3.1s)
+  ok 279 [chromium] › tests\e2e\sun-kudos.spec.ts:28:7 › Sun* Kudos: access › ID-1 (71b3ef43) guest on /sun-kudos goes to /login (1.1s)
+  ok 278 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:161:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie (1.6s)
+  ok 280 [chromium] › tests\e2e\sun-kudos.spec.ts:33:7 › Sun* Kudos: access › header link 'Sun* Kudos' is the current page for a signed-in user (1.8s)
+  ok 281 [chromium] › tests\e2e\sun-kudos.spec.ts:41:7 › Sun* Kudos: layout › GUI regions run KV, Highlight, Spotlight, All Kudos, footer; sidebar sits right of the feed at 1440 (2.6s)
+  ok 282 [chromium] › tests\e2e\sun-kudos.spec.ts:58:7 › Sun* Kudos: layout › GUI at 375 the sidebar drops below the Kudos feed (1.4s)
+  ok 283 [chromium] › tests\e2e\sun-kudos.spec.ts:72:7 › Sun* Kudos: Highlight carousel › ID-3 (86092c3a, 81446f61) 5 slides; Prev disabled at 1/5; Next x4 reaches 5/5 and disables Next (2.2s)
+  ok 284 [chromium] › tests\e2e\sun-kudos.spec.ts:92:7 › Sun* Kudos: filters › ID-4 (0e56cacb) Hashtag filter narrows Highlight and All Kudos, sets ?hashtag=, resets carousel; deselect restores (2.9s)
+  ok 285 [chromium] › tests\e2e\sun-kudos.spec.ts:112:7 › Sun* Kudos: filters › ID-4 (159fed13) Phòng ban filter keeps only kudos whose recipient is in the department (3.5s)
+  ok 286 [chromium] › tests\e2e\sun-kudos.spec.ts:128:7 › Sun* Kudos: filters › ID-4 both filters with no matching kudo show the empty text in Highlight and All Kudos (2.6s)
+  ok 287 [chromium] › tests\e2e\sun-kudos.spec.ts:138:7 › Sun* Kudos: filters › ID-5 (d01729d4) clicking a hashtag on a card sets the Hashtag filter to that tag (2.1s)
+  ok 288 [chromium] › tests\e2e\write-kudo-layout.spec.ts:35:5 › 1440x900 laptop: the whole form fits in the panel, no vertical scrollbar (2.5s)
+  ok 289 [chromium] › tests\e2e\write-kudo-layout.spec.ts:42:5 › 1440x1100 tall screen: Figma geometry (40px padding, 32px title, 200px editor), no scrollbar (2.3s)
+  ok 290 [chromium] › tests\e2e\write-kudo-layout.spec.ts:55:7 › 1280x720 short screen: only the inner area scrolls, everything stays inside the panel (2.5s)
+  ok 291 [chromium] › tests\e2e\write-kudo-layout.spec.ts:55:7 › 1366x600 short screen: only the inner area scrolls, everything stays inside the panel (2.7s)
+  ok 293 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:47:7 › Round 1: a popup outside the modal never swallows the Esc that closes the modal › filter dropdown left open behind the modal: one Esc closes the modal (1.9s)
+  ok 292 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:21:7 › A5 Esc in the hashtag dropdown closes the dropdown, never the modal › focus on the '+ Hashtag' trigger (Shift+Tab from the first row), Esc: dropdown closes, modal and form values stay (3.7s)
+  ok 294 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:61:7 › Round 1: a popup outside the modal never swallows the Esc that closes the modal › outside any modal the filter dropdown still closes on Esc and hands focus back to its button (1.8s)
+[WebServer] [kudos] hashtag options query failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected hashtag catalog failure'
+[WebServer] }
+  ok 295 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:75:7 › Round 2: Esc with focus on <body> picks its owner by the topmost modal › hashtag reload pending (the focused 'Thử lại' is gone, focus on body): Esc closes the dropdown only, the form survives (3.4s)
+  ok 296 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:102:7 › Round 2: Esc with focus on <body> picks its owner by the topmost modal › filter dropdown left open behind the modal, focus on body: one Esc closes the modal (2.2s)
+[WebServer] [kudos] hashtag options query failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected hashtag catalog failure'
+[WebServer] }
+[WebServer] [kudos] hashtag options query failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected hashtag catalog failure'
+[WebServer] }
+  ok 297 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:120:7 › A6 hashtag catalog failure is explained and retryable › a failed load shows an alert with 'Thử lại'; once the catalog is back, retry loads all tags (2.9s)
+  ok 298 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:151:7 › A7 content longer than 5000 characters of Markdown › shows the content error and keeps Gửi disabled (nothing sent); exactly 5000 is fine (3.6s)
+[WebServer] [kudos] create_kudo failed {
+[WebServer]   code: '22023',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'invalid_recipient'
+[WebServer] }
+  ok 299 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:174:9 › Round 1: a field the server refuses says it is invalid, not empty › DB answers invalid_recipient for a filled form: recipient shows the invalid message, the modal stays, Gửi works again (3.1s)
+[WebServer] [kudos] create_kudo failed { code: '22023', details: null, hint: null, message: 'invalid_title' }
+  ok 300 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:174:9 › Round 1: a field the server refuses says it is invalid, not empty › DB answers invalid_title for a filled form: title shows the invalid message, the modal stays, Gửi works again (3.5s)
+[WebServer] [kudos] create_kudo failed {
+[WebServer]   code: '22023',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'invalid_content'
+[WebServer] }
+  ok 301 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:174:9 › Round 1: a field the server refuses says it is invalid, not empty › DB answers invalid_content for a filled form: content shows the invalid message, the modal stays, Gửi works again (3.5s)
+[WebServer] [kudos] create_kudo failed {
+[WebServer]   code: '22023',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'invalid_hashtags'
+[WebServer] }
+  ok 302 [chromium] › tests\e2e\write-kudo-resilience.spec.ts:174:9 › Round 1: a field the server refuses says it is invalid, not empty › DB answers invalid_hashtags for a filled form: hashtags shows the invalid message, the modal stays, Gửi works again (3.7s)
+  ok 303 [chromium] › tests\e2e\write-kudo.spec.ts:61:7 › Viết Kudo: layout and defaults › ID-3 title on top; fields run Người nhận, editor, Hashtag, Image, anonymous checkbox; Hủy + Gửi bottom right (2.0s)
+  ok 304 [chromium] › tests\e2e\write-kudo.spec.ts:83:7 › Viết Kudo: layout and defaults › ID-4, ID-5, ID-6, ID-48 placeholders, anonymous unchecked with no alias field, Gửi disabled (1.9s)
+[WebServer] [kudos] hashtag options query failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected hashtag catalog failure'
+[WebServer] }
+  ok 305 [chromium] › tests\e2e\write-kudo.spec.ts:92:7 › Viết Kudo: layout and defaults › ID-49 Gửi enables once recipient, title, content and 1 hashtag are set (3.8s)
+  ok 306 [chromium] › tests\e2e\write-kudo.spec.ts:101:9 › Viết Kudo: layout and defaults › ID-48 Gửi stays disabled without recipient; nothing is sent (3.2s)
+  ok 307 [chromium] › tests\e2e\write-kudo.spec.ts:101:9 › Viết Kudo: layout and defaults › ID-48 Gửi stays disabled without title; nothing is sent (2.7s)
+  ok 308 [chromium] › tests\e2e\write-kudo.spec.ts:101:9 › Viết Kudo: layout and defaults › ID-48 Gửi stays disabled without content; nothing is sent (2.3s)
+  ok 309 [chromium] › tests\e2e\write-kudo.spec.ts:101:9 › Viết Kudo: layout and defaults › ID-48 Gửi stays disabled without hashtag; nothing is sent (3.3s)
+  ok 310 [chromium] › tests\e2e\write-kudo.spec.ts:117:7 › Viết Kudo: Người nhận › ID-8, ID-25 typing filters Sunners ignoring accents; suggestions carry no email (3.6s)
+  ok 311 [chromium] › tests\e2e\write-kudo.spec.ts:131:7 › Viết Kudo: Người nhận › ID-9 '@ # $' is searched by name ('# $') and matches nobody: no suggestions, no crash (2.5s)
+  ok 312 [chromium] › tests\e2e\write-kudo.spec.ts:140:7 › Viết Kudo: Người nhận › ID-10 surrounding spaces are trimmed before searching (2.4s)
+  ok 313 [chromium] › tests\e2e\write-kudo.spec.ts:149:7 › Viết Kudo: Người nhận › results cap at 10; the signed-in user is never suggested, not even by name or email (2.8s)
+  ok 314 [chromium] › tests\e2e\write-kudo.spec.ts:161:7 › Viết Kudo: Người nhận › each suggestion shows the avatar, the name and the department (3.1s)
+  ok 315 [chromium] › tests\e2e\write-kudo.spec.ts:171:7 › Viết Kudo: Người nhận › ID-26 choosing a suggestion fills the field and closes the list (3.0s)
+  ok 316 [chromium] › tests\e2e\write-kudo.spec.ts:178:7 › Viết Kudo: Người nhận › ID-7, ID-50 leaving Người nhận empty shows the red field and 'Không được để trống'; Gửi stays disabled (3.0s)
+  ok 317 [chromium] › tests\e2e\write-kudo.spec.ts:192:9 › Viết Kudo: Người nhận › typing a Sunner's full email suggests that Sunner; picking it enables Người nhận and Gửi (4.4s)
+  ok 318 [chromium] › tests\e2e\write-kudo.spec.ts:192:9 › Viết Kudo: Người nhận › typing a Sunner's email local part suggests that Sunner; picking it enables Người nhận and Gửi (4.1s)
+  ok 319 [chromium] › tests\e2e\write-kudo.spec.ts:207:7 › Viết Kudo: Người nhận › an email in capitals and with surrounding spaces still finds the Sunner (3.3s)
+  ok 320 [chromium] › tests\e2e\write-kudo.spec.ts:213:7 › Viết Kudo: Người nhận › an email fragment that fits several Sunners lists them by name (3.9s)
+  ok 321 [chromium] › tests\e2e\write-kudo.spec.ts:219:7 › Viết Kudo: Người nhận › '@Văn An' suggests by name (the '@' is not searched); picking one fills the field (3.4s)
+  ok 322 [chromium] › tests\e2e\write-kudo.spec.ts:228:7 › Viết Kudo: Người nhận › '@' alone lists the first 10 Sunners, never the signed-in user (3.7s)
+  ok 323 [chromium] › tests\e2e\write-kudo.spec.ts:237:9 › Viết Kudo: Người nhận › '@nguyen.van.an' (an email after '@') suggests nobody: '@' searches names only (4.1s)
+  ok 324 [chromium] › tests\e2e\write-kudo.spec.ts:237:9 › Viết Kudo: Người nhận › '@nguyen.van.an@sun-asterisk.com' (an email after '@') suggests nobody: '@' searches names only (3.7s)
+  ok 325 [chromium] › tests\e2e\write-kudo.spec.ts:245:7 › Viết Kudo: Người nhận › a search with no match shows a status row (not an option); Gửi stays disabled (4.5s)
+  ok 326 [chromium] › tests\e2e\write-kudo.spec.ts:258:7 › Viết Kudo: Người nhận › the no-match row goes away on blur and when the text is cleared (3.6s)
+  ok 328 [chromium] › tests\e2e\write-kudo.spec.ts:287:7 › Viết Kudo: Người nhận › leaving the field inside the debounce cancels the search: no request, no list, no no-match row (3.3s)
+  ok 327 [chromium] › tests\e2e\write-kudo.spec.ts:269:7 › Viết Kudo: Người nhận › text typed but no Sunner picked: leaving the field says to choose from the suggestions; Gửi stays disabled (4.3s)
+  ok 330 [chromium] › tests\e2e\write-kudo.spec.ts:319:7 › Viết Kudo: Người nhận › typing then clearing the field, or only spaces, still reads 'Không được để trống' on blur (3.5s)
+  ok 331 [chromium] › tests\e2e\write-kudo.spec.ts:335:7 › Viết Kudo: Danh hiệu and nội dung › leaving Danh hiệu empty shows 'Không được để trống' (2.1s)
+  ok 332 [chromium] › tests\e2e\write-kudo.spec.ts:341:7 › Viết Kudo: Danh hiệu and nội dung › ID-11, ID-51 leaving the content empty shows 'Không được để trống' (2.0s)
+  ok 329 [chromium] › tests\e2e\write-kudo.spec.ts:304:7 › Viết Kudo: Người nhận › leaving the field while the search is in flight drops the late answer: no list, no no-match row (8.0s)
+  ok 333 [chromium] › tests\e2e\write-kudo.spec.ts:352:9 › Viết Kudo: Danh hiệu and nội dung › ID-27 'In đậm' wraps the selected text in <strong> (3.2s)
+  ok 334 [chromium] › tests\e2e\write-kudo.spec.ts:352:9 › Viết Kudo: Danh hiệu and nội dung › ID-28 'In nghiêng' wraps the selected text in <em> (3.3s)
+  ok 335 [chromium] › tests\e2e\write-kudo.spec.ts:352:9 › Viết Kudo: Danh hiệu and nội dung › ID-29 'Gạch ngang' wraps the selected text in <s> (3.4s)
+  ok 336 [chromium] › tests\e2e\write-kudo.spec.ts:352:9 › Viết Kudo: Danh hiệu and nội dung › ID-32 'Trích dẫn' wraps the selected text in <blockquote> (3.6s)
+  ok 337 [chromium] › tests\e2e\write-kudo.spec.ts:363:7 › Viết Kudo: Danh hiệu and nội dung › ID-30 'Danh sách đánh số' turns two lines into an ordered list (3.6s)
+  ok 338 [chromium] › tests\e2e\write-kudo.spec.ts:373:7 › Viết Kudo: Danh hiệu and nội dung › ID-12, ID-13, ID-33 '@' + name suggests Sunners; choosing one inserts a mention (5.2s)
+  ok 339 [chromium] › tests\e2e\write-kudo.spec.ts:402:7 › Viết Kudo: @ + tên in the content › '@Nguyễn Văn B' (a name with spaces) narrows to one Sunner; Enter inserts the mention in place (2.8s)
+  ok 340 [chromium] › tests\e2e\write-kudo.spec.ts:414:7 › Viết Kudo: @ + tên in the content › '@zzz' shows the no-match status row (no option, no listbox); Esc closes it and keeps the modal (2.7s)
+  ok 341 [chromium] › tests\e2e\write-kudo.spec.ts:425:7 › Viết Kudo: @ + tên in the content › an unmatched '@word' followed by more text closes the no-match row instead of following the caret (4.0s)
+  ok 342 [chromium] › tests\e2e\write-kudo.spec.ts:445:7 › Viết Kudo: @ + tên in the content › Esc closes an open suggestion list without inserting a mention or closing the modal (2.2s)
+  ok 343 [chromium] › tests\e2e\write-kudo.spec.ts:455:7 › Viết Kudo: @ + tên in the content › a mention never matches by email: '@nguyen.van.an@' finds nobody (2.5s)
+  ok 344 [chromium] › tests\e2e\write-kudo.spec.ts:469:7 › Viết Kudo: Hashtag › ID-14, ID-52 closing the dropdown with no hashtag shows 'Không được để trống'; picking one clears it (2.6s)
+  ok 345 [chromium] › tests\e2e\write-kudo.spec.ts:478:7 › Viết Kudo: Hashtag › ID-15, ID-34, ID-35 picking tags adds one chip each, in the catalog's own names (2.6s)
+  ok 346 [chromium] › tests\e2e\write-kudo.spec.ts:484:7 › Viết Kudo: Hashtag › ID-36 the x on a chip removes only that chip (2.9s)
+  ok 348 [chromium] › tests\e2e\write-kudo.spec.ts:513:7 › Viết Kudo: Image › ID-21, ID-22, ID-37 jpg, png and webp each make a thumbnail (2.6s)
+  ok 347 [chromium] › tests\e2e\write-kudo.spec.ts:491:7 › Viết Kudo: Hashtag › ID-16, ID-17, ID-53 five tags fit; at 5 the other rows are disabled; removing one frees them (3.3s)
+  ok 349 [chromium] › tests\e2e\write-kudo.spec.ts:521:7 › Viết Kudo: Image › ID-18 three images keep '+ Image' visible (2.6s)
+  ok 350 [chromium] › tests\e2e\write-kudo.spec.ts:527:7 › Viết Kudo: Image › ID-19, ID-20, ID-38, ID-54 five images hide '+ Image'; a 6th is refused (3.3s)
+  ok 351 [chromium] › tests\e2e\write-kudo.spec.ts:535:7 › Viết Kudo: Image › six files chosen at once keep only five (1.8s)
+  ok 352 [chromium] › tests\e2e\write-kudo.spec.ts:540:7 › Viết Kudo: Image › ID-39, ID-40 the x removes one thumbnail; at 5 it brings '+ Image' back (2.4s)
+  ok 353 [chromium] › tests\e2e\write-kudo.spec.ts:555:9 › Viết Kudo: Image › ID-23 doc.pdf is refused with a file-format message and no thumbnail (1.9s)
+  ok 354 [chromium] › tests\e2e\write-kudo.spec.ts:555:9 › Viết Kudo: Image › ID-24 clip.mp4 is refused with a file-format message and no thumbnail (2.3s)
+  ok 355 [chromium] › tests\e2e\write-kudo.spec.ts:555:9 › Viết Kudo: Image › ID-55 note.txt is refused with a file-format message and no thumbnail (2.4s)
+[WebServer] [kudos] create rejected an image format
+  ok 357 [chromium] › tests\e2e\write-kudo.spec.ts:568:7 › Viết Kudo: Image › a .jpg that is really a PDF passes the browser MIME check but the server refuses it: no upload, no Kudo (4.0s)
+  ok 356 [chromium] › tests\e2e\write-kudo.spec.ts:562:7 › Viết Kudo: Image › an image over 5 MB is refused (4.7s)
+  ok 358 [chromium] › tests\e2e\write-kudo.spec.ts:582:7 › Viết Kudo: anonymous › ID-6, ID-41-44 the checkbox toggles and shows / hides the alias field (4.3s)
+  ok 359 [chromium] › tests\e2e\write-kudo.spec.ts:600:9 › Viết Kudo: anonymous › ID-46 payload and board: anonymous with an alias (6.8s)
+  ok 360 [chromium] › tests\e2e\write-kudo.spec.ts:600:9 › Viết Kudo: anonymous › ID-46 payload and board: anonymous without an alias falls back to the default label (4.8s)
+  ok 361 [chromium] › tests\e2e\write-kudo.spec.ts:600:9 › Viết Kudo: anonymous › ID-46 payload and board: alias typed then anonymous switched off sends no alias and shows the sender (5.3s)
+  ok 362 [chromium] › tests\e2e\write-kudo.spec.ts:626:9 › Viết Kudo: Hủy, Gửi › ID-45 Hủy closes the modal and discards the form (6.1s)
+  ok 363 [chromium] › tests\e2e\write-kudo.spec.ts:626:9 › Viết Kudo: Hủy, Gửi › ID-45 Esc closes the modal and discards the form (3.7s)
+  ok 364 [chromium] › tests\e2e\write-kudo.spec.ts:626:9 › Viết Kudo: Hủy, Gửi › ID-45 click on the backdrop closes the modal and discards the form (4.0s)
+  ok 365 [chromium] › tests\e2e\write-kudo.spec.ts:641:7 › Viết Kudo: Hủy, Gửi › ID-47 one tag, no image: the RPC gets the picked recipient, title, content, slug; modal closes (5.0s)
+  ok 366 [chromium] › tests\e2e\write-kudo.spec.ts:656:7 › Viết Kudo: Hủy, Gửi › ID-46 two tags + two images: shows loading, blocks a double send, uploads real files as flat identity-free {uuid}.{ext} objects, sends their URLs; the board card shows both (5.1s)
+  ok 367 [chromium] › tests\e2e\write-kudo.spec.ts:692:7 › Viết Kudo: Hủy, Gửi › ID-27, ID-13 content goes to the RPC as Markdown: **bold** and @[Tên](id) (3.5s)
+[WebServer] [kudos] create_kudo failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected failure boom-secret-detail'
+[WebServer] }
+  ok 368 [chromium] › tests\e2e\write-kudo.spec.ts:707:7 › Viết Kudo: Hủy, Gửi › server failure after upload: generic message only, uploaded images are deleted, form stays for a retry (3.8s)
+  ok 369 [chromium] › tests\e2e\write-kudo.spec.ts:725:7 › Viết Kudo: Hủy, Gửi › on /sun-kudos the new Kudo leads the All Kudos feed (4.9s)
+  ok 370 [chromium] › tests\e2e\write-kudo.spec.ts:739:9 › Viết Kudo: Hủy, Gửi › success from / closes the modal and stays on the page (3.4s)
+  ok 371 [chromium] › tests\e2e\write-kudo.spec.ts:739:9 › Viết Kudo: Hủy, Gửi › success from /awards-information closes the modal and stays on the page (3.4s)
+  ok 372 [chromium] › tests\e2e\write-kudo.spec.ts:782:7 › Add link (OyDLDuSGEa) › opens empty with title Thêm đường dẫn, Nội dung, URL, Hủy and Lưu; clicking the Text label focuses its field (2.2s)
+  ok 373 [chromium] › tests\e2e\write-kudo.spec.ts:793:7 › Add link (OyDLDuSGEa) › ID-31 valid Text + Link: Lưu closes Add link and inserts the link into the editor (2.6s)
+  ok 374 [chromium] › tests\e2e\write-kudo.spec.ts:804:7 › Add link (OyDLDuSGEa) › Text empty, spaces only or 101 characters is rejected (3.5s)
+  ok 376 [chromium] › tests\e2e\write-kudo.spec.ts:814:7 › Add link (OyDLDuSGEa) › boundaries: Text of 1 character and a 2048-character https URL are accepted (2.3s)
+  ok 375 [chromium] › tests\e2e\write-kudo.spec.ts:808:7 › Add link (OyDLDuSGEa) › Link empty, 'invalid-url', 'www', javascript:, ftp: or over 2048 characters is rejected (4.2s)
+  ok 377 [chromium] › tests\e2e\write-kudo.spec.ts:824:7 › Add link (OyDLDuSGEa) › Hủy closes without inserting anything (1.8s)
+
+  377 passed (7.5m)
+full e2e exit=0

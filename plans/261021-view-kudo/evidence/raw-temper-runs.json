@@ -1,0 +1,180 @@
+[
+  {
+    "command": "npm run test:e2e -- tests/e2e/kudo-detail.spec.ts",
+    "exitCode": 1,
+    "summary": "RED (phase 01, before any app code): next build ok; 3 passed, 12 failed on the missing detail page (404 route, no kudo-detail frame, no Đóng, no ?next, no card link)",
+    "ts": "2026-10-21T12:48:00+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit -p .",
+    "exitCode": 0,
+    "summary": "typecheck clean on the integrated tree (tracks A+B+C)",
+    "ts": "2026-10-21T13:10:00+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "eslint: no findings",
+    "ts": "2026-10-21T13:10:30+07:00"
+  },
+  {
+    "command": "npx vitest run",
+    "exitCode": 0,
+    "summary": "46 files, 725 tests passed, 0 failed",
+    "ts": "2026-10-21T13:11:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/kudo-detail.spec.ts",
+    "exitCode": 0,
+    "summary": "GREEN: next build ok (route /[locale]/sun-kudos/[id] dynamic); 15 passed, 0 failed",
+    "ts": "2026-10-21T13:14:00+07:00"
+  },
+  {
+    "command": "npx playwright test",
+    "exitCode": 0,
+    "summary": "full E2E on the same build: 244 passed, 0 failed (7.7m)",
+    "ts": "2026-10-21T13:22:00+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/kudo-detail.spec.ts -g \"arrived from the login page\"",
+    "exitCode": 1,
+    "summary": "RED for review Medium #1 on the pre-fix build: Đóng went back to /login?next=%2Fsun-kudos%2F… instead of /sun-kudos",
+    "ts": "2026-10-21T13:52:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 1,
+    "summary": "after review + visual fixes: next build ok; 244 passed, 1 failed: write-kudo.spec.ts:413 (@word no-match row) waitForResponse timeout 30s on the Sunner-search action; code path untouched by this change (last changed 7597034); suite ran 10.2m vs 7.7m (busy machine). New Close-after-login test passed",
+    "ts": "2026-10-21T13:53:18+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts -g \"unmatched '@word'\" --repeat-each=10",
+    "exitCode": 0,
+    "summary": "10 passed: the failure does not reproduce alone (timing flake under load)",
+    "ts": "2026-10-21T13:57:30+07:00"
+  },
+  {
+    "command": "npx playwright test",
+    "exitCode": 0,
+    "summary": "full E2E re-run on the same post-fix build: 245 passed, 0 failed (7.2m), incl. kudo-detail 16/16 and write-kudo.spec.ts:413",
+    "ts": "2026-10-21T14:05:21+07:00"
+  },
+  {
+    "command": "supabase/verify/20261021120000_create_kudo_detail_rpc_verify.sql (user, Supabase SQL Editor, real project)",
+    "exitCode": 0,
+    "summary": "migration applied by the owner; verify D1, D2, D3, D4, D5, D1b: 6/6 PASS (anon 42501)",
+    "ts": "2026-10-21T14:08:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "after the login form reads next from the address bar (Workers fix) + hidden-input assertions: next build ok; 245 passed, 0 failed (6.9m)",
+    "ts": "2026-10-21T14:36:50+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build && npx opennextjs-cloudflare preview (debugger, via http://localhost:8787)",
+    "exitCode": 0,
+    "summary": "workerd: /login?error=auth_failed banner in server HTML; /login?next=%2Fsun-kudos%2F<guid> hidden next present; evil next absent; guest /sun-kudos/<guid> 307 /login?next=…; the earlier empty-query result was a 127.0.0.1-host preview artifact, not production",
+    "ts": "2026-10-21T15:20:00+07:00"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run",
+    "exitCode": 0,
+    "summary": "gzip 2241.46 KiB (limit 3072 KiB)",
+    "ts": "2026-10-21T15:21:00+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit -p . && npm run lint && npx vitest run",
+    "exitCode": 0,
+    "summary": "final code (bg overlay, client next fallback removed): tsc 0, lint 0, 46 files / 725 tests passed",
+    "ts": "2026-10-21T15:23:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "final code: next build ok; 245 passed, 0 failed (6.5m)",
+    "ts": "2026-10-21T15:30:38+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit -p . && npx eslint <header + layout> && npm run test:e2e",
+    "exitCode": 0,
+    "summary": "after SiteHeader dimmed prop (owner decision): tsc 0, eslint 0; next build ok; 245 passed, 0 failed (6.4m)",
+    "ts": "2026-10-21T15:50:02+07:00"
+  },
+  {
+    "command": "playwright screenshot /sun-kudos/<id> at 1440x1521 vs figma/view-kudo-520-18779-1440.png",
+    "exitCode": 0,
+    "summary": "header avg RGB ref [5,20,28] ours [4,18,26]; nav band ref [9,24,32] ours [8,22,30]; open language list renders above the overlay (bright); page below band [0,16,26] both",
+    "ts": "2026-10-21T15:53:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "review baseline at 652d469 before fixes: 245/245 (ts approximate: run during the 2026-10-21 review, exact time not logged)",
+    "ts": "2026-10-21T17:30:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "temper after first fix pass: 267/267 (superseded: Worker gzip 2304.43 KiB, duplicate chunk; fix round 1 followed)",
+    "ts": "2026-10-22T08:26:25+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: eslint clean (fix round 261022, final)",
+    "ts": "2026-10-22T09:41:28+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: typecheck clean (fix round 261022, final)",
+    "ts": "2026-10-22T09:42:52+07:00"
+  },
+  {
+    "command": "npx vitest run",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: 48 files, 778/778 (fix round 261022, final)",
+    "ts": "2026-10-22T09:44:22+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: next build + Playwright 267/267, 0 flaky, 10.2 m (fix round 261022, final)",
+    "ts": "2026-10-22T09:56:34+07:00"
+  },
+  {
+    "command": "npx playwright test kudo-detail{,-hardening,-login-next,-visual-contract}.spec.ts --repeat-each=5",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: 190/190 (38 x 5), 0 flaky (fix round 261022, final)",
+    "ts": "2026-10-22T10:05:26+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: OpenNext build complete (fix round 261022, final)",
+    "ts": "2026-10-22T10:10:32+07:00"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run --outdir <scratch>",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: Total Upload 10791.65 KiB / gzip 2243.72 KiB (HEAD 2241.61; limit 3072) (fix round 261022, final)",
+    "ts": "2026-10-22T10:11:38+07:00"
+  },
+  {
+    "command": "netstat 310x + git status env files",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "no listeners, no .env/.dev.vars in status (fix round 261022, final)",
+    "ts": "2026-10-22T10:12:59+07:00"
+  }
+]

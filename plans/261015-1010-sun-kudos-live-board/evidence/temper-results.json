@@ -1,0 +1,67 @@
+{
+  "commands": [
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "eslint clean, no findings (whole project)",
+      "ts": "2026-10-15T13:28:14+07:00"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "typecheck clean (whole project)",
+      "ts": "2026-10-15T13:28:22+07:00"
+    },
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "vitest: 29 files, 312 tests passed, 0 failed (8.3s); up from 304 because spotlight-layout.test.ts went from 14 to 22 cases (6 desktop board widths 672/800/928/992/1152/1157 + phone/tablet board widths 288/343/398/480/600/735 for 20/60/105/200 names; RED first: 800, 928 and 992 failed on the old zones)",
+      "ts": "2026-10-15T13:28:40+07:00"
+    },
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "next build then playwright: 94 passed, 0 failed, 0 flaky, 0 skipped (2.4m run, 3m19s total incl. build)",
+      "ts": "2026-10-15T13:32:06+07:00"
+    },
+    {
+      "command": "npx playwright test tests/e2e/sun-kudos.spec.ts tests/e2e/sun-kudos-feed.spec.ts --repeat-each=5",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "kudos specs: 100 passed (20 cases x 5), 0 failed, 0 flaky (2.8m)",
+      "ts": "2026-10-15T13:35:29+07:00"
+    },
+    {
+      "command": "node scratchpad/overlap-final.cjs (real DOM, next start + fake Supabase on 3191/54398, initial pan 0,0 scale 1, 15 viewport widths: 320 375 431 480 600 767 768 900 1024 1100 1253 1279 1280 1440 1600)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "345 node rects checked (23 nodes x 15 widths): 0 intersections with the total / search / ticker / Pan-Zoom rects at every width incl. 768, 1024, 1280 (the tester's failing widths); 0 of 60 real overlay rects fall outside SPOTLIGHT_OVERLAY_ZONES; board widths measured 288-735 (below md) and 672-1157 (md+)",
+      "ts": "2026-10-15T13:36:45+07:00"
+    },
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "vitest after final test-only edit (tests/unit/spotlight-layout.test.ts TICKER_ROW 24->19 + comment): 29 files, 312 passed, 0 failed",
+      "ts": "2026-10-15T07:07:38.326Z"
+    },
+    {
+      "command": "npx vitest run",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "post-seed fix: kudos zod ids z.uuid() -> z.guid() (md5-derived seed ids are valid Postgres uuids but not RFC 4122); regression test added; 29 files, 313 passed, 0 failed",
+      "ts": "2026-10-15T08:05:28.482Z"
+    },
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "final code after Figma background fix (KV cover, spotlight raw art + network opacity-30): next build + playwright 94 passed, 0 failed, 0 skipped",
+      "ts": "2026-10-15T09:35:52.401Z"
+    }
+  ]
+}

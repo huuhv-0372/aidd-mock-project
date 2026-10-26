@@ -1,0 +1,22 @@
+[
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "TypeScript type check passed"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "ESLint passed, no linting errors"
+  },
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "summary": "Vitest: 48 tests passed across 4 test files"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "Playwright: 8 E2E tests passed (build completed in 28.2s)"
+  }
+]

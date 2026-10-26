@@ -1,0 +1,21 @@
+# Tester — Phase 01 RED (2026-10-22/23)
+
+- redTestFiles: `tests/e2e/edit-kudo.spec.ts` (18 tests); contract `tests/e2e/support/edit-kudo-contract.ts`
+- redCommand: `npx playwright test tests/e2e/edit-kudo.spec.ts --reporter=list`
+- redExitCode: 1 — 18 run, 0 passed, 18 failed
+- redFailure:
+  - 15 tests time out waiting for `getByRole('button', { name: 'Chỉnh sửa Kudo' })` in the seeded card; the pencil is an aria-hidden span today.
+  - The profile test expects 2 Sent pencils and gets 0.
+  - The Viết Kudo counter test finds no `content-counter`.
+  - The EN and 375px tests wait for the missing pencil.
+  - The seed renders (sender E2E User, recipient Nguyễn Văn An, 3 images, mention, link), so the failures come from the missing feature.
+- Ran on a build of HEAD: the working tree did not build, TS2741 `updateKudo` missing in `kudos-composer-provider.tsx`, expected until 02a wires it.
+- Fixtures (`write-kudo-fixtures.mjs`):
+  - fake `update_kudo`: sender-only, otherwise 22023 `not_found`; validation shared with create; returns removed URLs.
+  - `kudo_detail` read-back for created Kudos; `/__kudo-seed-own`, `/__kudo-fail-update`, `/__kudo-refuse-update-once`.
+  - `validate` refactored into `checkCommon`/`aliasCode`; create behaviour unchanged.
+  - `fake-supabase-server.mjs` unchanged: routing goes through `writeKudoRpc`.
+- Deviation: read-back uses `kudo_detail(p_id)`, not `kudos_rows`, because `kudos_rows` is revoked from authenticated. Accepted by the controller; plan updated.
+- Regression: write-kudo, write-kudo-layout, write-kudo-resilience, profile, sun-kudos, sun-kudos-feed, kudo-detail — 158 passed, exit 0 (HEAD build).
+- Coverage map: pencil own-only, 44px and Enter; profile Sent vs Received; pre-fill; locked recipient and anonymous state; save body, card in place, Storage delete; byte-identical no-change save; Lưu disabled ×3; Hủy/Esc ×2; failure ×2; counter Write/Edit/EN; EN copy; 375 overflow.
+- Notes: the spec is about 330 lines. Next 16.4.0 build printed a security notice (`next upgrade`); not run, owner decision.

@@ -1,0 +1,14 @@
+{ "score": 8, "criticalCount": 0, "decision": "SEALED",
+  "contractStatus": "OK", "refuted": [], "unproven": [], "reachableRegressions": [],
+  "findings": [
+    { "severity": "Medium", "category": "Logic", "location": "components/awards/use-active-award.ts:101-106", "summary": "settle() un-pauses the spy without re-measuring; an interrupted smooth scroll leaves a stale active item until the next band crossing", "disposition": "Accept" },
+    { "severity": "Medium", "category": "UX", "location": "components/awards/awards-nav.tsx:28-50", "summary": "Below lg the active chip is never scrolled into view in the horizontal chip bar (e.g. landing on #mvp at 375px); use nav.scrollTo, not scrollIntoView", "disposition": "Accept" },
+    { "severity": "Medium", "category": "Test", "location": "tests/e2e/awards-information-nav.spec.ts:163-172", "summary": "'from Homepage' hash landing is tested only as a direct goto; the soft navigation from the Homepage award card is not asserted to activate the slug", "disposition": "Accept" },
+    { "severity": "Low", "category": "Logic", "location": "components/awards/use-active-award.ts:81", "summary": "Mount always jumps to #slug; reload after manual scroll snaps back", "disposition": "Accept" },
+    { "severity": "Low", "category": "Types", "location": "components/awards/use-active-award.ts:37", "summary": "Empty slugs gives activeSlug undefined typed as AwardSlug (unreachable today)", "disposition": "Accept" },
+    { "severity": "Low", "category": "Performance", "location": "components/awards/use-active-award.ts:84", "summary": "resize recreates the IntersectionObserver on every event without throttling", "disposition": "Accept" },
+    { "severity": "Low", "category": "Maintainability", "location": "components/awards/award-tile.tsx:2", "summary": "Awards feature imports AWARD_CARDS from components/home", "disposition": "Accept" },
+    { "severity": "Low", "category": "A11y", "location": "components/awards/award-tile.tsx:24", "summary": "Background image alt repeats the adjacent h2 title", "disposition": "Accept" },
+    { "severity": "Low", "category": "Types", "location": "components/site-shell/site-header.tsx:18", "summary": "activeHref typed as string", "disposition": "Accept" },
+    { "severity": "Low", "category": "Test", "location": "tests/e2e/support/awards-contract.ts:29-31", "summary": "Signature/MVP quantity regex does not assert the unit", "disposition": "Accept" }
+  ] }

@@ -1,0 +1,475 @@
+[
+  {
+    "command": "netstat -ano | grep -E \"(3100|3101|3102|3103|54398)\"",
+    "exitCode": 1,
+    "summary": "no listening sockets on 3100-3103/54398 before the first run (grep exit 1 = no match), nothing stale to report; ports re-checked free after the e2e runs, after the visual servers (3103 + fake 54398, started by me, killed by PID) and after the OpenNext build",
+    "ts": "2026-10-19T12:47:50+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "eslint clean, no findings (whole project; re-run after the last spec edit: still 0)",
+    "ts": "2026-10-19T12:48:21+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "typecheck clean (whole project; re-run after the last spec edit: still 0)",
+    "ts": "2026-10-19T12:48:35+07:00"
+  },
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "summary": "vitest: 33 files, 404 tests passed, 0 failed (9.2s)",
+    "ts": "2026-10-19T12:48:57+07:00"
+  },
+  {
+    "command": "npm run test:e2e (first full run, before spec fixes)",
+    "exitCode": 1,
+    "summary": "next build + playwright: 164 passed, 1 failed (write-kudo.spec.ts:142 ID-26 'An' query: fake search caps at 10 alphabetical matches of 19 and 'Nguyen Van An' is 14th, so the option never rendered; test bug, not app bug)",
+    "ts": "2026-10-19T12:57:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e (full suite, after ID-26 query fix)",
+    "exitCode": 0,
+    "summary": "next build + playwright: 165 passed, 0 failed, 0 flaky, 0 skipped (4.6m run)",
+    "ts": "2026-10-19T13:05:08+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts tests/e2e/kudos-quick-actions.spec.ts --repeat-each=5 (first attempt)",
+    "exitCode": 1,
+    "summary": "349 passed, 1 failed (8.5m): guest 'can open Thể lệ and close it' hit a strict-mode violation, widget-button matched 2 elements (Suspense fallback pill + streamed widget) = test sync gap, fixed with openWidgetMenu retry helper",
+    "ts": "2026-10-19T13:14:05+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts tests/e2e/kudos-quick-actions.spec.ts --repeat-each=5 (after openWidgetMenu helper)",
+    "exitCode": 0,
+    "summary": "350 passed, 0 failed (70 tests x 5, 8.3m)",
+    "ts": "2026-10-19T13:25:15+07:00"
+  },
+  {
+    "command": "Visual check via Playwright MCP on authed server 3103 + fake Supabase 54398 (1440x900 and 375x812, VI and EN)",
+    "exitCode": 0,
+    "summary": "4 scripted runs, 21 states each, 53 screenshots in reports/visual/; no horizontal overflow, modal scrolls at 375, 0 console errors; findings in reports/visual-check.md (no blocking layout bug; editor has no visible focus ring; 20px remove buttons below 44px; no MoMorph reference images available to this agent, comparison qualitative)",
+    "ts": "2026-10-19T13:37:00+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build",
+    "exitCode": 0,
+    "summary": "OpenNext build complete (2m36s), worker.js saved",
+    "ts": "2026-10-19T13:41:00+07:00"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run --outdir <scratch>",
+    "exitCode": 0,
+    "summary": "Total Upload 10653.17 KiB / gzip 2217.34 KiB (baseline 2219.36 KiB, free limit 3072 KiB); bundled worker.js has 0 hits for tiptap/prosemirror, server-functions/worker.js/middleware 0 files; Tiptap only in 1 client chunk (444 KiB raw, 141 KiB gzip)",
+    "ts": "2026-10-19T13:51:00+07:00"
+  },
+  {
+    "command": "taskkill servers started for the visual check + netstat 3100-3103/54398",
+    "exitCode": 0,
+    "summary": "killed next start 3103 (PID 7104) and fake Supabase 54398 (PID 7512); all five ports free; removed the scratch .playwright-mcp dir",
+    "ts": "2026-10-19T13:36:00+07:00"
+  },
+  {
+    "command": "npm run lint (polish round)",
+    "exitCode": 0,
+    "summary": "eslint clean, no output",
+    "ts": "2026-10-19T07:27:46.305Z"
+  },
+  {
+    "command": "npx tsc --noEmit (polish round)",
+    "exitCode": 0,
+    "summary": "no type errors",
+    "ts": "2026-10-19T07:27:46.308Z"
+  },
+  {
+    "command": "npm test (polish round)",
+    "exitCode": 0,
+    "summary": "vitest: 33 files, 404 tests passed, 0 failed (29.5s)",
+    "ts": "2026-10-19T07:27:46.308Z"
+  },
+  {
+    "command": "npm run test:e2e (polish round; next build + playwright test, full suite)",
+    "exitCode": 0,
+    "summary": "165 passed, 0 failed, 0 flaky (5.0m); server-side getClaims/create_kudo error logs are the intentional negative-case tests",
+    "ts": "2026-10-19T07:27:46.308Z"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts tests/e2e/kudos-quick-actions.spec.ts --repeat-each=3 (polish round)",
+    "exitCode": 0,
+    "summary": "210 passed (70 tests x 3), 0 failed, 0 flaky (8.2m)",
+    "ts": "2026-10-19T07:27:46.308Z"
+  },
+  {
+    "command": "Polish-round visual capture: node scratch script (Playwright chromium, scrollbars visible) on authed next start 3103 + fake Supabase 54398; vi 1440x900, vi 375x812, en 1440x900; 8 screenshots overwritten in reports/visual/",
+    "exitCode": 0,
+    "summary": "chip/image remove + anon checkbox 44x44 at 1440 and 375 (inner dot 20x20); VI Legend row badge/text tops differ by 1px at 1440; rules text gap to scrollbar 25px (1440) / 16px (375); 375 hashtag dropdown bottom 756.6 <= dialog visible bottom 793 (fits); editor focus-within ring 1px rgb(0,16,26) + ink border; 0 console errors. Observations: EN Legend row wraps at 1440 (26px), 1440 hashtag dropdown bottom 1073 > visible bottom 881 (max-h change is below sm only); details in visual-check.md Polish round",
+    "ts": "2026-10-19T07:27:46.308Z"
+  },
+  {
+    "command": "taskkill servers started for the polish visual capture (next start 3103 PID 26820, fake Supabase 54398 PID 28916) + netstat 3100-3103/54398",
+    "exitCode": 0,
+    "summary": "both killed; all five ports free",
+    "ts": "2026-10-19T07:27:46.308Z"
+  },
+  {
+    "command": "netstat -ano | grep -E \":(3100|3101|3102|3103|54398) \"  (fix round 1, before runs)",
+    "exitCode": 0,
+    "summary": "no listeners on 3100-3103/54398 (only TIME_WAIT leftovers); ports re-checked free after every run and at the end",
+    "ts": "2026-10-19T14:46:00+07:00"
+  },
+  {
+    "command": "npm run lint (fix round 1)",
+    "exitCode": 0,
+    "summary": "eslint clean; re-run after the fake-supabase keep-alive edit: still 0",
+    "ts": "2026-10-19T14:47:30+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit (fix round 1)",
+    "exitCode": 0,
+    "summary": "typecheck clean; re-run after the fake edit: still 0",
+    "ts": "2026-10-19T14:47:50+07:00"
+  },
+  {
+    "command": "npm test (fix round 1)",
+    "exitCode": 0,
+    "summary": "vitest: 35 files, 450 tests passed, 0 failed (9.8s)",
+    "ts": "2026-10-19T14:48:10+07:00"
+  },
+  {
+    "command": "npm run test:e2e (fix round 1, full suite, first run)",
+    "exitCode": 0,
+    "summary": "next build + playwright: 165 passed, 0 failed, 0 flaky, 0 skipped (5.2m)",
+    "ts": "2026-10-19T14:57:00+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts --repeat-each=3 (attempt 1)",
+    "exitCode": 1,
+    "summary": "164 passed, 1 failed (8.0m): ID-45 Esc, repeat2: apiRequestContext.get read ECONNRESET on fake GET /__kudo-log (support/kudos-contract.ts:176), not an app or assertion failure",
+    "ts": "2026-10-19T15:08:00+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts --repeat-each=3 (attempt 2, unchanged code)",
+    "exitCode": 1,
+    "summary": "164 passed, 1 failed (8.0m): same ECONNRESET on /__kudo-log, ID-45 backdrop repeat2 -> reproducible, test-infra race, not random once",
+    "ts": "2026-10-19T15:17:00+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts -g ID-45 --repeat-each=12",
+    "exitCode": 0,
+    "summary": "36 passed (4.9m): not reproducible in isolation (tests take 4-12s here, idle gap between the mint call and /__kudo-log crosses Node's 5s keep-alive default)",
+    "ts": "2026-10-19T15:23:00+07:00"
+  },
+  {
+    "command": "edit tests/e2e/support/fake-supabase-server.mjs: server.keepAliveTimeout = 30_000 (was Node default 5s)",
+    "exitCode": 0,
+    "summary": "test-infra fix only; no assertion changed; node --check ok",
+    "ts": "2026-10-19T15:24:00+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts --repeat-each=3 (after keep-alive fix)",
+    "exitCode": 0,
+    "summary": "165 passed (55 tests x 3), 0 failed, 0 ECONNRESET (7.6m)",
+    "ts": "2026-10-19T15:33:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e (fix round 1, full suite, re-run after the shared fake changed)",
+    "exitCode": 0,
+    "summary": "next build + playwright: 165 passed, 0 failed, 0 flaky, 0 skipped (4.9m), 0 ECONNRESET",
+    "ts": "2026-10-19T15:40:00+07:00"
+  },
+  {
+    "command": "workerd 5x5 MB preview check (step 5)",
+    "exitCode": 0,
+    "summary": "NOT RUN: skipped on controller instruction (fix round 2 will change lib/kudos/*, re-run after it with JPEG files); no OpenNext build started; scratch spec + 5 x 4.9 MB JPEG generator prepared outside the repo only",
+    "ts": "2026-10-19T15:41:00+07:00"
+  },
+  {
+    "command": "netstat 3100-3103/8787/54398 LISTEN + .dev.vars check (end of run)",
+    "exitCode": 0,
+    "summary": "no listeners, no servers left running, no .dev.vars written, scratch node_modules junction removed",
+    "ts": "2026-10-19T15:42:00+07:00"
+  },
+  {
+    "command": "netstat LISTEN 3100-3103/8787/54398 (fix round 2 final, before runs)",
+    "exitCode": 0,
+    "summary": "no listeners",
+    "ts": "2026-10-19T15:48:00+07:00"
+  },
+  {
+    "command": "npm run lint (fix round 2 final)",
+    "exitCode": 0,
+    "summary": "eslint clean",
+    "ts": "2026-10-19T15:48:30+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit (fix round 2 final)",
+    "exitCode": 0,
+    "summary": "typecheck clean",
+    "ts": "2026-10-19T15:49:00+07:00"
+  },
+  {
+    "command": "npm test (fix round 2 final)",
+    "exitCode": 0,
+    "summary": "vitest: 37 files, 499 tests passed, 0 failed",
+    "ts": "2026-10-19T15:49:30+07:00"
+  },
+  {
+    "command": "npm run test:e2e (fix round 2 final, full suite)",
+    "exitCode": 0,
+    "summary": "next build + playwright: 165 passed, 0 failed, 0 flaky, 0 skipped (4.3m), 0 ECONNRESET",
+    "ts": "2026-10-19T15:56:00+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts --repeat-each=3 (fix round 2 final)",
+    "exitCode": 0,
+    "summary": "165 passed (55 tests x 3), 0 failed, 0 ECONNRESET (6.4m)",
+    "ts": "2026-10-19T16:04:00+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build (env NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54398, publishable key e2e fake)",
+    "exitCode": 0,
+    "summary": "OpenNext build complete, worker.js saved",
+    "ts": "2026-10-19T16:12:00+07:00"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run --outdir <scratch> (Worker size, nothing uploaded)",
+    "exitCode": 0,
+    "summary": "Total Upload 10658.66 KiB / gzip 2218.85 KiB (free limit 3072 KiB; +1.51 KiB vs fix-round-0 2217.34)",
+    "ts": "2026-10-19T16:14:00+07:00"
+  },
+  {
+    "command": "opennextjs-cloudflare preview (workerd, port 8787, .dev.vars -> fake 54398) + scratch Playwright spec: 5 x 5138005-byte JPEG (JFIF + 36-byte Exif Orientation APP1) via real UI, signed in",
+    "exitCode": 0,
+    "summary": "PASS: 1 passed; fake log: 5 uploads (sizes identical to input, nothing to strip), 1 create_kudo with 5 urls, 0 deletes; 0 page errors; wrangler log: POST /sun-kudos 200 (582ms), 0 matches for exceeded/1101/memory/error/500",
+    "ts": "2026-10-19T16:20:00+07:00"
+  },
+  {
+    "command": "same on a freshly restarted preview, 5 x ~4.9 MB JPEG each with heavy metadata (40 KB Exif with SECRET description/Make/GPS-like string + Orientation, XMP APP1, IPTC APP13, COM)",
+    "exitCode": 0,
+    "summary": "PASS: 1 passed; 5 uploads 5096796..5096864 bytes (-41 KB each, metadata gone), 1 create_kudo, 0 deletes, POST /sun-kudos 200 (1354 ms), 0 errors. Stored object 1: segments JFIF + one 36-byte APP1 (Orientation=6 present) then SOS; no SECRET/SecretCam/xmpmeta/8BIM/Photoshop/GPS bytes. workerd (user-worker process) working set: idle 130.8 MB, after 1 tiny Kudo 205.3 MB, after 5x4.9 MB Kudo 363.4 MB (peak 416.5 MB, 100 ms sampler max 411.7 MB); whole-process indicator, local workerd does not enforce the 128 MB isolate limit",
+    "ts": "2026-10-19T16:26:00+07:00"
+  },
+  {
+    "command": "taskkill preview tree + fake Supabase, rm .dev.vars, remove scratch node_modules junction, netstat",
+    "exitCode": 0,
+    "summary": "no listeners on 3100-3103/8787/54398, no workerd left, no .dev.vars, no env file in git status",
+    "ts": "2026-10-19T16:28:00+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "PASS: eslint clean (fix round 3 final)",
+    "ts": "2026-10-19T16:46:10+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "PASS: no type errors (fix round 3 final)",
+    "ts": "2026-10-19T16:46:15+07:00"
+  },
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "summary": "PASS: 37 files, 499 tests passed, 0 failed, 22.4 s (fix round 3 final)",
+    "ts": "2026-10-19T16:46:41+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "PASS: 173 passed, 0 failed, 0 flaky, 0 skipped, 5.3 m, 0 ECONNRESET; write-kudo.spec 63 tests incl. recipient search by name/email, no-result status row, choose-from-list error (fix round 3 final)",
+    "ts": "2026-10-19T16:53:00+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts --repeat-each=3",
+    "exitCode": 0,
+    "summary": "PASS: 189 passed (63 x 3), 0 failed, 0 flaky, 5.4 m, 0 ECONNRESET (fix round 3 final)",
+    "ts": "2026-10-19T16:59:00+07:00"
+  },
+  {
+    "command": "netstat ports 3100-3103/8787/54398 before and after runs",
+    "exitCode": 0,
+    "summary": "no listeners before or after (only TIME_WAIT client sockets); Playwright webServers exit with their run; no servers left (fix round 3 final)",
+    "ts": "2026-10-19T17:00:30+07:00"
+  },
+  {
+    "command": "netstat ports 3100-3103/8787/54398 before final runs",
+    "exitCode": 0,
+    "summary": "no listeners before (only TIME_WAIT client sockets) (final)",
+    "ts": "2026-10-19T20:38:35+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "PASS: eslint clean (final)",
+    "ts": "2026-10-19T20:38:50+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "PASS: no type errors (final)",
+    "ts": "2026-10-19T20:39:00+07:00"
+  },
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "summary": "PASS: 37 files, 501 tests passed, 0 failed, 9.7 s (final)",
+    "ts": "2026-10-19T20:39:16+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "PASS: 183 passed, 0 failed, 0 flaky, 0 skipped, 3.5 m, 0 ECONNRESET; includes mention-exit case (final)",
+    "ts": "2026-10-19T20:43:57+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts tests/e2e/kudos-quick-actions.spec.ts --repeat-each=2",
+    "exitCode": 0,
+    "summary": "PASS: 176 passed (88 x 2), 0 failed, 0 flaky, 4.0 m, 0 ECONNRESET (final)",
+    "ts": "2026-10-19T20:48:28+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build",
+    "exitCode": 0,
+    "summary": "PASS: build with normal .env.local (not the fake), no .dev.vars written (final)",
+    "ts": "2026-10-19T20:50:35+07:00"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run --outdir <scratch>",
+    "exitCode": 0,
+    "summary": "PASS: Total Upload 10660.82 KiB / gzip 2220.12 KiB (limit 3072, +1.27 KiB vs 2218.85) (final)",
+    "ts": "2026-10-19T21:15:50+07:00"
+  },
+  {
+    "command": "netstat ports 3100-3103/8787/54398 + tasklist workerd + git status env files after final runs",
+    "exitCode": 0,
+    "summary": "no listeners, no workerd, no env/.dev.vars in git status; Playwright webServers exit with run (final)",
+    "ts": "2026-10-19T21:16:12+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "PASS: no lint errors (final-2)",
+    "ts": "2026-10-19T22:00:20+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "PASS: no type errors (final-2)",
+    "ts": "2026-10-19T22:00:25+07:00"
+  },
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "summary": "PASS: 37 files, 501 tests passed, 0 failed, 14.6 s (final-2)",
+    "ts": "2026-10-19T22:00:45+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "PASS: 183 passed, 0 failed, 0 flaky, 0 skipped, 4.4 m, 0 ECONNRESET; mention-exit case (write-kudo.spec.ts:380, now asserts search count stops growing) green (final-2)",
+    "ts": "2026-10-19T22:06:20+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts --repeat-each=2",
+    "exitCode": 0,
+    "summary": "PASS: 146 passed (73 x 2), 0 failed, 0 flaky, 4.2 m, 0 ECONNRESET (final-2)",
+    "ts": "2026-10-19T22:10:48+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build",
+    "exitCode": 0,
+    "summary": "PASS: build with normal .env.local, no .dev.vars (final-2)",
+    "ts": "2026-10-19T22:13:36+07:00"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run --outdir <scratch>",
+    "exitCode": 0,
+    "summary": "PASS: Total Upload 10660.81 KiB / gzip 2220.10 KiB (limit 3072, -0.02 KiB vs final 2220.12) (final-2)",
+    "ts": "2026-10-19T22:14:22+07:00"
+  },
+  {
+    "command": "netstat ports 3100-3103/8787/54398 + tasklist workerd + git status env files after final-2 runs",
+    "exitCode": 0,
+    "summary": "no listeners, no workerd, no env/.dev.vars in git status (final-2)",
+    "ts": "2026-10-19T22:14:40+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 1,
+    "status": "fail",
+    "summary": "review baseline before fixes: 181 passed, 2 failed (write-kudo.spec.ts:263 flaky 3/5 idle; countdown-prelaunch-gate test-6 load-flaky, unrelated)",
+    "ts": "2026-10-20T09:20:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "temper after A1-A14: 187 passed, 0 failed (superseded by fix rounds 1-2)",
+    "ts": "2026-10-20T10:18:03+07:00"
+  },
+  {
+    "command": "npx playwright test write-kudo + resilience --repeat-each=5",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "temper after A1-A14: 385/385 (superseded)",
+    "ts": "2026-10-20T10:26:36+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: eslint clean (fix-round 261020, final)",
+    "ts": "2026-10-20T12:42:29+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: no type errors (fix-round 261020, final)",
+    "ts": "2026-10-20T12:42:55+07:00"
+  },
+  {
+    "command": "npx vitest run",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: 39 files, 538 tests passed, 0 failed, 13.07 s (fix-round 261020, final)",
+    "ts": "2026-10-20T12:43:26+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: next build + Playwright 195 passed, 0 failed, 0 flaky, 6.8 m (fix-round 261020, final)",
+    "ts": "2026-10-20T12:51:26+07:00"
+  },
+  {
+    "command": "npx playwright test tests/e2e/write-kudo.spec.ts tests/e2e/write-kudo-resilience.spec.ts --repeat-each=5",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: 425 passed (85 x 5), 0 failed, 0 flaky, 15.4 m (fix-round 261020, final)",
+    "ts": "2026-10-20T13:07:16+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: OpenNext build complete (fix-round 261020, final)",
+    "ts": "2026-10-20T13:11:46+07:00"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run --outdir <scratch>",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "PASS: Total Upload 10662.59 KiB / gzip 2220.64 KiB (limit 3072); 0 @tiptap/prosemirror in worker.js (fix-round 261020, final)",
+    "ts": "2026-10-20T13:12:21+07:00"
+  },
+  {
+    "command": "netstat ports 3100-3109 + git status env files after final runs",
+    "exitCode": 0,
+    "status": "pass",
+    "summary": "no listeners, no .env/.dev.vars in git status (fix-round 261020, final)",
+    "ts": "2026-10-20T13:12:21+07:00"
+  }
+]

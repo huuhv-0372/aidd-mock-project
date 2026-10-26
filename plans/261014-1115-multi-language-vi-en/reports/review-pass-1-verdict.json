@@ -1,0 +1,43 @@
+{
+  "score": 8,
+  "criticalCount": 0,
+  "decision": "REWORK",
+  "acceptanceCovered": [
+    "default locale is vi: selector shows VN with VN flag, html lang is vi, UI text identical to before (ID-10, login default VN) — live curl: no cookie -> lang=\"vi\"; scripted diff of all VI literals from HEAD's 43 modified/deleted files: 77 checked, 0 missing outside comments; E2E ID-10",
+    "dropdown lists exactly VN and EN, each with its flag (ID-24, ID-58, dropdown spec A.1/A.2) — language-selector.tsx OPTIONS [VN,EN] + LanguageFlag per option; E2E ID-24/ID-58",
+    "selecting EN switches header, footer, page content and metadata to English from MoMorph localizations, html lang en, URL unchanged (ID-25) — live: NEXT_LOCALE=en -> lang=\"en\", title 'SAA 2025 Award System' on /awards-information; E2E ID-25",
+    "the choice persists across reload and navigation via the NEXT_LOCALE cookie — set-locale-action.ts maxAge 1y path=/; live curl with cookie on /, /login, /awards-information; E2E reload + awards tests",
+    "selecting VN switches back to Vietnamese (ID-26) — E2E ID-26",
+    "language switch works on /login for guests — live guest /login with cookie en -> lang=\"en\"; E2E login guest test",
+    "invalid cookie values fall back to vi and the setLocale server action rejects anything but vi|en — live NEXT_LOCALE=../en -> lang=\"vi\"; unit tests locale.test.ts, resolve-locale-rewrite.test.ts, set-locale-action.test.ts (jp, EN, '', null, object rejected)",
+    "countdown gate, auth redirects, Supabase session cookies and the 404 page keep working; existing E2E suite stays green — live: guest unknown paths 307 /login, authed /login 307 /, /auth/callback not rewritten, authed unknown and /vi/* -> 404 with localized not-found after hydration; rewrite-with-session unit test; E2E 68/68 per evidence"
+  ],
+  "regressionChecked": [
+    "proxy order gate -> updateSession -> auth redirect -> locale rewrite (proxy.ts:14-31)",
+    "Supabase cookie propagation through rewriteWithSession (request cookies + Set-Cookie + no-store headers)",
+    "hand-typed /vi/* and /en/* never serve a page (guest 307, authed 404)",
+    "app/auth/callback untouched by rewrite",
+    "404 status and localized content via [...rest] catch-all",
+    "html lang per locale",
+    "Cache-Control private on rewritten prerendered pages",
+    "proxy matcher exclusions",
+    "VI copy byte-identical to HEAD",
+    "LOGIN_ERROR_MESSAGE export kept for existing E2E",
+    "cross-tab locale change with soft navigation"
+  ],
+  "contractStatus": "CHANGED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [
+    "proxy.ts:36 matcher escapes lost, doubled backslash became single (dot is now a wildcard): /faviconXico bypasses proxy (bare 404 instead of guest 307 -> /login); harmless today but reverses a deliberate guard"
+  ],
+  "findings": [
+    { "severity": "Medium", "category": "Logic", "location": "components/ui/language-selector.tsx:51-56", "summary": "A locale change from another tab followed by a soft navigation leaves the old-locale trees mounted in hidden Activity (3 selectors/footers in DOM, duplicate ids); add a BroadcastChannel + pageshow reload guard", "disposition": "Accept" },
+    { "severity": "Medium", "category": "Logic", "location": "app/[locale]/[...rest]/page.tsx:7-9", "summary": "404 response body is a client-rendered __next_error__ shell (no SSR content, lang or title until JS); likely regression vs HEAD's static root not-found, not confirmed against a HEAD build", "disposition": "Defer" },
+    { "severity": "Low", "category": "Security", "location": "proxy.ts:36", "summary": "Matcher escapes lost (doubled backslash became single), turning favicon.ico/robots.txt/sitemap.xml exclusions into wildcard-dot prefixes that bypass the gate and auth proxy", "disposition": "Accept" },
+    { "severity": "Low", "category": "Maintainability", "location": "lib/supabase/update-session.ts:66-78", "summary": "Vary: Cookie append is overwritten by Next and never reaches the client while the docblock claims it does; reword the comment so Cache-Control private is the stated guard", "disposition": "Accept" },
+    { "severity": "Low", "category": "Error handling", "location": "components/ui/language-selector.tsx:55", "summary": "await setLocale(next) has no catch: a network failure gives an unhandled rejection and a silent no-op", "disposition": "Accept" },
+    { "severity": "Low", "category": "Deployment", "summary": "Cache-Control private on prerendered rewritten routes verified only on next start, not on OpenNext/Workers", "disposition": "Defer" },
+    { "severity": "Low", "category": "Documentation", "summary": "Phase-04 docs/changelog update still pending", "disposition": "Defer" }
+  ]
+}

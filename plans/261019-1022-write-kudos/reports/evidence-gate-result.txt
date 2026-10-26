@@ -1,0 +1,4 @@
+# evidence-gate --stage hard — 2026-10-19T22:26:07+0700
+$ node .claude/skills/_shared/lib/evidence-gate.cjs --evidence-dir <abs plans/261019-1022-write-kudos/evidence> --stage hard
+evidence-gate: SEALED (hard) — evidence verified
+exit=0

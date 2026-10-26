@@ -1,0 +1,42 @@
+{
+  "task": "Homepage SAA phase 06: public homepage (/ in PUBLIC_PATHS), session-aware header (bell + account menu signed in, Đăng nhập link for guests) read server-side in <Suspense>; earlier phases sealed in 80d4baa",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "anonymous visitors can open / and stay on /, seeing header, hero, awards, kudos and footer",
+    "every other non-public path stays default-deny to /login; /login, /auth/callback, /countdown stay reachable; // stays denied",
+    "guest header shows the language selector and a Đăng nhập link to /login, and no bell or account menu",
+    "signed-in header shows bell, language selector and account menu (with working Sign out) and no login link",
+    "session is read server-side with getClaims() inside <Suspense>, so / remains Partial Prerender with no prerender errors",
+    "a forged session cookie renders / as guest and cannot reach protected paths",
+    "countdown test-8: anonymous / on the invalid-env server stays on /"
+  ],
+  "touchpoints": [
+    "lib/auth/constants.ts",
+    "lib/auth/get-is-authenticated.ts",
+    "app/page.tsx",
+    "components/home/home-header.tsx",
+    "components/home/home-class-names.ts",
+    "components/home/header-session-controls.tsx",
+    "components/home/header-controls-placeholder.tsx",
+    "components/home/login-link.tsx",
+    "components/home/signed-in-controls.tsx",
+    "tests/unit/resolve-auth-redirect.test.ts",
+    "tests/unit/get-is-authenticated.test.ts",
+    "tests/e2e/homepage.spec.ts",
+    "tests/e2e/homepage-guest.spec.ts",
+    "tests/e2e/homepage-account-menu.spec.ts",
+    "tests/e2e/countdown-prelaunch-gate.spec.ts"
+  ],
+  "blastRadius": [
+    "every route via proxy default-deny (PUBLIC_PATHS change)",
+    "homepage static shell / PPR",
+    "sign-out flow end state",
+    "countdown prelaunch gate anonymous-root contract"
+  ],
+  "contracts": [
+    "proxy order gate -> getClaims -> auth redirect",
+    "PUBLIC_PATHS (deliberately extended with /)",
+    "HomeHeader prop signOutSlot -> controls (internal only)",
+    "countdown test-8 anonymous-root contract (deliberately changed back to /)"
+  ]
+}

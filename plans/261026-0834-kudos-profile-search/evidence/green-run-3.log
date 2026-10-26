@@ -1,0 +1,80 @@
+
+> aidd-mockproject@0.1.0 test:e2e
+> next build && playwright test tests/e2e/sun-kudos-profile-search
+
+▲ Next.js 16.4.0 (Turbopack)
+- Environments: .env.local
+✓ Running next.config.ts took 126ms
+- Experiments (use with caution):
+  ✓ agentFeedback
+  ✓ authInterrupts
+  · proxyClientMaxBodySize: "26mb"
+  · serverActions
+
+  Creating an optimized production build ...
+⚠ Your version of Next.js is affected by a known security vulnerability. This command is continuing after the upgrade reminder.
+Reference: https://registry.npmjs.org/-/npm/v1/security/advisories/bulk
+✓ Compiled successfully in 16.5s
+  Running TypeScript ...
+  Finished TypeScript in 21.4s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/24) ...
+  Generating static pages using 3 workers (6/24) 
+  Generating static pages using 3 workers (12/24) 
+  Generating static pages using 3 workers (18/24) 
+✓ Generating static pages using 3 workers (24/24) in 3.1s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/[...rest]
+├ ƒ /[locale]/403
+├ ƒ /[locale]/admin
+├ ƒ /[locale]/admin/users
+├ ƒ /[locale]/admin/users/export
+├ ƒ /[locale]/awards-information
+├ ƒ /[locale]/countdown
+├ ƒ /[locale]/login
+├ ƒ /[locale]/profile
+├ ƒ /[locale]/profile/[id]
+├ ƒ /[locale]/sun-kudos
+├ ƒ /[locale]/sun-kudos/[id]
+├ ƒ /[locale]/tieu-chuan-chung
+└ ƒ /auth/callback
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+Running 18 tests using 2 workers
+
+  ok  2 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:27:7 › Tìm kiếm profile Sunner: keyboard › Enter without a pick opens the first suggestion (5.3s)
+  ok  1 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:33:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown then Enter opens row 1 (4.2s)
+  ok  3 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:40:7 › Tìm kiếm profile Sunner: keyboard › ArrowDown twice then Enter opens row 2 (2.0s)
+  ok  4 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:48:7 › Tìm kiếm profile Sunner: keyboard › ArrowUp from nothing picks the last row, ArrowDown on the last wraps to the first; aria tracks the pick (2.1s)
+  ok  5 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:64:7 › Tìm kiếm profile Sunner: keyboard › the magnifier does the same as Enter: opens the first suggestion (2.0s)
+  ok  6 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:70:7 › Tìm kiếm profile Sunner: keyboard › Escape closes the list and keeps the text; Tab closes it too (2.1s)
+  ok  7 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:84:7 › Tìm kiếm profile Sunner: keyboard › 375px: pill under A.1 at the same width, no horizontal scroll, listbox as wide as the pill, rows and magnifier at least 44px (2.2s)
+  ok  9 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:22:7 › Tìm kiếm profile Sunner: type-ahead › 1ce82447 / d3877e54: pill has a magnifier and a combobox with the VI placeholder; pill A.1 stays enabled (1.9s)
+  ok  8 [chromium] › tests\e2e\sun-kudos-profile-search-keyboard.spec.ts:101:7 › Tìm kiếm profile Sunner: keyboard › the first row is the topmost element at its centre at 375 and at 1440 (the Highlight banner does not cover it) (3.0s)
+  ok 11 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:47:7 › Tìm kiếm profile Sunner: type-ahead › Sunner Tester: exactly 10 suggestions out of 12 matches (1.9s)
+  ok 10 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:29:7 › Tìm kiếm profile Sunner: type-ahead › Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent (2.3s)
+  ok 12 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:53:7 › Tìm kiếm profile Sunner: type-ahead › click a suggestion: URL becomes /profile/{id} of that Sunner (1.6s)
+  ok 13 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:60:7 › Tìm kiếm profile Sunner: type-ahead › zzzz: one status line 'Không tìm thấy Sunner nào.', no options, Enter does not navigate (2.3s)
+  ok 14 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:71:7 › Tìm kiếm profile Sunner: type-ahead › 9e689933: maxlength 100 stops the 101st character; a 100-character query is searched without an error (2.5s)
+  ok 15 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:84:7 › Tìm kiếm profile Sunner: type-ahead › blank or spaces: Enter and the magnifier do nothing; no empty query is sent (2.6s)
+[WebServer] [kudos] kudos_search_sunners failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected search failure boom-secret-detail'
+[WebServer] }
+  ok 17 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:117:7 › Tìm kiếm profile Sunner: type-ahead › server error: generic line, the internal detail never reaches the page, and the box works again (1.5s)
+  ok 16 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:103:7 › Tìm kiếm profile Sunner: type-ahead › a slow answer for an old query never replaces the newer one (3.3s)
+  ok 18 [chromium] › tests\e2e\sun-kudos-profile-search.spec.ts:129:7 › Tìm kiếm profile Sunner: type-ahead › EN: placeholder and the no-result line follow the NEXT_LOCALE cookie (1.3s)
+
+  18 passed (52.7s)

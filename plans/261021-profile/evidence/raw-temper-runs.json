@@ -1,0 +1,104 @@
+[
+  {
+    "command": "npm run test:e2e -- tests/e2e/profile.spec.ts",
+    "exitCode": 1,
+    "summary": "RED (phase 01, before any app code): next build ok; 3 passed, 27 failed on the missing /profile route (404)",
+    "ts": "2026-10-21T17:40:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 1,
+    "summary": "merge of main into feature.new.profiles: 270 passed, 27 failed (all 27 = profile.spec.ts RED, route not built yet)",
+    "ts": "2026-10-22T10:30:00+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "eslint: no findings on the integrated tree (02a + 02b + 02c)",
+    "ts": "2026-10-22T13:20:00+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit -p .",
+    "exitCode": 0,
+    "summary": "typecheck clean on the integrated tree",
+    "ts": "2026-10-22T13:20:30+07:00"
+  },
+  {
+    "command": "npx vitest run",
+    "exitCode": 0,
+    "summary": "51 files, 826 tests passed, 0 failed",
+    "ts": "2026-10-22T13:21:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "GREEN: next build ok; full E2E 297 passed, 0 failed (9.9m), incl. profile.spec.ts 30/30",
+    "ts": "2026-10-22T13:35:00+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "fix round 1 (visual + DRY): eslint no findings",
+    "ts": "2026-10-22T15:05:00+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit -p .",
+    "exitCode": 0,
+    "summary": "fix round 1: typecheck clean",
+    "ts": "2026-10-22T15:05:30+07:00"
+  },
+  {
+    "command": "npx vitest run",
+    "exitCode": 0,
+    "summary": "fix round 1: 51 files, 826 tests passed",
+    "ts": "2026-10-22T15:06:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "fix round 1: next build ok; full E2E 297 passed, 0 failed (7.1m)",
+    "ts": "2026-10-22T15:15:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/profile.spec.ts -g \"title pencil\"",
+    "exitCode": 1,
+    "summary": "RED for the owner decision (pencil only on own Kudos) on the pre-fix card: Đã nhận list had 3 pencils, expected 0",
+    "ts": "2026-10-22T16:20:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e -- tests/e2e/profile.spec.ts -g \"title pencil\"",
+    "exitCode": 0,
+    "summary": "GREEN after KudoPostCard renders the pencil only when is_mine",
+    "ts": "2026-10-22T16:25:00+07:00"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "final code: eslint no findings",
+    "ts": "2026-10-22T16:27:00+07:00"
+  },
+  {
+    "command": "npx tsc --noEmit -p .",
+    "exitCode": 0,
+    "summary": "final code: typecheck clean",
+    "ts": "2026-10-22T16:27:30+07:00"
+  },
+  {
+    "command": "npx vitest run",
+    "exitCode": 0,
+    "summary": "final code: 51 files, 826 tests passed",
+    "ts": "2026-10-22T16:28:00+07:00"
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 0,
+    "summary": "final code: next build ok; full E2E 298 passed, 0 failed (5.1m)",
+    "ts": "2026-10-22T16:35:00+07:00"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build && npx wrangler deploy --dry-run",
+    "exitCode": 0,
+    "summary": "Worker Total Upload 10879.26 KiB / gzip 2259.13 KiB (View Kudo baseline 2241 KiB; +18 KiB, no duplicated chunk, under 3 MiB)",
+    "ts": "2026-10-22T16:45:00+07:00"
+  }
+]

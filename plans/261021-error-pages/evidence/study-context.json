@@ -1,0 +1,26 @@
+{
+  "task": "Error pages (VI/EN): redesign the 404 page per Figma 1378:5063 and add a 403 page per Figma 2182:9291 (route /403 and Next forbidden() via forbidden.tsx), both keeping the back-to-home button",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "an unknown path returns HTTP 404 and shows the redesigned not-found page with its title, the robot illustration, the description and a back-to-home button that goes to /",
+    "/403 returns HTTP 403 for guests and signed-in users and shows the Access Denied page with its title, the monitor illustration, its own description and a back-to-home button that goes to /",
+    "any route can call forbidden() and get the same 403 page",
+    "both pages match their Figma exports at 1440 wide (dark ribbon background, centred title, illustration and description) and have no horizontal scroll at 375",
+    "every string switches between VI and EN; the existing unit and E2E suites stay green"
+  ],
+  "touchpoints": [
+    "app/[locale]/not-found.tsx", "app/[locale]/forbidden.tsx", "app/[locale]/403/page.tsx", "components/not-found/*", "components/errors/*",
+    "next.config.ts", "lib/auth/constants.ts", "messages/vi/*", "messages/en/*", "public/images/errors/*", "tests/e2e/error-pages.spec.ts", "tests/unit/*"
+  ],
+  "blastRadius": [
+    "next.config.ts experimental flag (build + OpenNext Worker)",
+    "auth gate PUBLIC_PATHS",
+    "every unknown URL (404 page) and specs that assert it (awards-information.spec.ts, language-switch-authed.spec.ts)",
+    "Dictionary type shared by all pages"
+  ],
+  "contracts": [
+    "NotFoundContent props unchanged ({ copy: Record<Locale, Dictionary['notFound']> })",
+    "new Dictionary key forbidden { metaTitle, title, body, homeLink }",
+    "PUBLIC_PATHS adds /403 only"
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "score": 8.6,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "an unknown path returns HTTP 404 and shows the redesigned not-found page with its title, the robot illustration, the description and a back-to-home button that goes to /",
+    "/403 returns HTTP 403 for guests and signed-in users and shows the Access Denied page with its title, the monitor illustration, its own description and a back-to-home button that goes to /",
+    "any route can call forbidden() and get the same 403 page",
+    "both pages match their Figma exports at 1440 wide (dark ribbon background, centred title, illustration and description) and have no horizontal scroll at 375",
+    "every string switches between VI and EN; the existing unit and E2E suites stay green"
+  ],
+  "regressionChecked": [
+    "auth gate default-deny: /403 exact only; /403/x and /vi/403 redirect to /login (unit + live probe)",
+    "guest unknown path still 307 /login (E2E + Worker preview)",
+    "language-switch-authed EN 404 case updated and passing in full run",
+    "no existing route calls forbidden()/unauthorized(); no loading.tsx above /403",
+    "/403 dynamic (not prerendered), status 403, noindex, private no-cache, no Set-Cookie",
+    "Dictionary type completeness enforced by en: Dictionary (tsc 0)",
+    "Worker bundle size within limit (gzip 2272.13 KiB)"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "Medium",
+      "category": "evidence",
+      "location": "plans/261021-error-pages/evidence/raw-temper-runs.json:19",
+      "summary": "Post-fix error-pages E2E run (33/33) not recorded; evidence ends on red runs",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "a11y/seo",
+      "location": "app/[locale]/forbidden.tsx:17",
+      "summary": "Boundary serves __next_error__ client shell: no lang/h1 until hydration (known, pre-existing for 404)",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "error-boundaries",
+      "location": "app/[locale]/403/page.tsx:3",
+      "summary": "Future routes calling forbidden() after streaming starts would return 200; document the rule",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "config",
+      "location": "next.config.ts:8",
+      "summary": "authInterrupts also enables unauthorized() (no unauthorized.tsx); try/catch must rethrow interrupts",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "tests",
+      "location": "tests/e2e/error-pages.spec.ts:145",
+      "summary": "Guest /403 E2E asserts status and path only, not content",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "tests",
+      "location": "tests/e2e/error-pages.spec.ts:80",
+      "summary": "hasBackground probe redundant after the new poll; no assertion weakened",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "visual",
+      "location": "components/errors/error-screen.tsx:24",
+      "summary": "Group not vertically centred (added button); background ~2.7 levels darker (known, accepted)",
+      "disposition": "Defer"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": true
+  }
+}

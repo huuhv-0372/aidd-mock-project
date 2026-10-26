@@ -1,0 +1,116 @@
+[
+ {
+  "command": "npx playwright test tests/e2e/edit-kudo.spec.ts --reporter=list (RED, HEAD build)",
+  "exitCode": 1,
+  "summary": "RED: 18 run, 0 passed, 18 failed on the missing edit button/dialog/counter; regression write-kudo/profile/sun-kudos/kudo-detail 158 passed",
+  "ts": "2026-10-23T00:30:00+07:00"
+ },
+ {
+  "command": "npx vitest run (02b)",
+  "exitCode": 0,
+  "summary": "54 files, 918/918 passed after phase 02a+02b",
+  "ts": "2026-10-23T07:20:00+07:00"
+ },
+ {
+  "command": "npx next build",
+  "exitCode": 1,
+  "summary": "Stopped on Next.js SecurityFatalError nudge (Next 16.4.0 advisory); no compile error. Owner decides on upgrade; retried",
+  "ts": "2026-10-23T07:48:41+07:00"
+ },
+ {
+  "command": "npx next build (retry)",
+  "exitCode": 0,
+  "summary": "Compiled successfully in 7.2s; all routes built",
+  "ts": "2026-10-23T07:49:49+07:00"
+ },
+ {
+  "command": "npx playwright test tests/e2e/edit-kudo.spec.ts --reporter=list",
+  "exitCode": 1,
+  "summary": "15 passed, 3 failed: byte-for-byte no-change save (CRLF in p_content), empty-hashtags error line, EN title helper (test bug, fixed after)",
+  "ts": "2026-10-23T07:51:34+07:00"
+ },
+ {
+  "command": "npx playwright test tests/e2e/edit-kudo.spec.ts --reporter=list (after EN helper fix)",
+  "exitCode": 1,
+  "summary": "16 passed, 2 failed: byte-for-byte (CRLF) and empty-hashtags error line",
+  "ts": "2026-10-23T07:57:38+07:00"
+ },
+ {
+  "command": "npx playwright test (full suite)",
+  "exitCode": 1,
+  "summary": "315 passed, 2 failed of 317; both failures are edit-kudo.spec.ts; all other specs green",
+  "ts": "2026-10-23T08:06:10+07:00"
+ },
+ {
+  "command": "npx vitest run",
+  "exitCode": 0,
+  "summary": "54 files, 918/918 passed",
+  "ts": "2026-10-23T08:07:06+07:00"
+ },
+ {
+  "command": "npm run lint",
+  "exitCode": 0,
+  "summary": "eslint clean",
+  "ts": "2026-10-23T08:07:10+07:00"
+ },
+ {
+  "command": "npx playwright test tests/e2e/edit-kudo.spec.ts --repeat-each=3 (after wait fix)",
+  "exitCode": 1,
+  "summary": "48 passed, 6 failed of 54: only the 2 known defects x3; 16 tests stable",
+  "ts": "2026-10-23T08:16:14+07:00"
+ },
+ {
+  "command": "npx vitest run (polish round 1)",
+  "exitCode": 0,
+  "summary": "54 files, 922/922 passed (+4; CRLF, linked mention, origin pin RED first)",
+  "ts": "2026-10-23T08:30:00+07:00"
+ },
+ {
+  "command": "npx next build (retry after security nudge)",
+  "exitCode": 0,
+  "summary": "Compiled successfully; 20 static pages; no warnings",
+  "ts": "2026-10-23T08:38:48+07:00"
+ },
+ {
+  "command": "npx playwright test tests/e2e/edit-kudo.spec.ts --reporter=list",
+  "exitCode": 0,
+  "summary": "GREEN 18/18 after polish round 1 (test-side wait for seeded chips added before the clear loop)",
+  "ts": "2026-10-23T08:42:46+07:00"
+ },
+ {
+  "command": "npx playwright test tests/e2e/edit-kudo.spec.ts --repeat-each=3",
+  "exitCode": 0,
+  "summary": "54 passed, 0 flaky",
+  "ts": "2026-10-23T08:45:01+07:00"
+ },
+ {
+  "command": "npx playwright test (full)",
+  "exitCode": 0,
+  "summary": "317 passed, 0 failed (8.8 min); Write Kudo, board, profile specs green",
+  "ts": "2026-10-23T08:54:06+07:00"
+ },
+ {
+  "command": "npx vitest run",
+  "exitCode": 0,
+  "summary": "54 files, 922 tests passed",
+  "ts": "2026-10-23T08:56:37+07:00"
+ },
+ {
+  "command": "npm run lint",
+  "exitCode": 0,
+  "summary": "eslint clean",
+  "ts": "2026-10-23T08:56:57+07:00"
+ },
+ {
+  "command": "npx opennextjs-cloudflare build && npx wrangler deploy --dry-run",
+  "exitCode": 0,
+  "summary": "Worker Total Upload 10884.11 KiB / gzip 2258.47 KiB (Profile baseline 2259 KiB; no growth; under 3 MiB). First attempt stopped on the Next 16.4.0 security nudge, retry passed",
+  "ts": "2026-10-23T09:10:00+07:00"
+ },
+ {
+  "command": "psql (owner, real Supabase): migrations/20261023100000_create_update_kudo_rpc.sql + verify/20261023100000_create_update_kudo_rpc_verify.sql",
+  "exitCode": 0,
+  "summary": "Real SQL verify 11/11 PASS (P1 metadata/grants/order, U0-U9 incl. not_found for other user, forbidden, anon 42501); screenshot reports/sql-verify-261023-update-kudo.png",
+  "ts": "2026-10-23T09:30:00+07:00"
+ }
+]

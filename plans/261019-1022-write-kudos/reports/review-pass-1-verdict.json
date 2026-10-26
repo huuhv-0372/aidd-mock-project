@@ -1,0 +1,48 @@
+{
+  "score": 6,
+  "criticalCount": 1,
+  "decision": "REWORK",
+  "acceptanceCovered": [
+    "clicking the Widget on /, /awards-information and /sun-kudos opens the quick-action menu with Thể lệ, Viết KUDOS and a close button; close or Esc collapses it — components/site-shell/widget-button.tsx (open/close + useDismissable Esc/outside), wired on all 3 pages via ComposerWidget; kudos-quick-actions.spec.ts 15/15 green + repeat-each 5 (e2e-green-evidence.md)",
+    "Thể lệ opens the rules panel with Figma copy, 4 hero badges and 6 icons; Đóng closes it and Viết KUDOS in the panel opens the Viết Kudo modal — kudos-rules-dialog.tsx footer onClose + onWriteKudo→openComposer, kudos-rules-content.tsx with HeroBadge medium + public/images/kudos/rules/*; quick-actions spec green",
+    "the compose pill on /sun-kudos opens the Viết Kudo modal; a guest on / choosing Viết KUDOS is sent to /login — kudos-compose-trigger.tsx onClick=openComposer; widget-session-gate.tsx passes LOGIN_PATH for guests and the provider routes rules-panel Viết KUDOS there too; E2E green (fallback-window edge L5 noted)",
+    "the modal shows Người nhận, Danh hiệu, editor, Hashtag, Image and the anonymous checkbox (unchecked) in Figma order with Hủy and Gửi; Gửi stays disabled until recipient, title, content and at least one hashtag are filled, and each required field shows its error after blur — use-write-kudo-form.ts canSend/touched logic; write-kudo.spec.ts ID-3/4/5/6/48/50-52 green",
+    "recipient search suggests up to 10 Sunners accent-insensitively, trims input, excludes the current user, and selecting one fills the field; typing @ in the editor suggests colleagues and inserts a mention — SQL kudos_search_sunners read: unaccent+lower, btrim, p.id<>uid, limit clamped 10; recipient-picker.tsx + kudo-mention-extension.ts; E2E ID-26 green",
+    "editor toolbar applies bold, italic, strike, numbered list, quote and inserts links through the Add link dialog (Text 1-100 non-blank, Link http/https 5-2048) — kudo-rich-editor.tsx StarterKit config, add-link-validation.ts rules, serializer safeHref; write-kudo.spec Add link block + kudo-content-markdown unit tests green",
+    "hashtags come only from the DB catalog, max 5 (remaining rows disabled), chips removable; images accept jpg/png/webp up to 5 MB, max 5 with + Image hidden at 5, thumbnails removable, other formats show an invalid-format error — get-hashtag-options-action.ts reads hashtags table; hashtag-picker full→aria-disabled; image-picker hides + at 5; use-image-attachments type/size checks; E2E green",
+    "Gửi validates on the server with zod, uploads images to kudo-images/{uid}/, calls create_kudo, removes uploaded images when the RPC fails, closes the modal on success and the new Kudo appears at the top of the /sun-kudos feed; Hủy closes and discards — create-kudo-action.ts:83-142 (zod first, sniff, session upload, RPC, removeUploaded on error), provider onSent→router.refresh + feedKey with first row id; unit create-kudo-action.test + E2E green. NOTE: the {uid}/ path is the Critical C1 anonymity leak",
+    "create_kudo takes the sender from auth.uid(), rejects non-allowed accounts, self-recipient, out-of-range title/content, 0 or more than 5 or unknown hashtags, images outside the sender folder or not in storage, and alias when not anonymous; kudos_search_sunners never returns email; both are executable by authenticated only — proven by reading migration lines 106-185 (v_uid, forbidden first, recipient<>uid, title 1-100, content 1-5000 non-blank, cardinality/distinct/catalog count, anchored own-folder regex + storage.objects owner_id, alias only when anonymous), search returns table without email, grants lines 224-228",
+    "every new string switches between VI and EN; the existing unit and E2E suites stay green — messages/{vi,en}/kudos-compose.ts typed via Dictionary (missing key = compile error); tsc 0, 404 unit, E2E 165/165 per e2e-green-evidence.md"
+  ],
+  "regressionChecked": [
+    "homepage guest render — only WidgetSessionGate leaf reads the session, inside Suspense, connection() before getIsAuthenticated try/catch; page stays public",
+    "shared fake Supabase for all authed E2E — 95 pre-existing tests stayed green in full run #2",
+    "next.config body limits — serverActions.bodySizeLimit and proxyClientMaxBodySize both 26mb; workerd 5x5MB not exercised (M1)",
+    "Worker bundle size — gzip 2217 KiB (−2 KiB), 0 Tiptap/ProseMirror in worker.js; WriteKudoDialog via next/dynamic ssr:false",
+    "All Kudos feed state after router.refresh — feedKey adds the first row id; the only router.refresh caller is the composer onSent",
+    "Dictionary type shared by all pages — kudosCompose added to vi (source type) and en (typed Dictionary); lib/validation/kudos.ts imported type-only by client files, so getSupabaseEnv never runs in the browser"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [
+    "26mb Server Action body (5 x 5 MB images) succeeds within workerd memory on npm run preview — not run (e2e-green-evidence.md says so)",
+    "create_kudo owner role bypasses RLS on storage.objects on the target Supabase project — guarded by verify S2 but SQL not executed"
+  ],
+  "reachableRegressions": [],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": false
+  },
+  "findings": [
+    { "severity": "Critical", "category": "security/privacy", "location": "supabase/migrations/20261019110000_create_kudo_write.sql:145-146", "summary": "Anonymous Kudo images live at kudo-images/{sender_uid}/...; kudos_rows returns the URLs to every viewer and the uid maps to a name via kudos_search_sunners/person JSON, so the anonymous sender is revealed. Also lib/kudos/create-kudo-action.ts:61 and verify B6. Fix: identity-free object names + owner_id-based Storage policies + regex without uid.", "disposition": "Accept" },
+    { "severity": "Medium", "category": "performance/ops", "location": "next.config.ts:678-679", "summary": "26mb body plus FormData plus per-file Uint8Array copies is about 3x25MB in a 128MB isolate; never run on workerd. Run preview with 5x5MB; sniff file.slice and upload the File to avoid copies.", "disposition": "Accept" },
+    { "severity": "Medium", "category": "security/dos", "location": "lib/kudos/create-kudo-action.ts:90-103", "summary": "Images are read and sniffed before getClaims; a guest can POST the action to public / and make the Worker buffer and parse up to 26MB. Move getClaims before inspectKudoImage.", "disposition": "Accept" },
+    { "severity": "Medium", "category": "privacy", "location": "lib/kudos/kudo-image-file.ts:39-47", "summary": "EXIF (GPS/device/artist) is published unchanged in a public bucket; can leak location and de-anonymise. Strip APP1 or re-encode.", "disposition": "Defer" },
+    { "severity": "Low", "category": "ux", "location": "components/kudos-compose/use-write-kudo-form.ts:87", "summary": "Server images='size' is shown with the imageFormat message; map size to copy.errors.imageSize.", "disposition": "Accept" },
+    { "severity": "Low", "category": "data-integrity", "location": "supabase/migrations/20261019110000_create_kudo_write.sql:147-159", "summary": "Duplicate image URLs are accepted (direct RPC call); add a count(distinct) check.", "disposition": "Accept" },
+    { "severity": "Low", "category": "security", "location": "supabase/migrations/20261019110000_create_kudo_write.sql:129-132", "summary": "Content link targets are not checked in SQL; a direct PostgREST call bypasses zod. Safe while the board renders plain text; any future Markdown renderer must sanitise on read.", "disposition": "Defer" },
+    { "severity": "Low", "category": "robustness", "location": "lib/kudos/kudo-content-markdown.ts:45-49", "summary": "Mention id is not checked as a uuid in the serializer; a crafted paste makes the whole send fail with a generic error.", "disposition": "Defer" },
+    { "severity": "Low", "category": "ux", "location": "app/[locale]/page.tsx:154-156", "summary": "The Suspense fallback widget has no guest href; a guest clicking before the gate streams in opens the modal instead of going to /login.", "disposition": "Defer" }
+  ]
+}

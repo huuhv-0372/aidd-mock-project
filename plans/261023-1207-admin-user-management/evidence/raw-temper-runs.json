@@ -1,0 +1,206 @@
+[
+  {
+    "command": "npx tsc --noEmit (controller, not re-run)",
+    "exitCode": 0,
+    "summary": "Reported by controller: typecheck clean",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npx eslint <changed files> (controller, not re-run)",
+    "exitCode": 0,
+    "summary": "Reported by controller: lint clean on changed files",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npx vitest run (controller, not re-run)",
+    "exitCode": 0,
+    "summary": "Reported by controller: 63 files, 1047 passed",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npm run build (run 1)",
+    "exitCode": 1,
+    "summary": "Stopped on Next 16.4.0 SecurityFatalError nudge; no compile error; not retried-away, retried below",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npm run build (run 2, retry)",
+    "exitCode": 0,
+    "summary": "Compiled successfully in 30.0s; all admin routes built; no [auth]/[admin]/HANGING_PROMISE log lines",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npx playwright test tests/e2e/admin-users --repeat-each=3",
+    "exitCode": 0,
+    "summary": "117 passed (39 cases x 3), 0 failed, 0 flaky in this run",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npx playwright test (full suite)",
+    "exitCode": 1,
+    "summary": "355 passed, 1 failed of 356; failure admin-users-actions.spec.ts:78 (menu item not found, race in actions menu, see report)",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npx playwright test tests/e2e/admin-users-actions.spec.ts:78 --repeat-each=5",
+    "exitCode": 1,
+    "summary": "4 passed, 1 failed of 5: same flaky race (flake rate about 1 in 5)",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build (run 1)",
+    "exitCode": 1,
+    "summary": "Inner npm run build stopped on Next security nudge; retried",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build (run 2, retry)",
+    "exitCode": 0,
+    "summary": "Worker build produced .open-next/worker.js",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run",
+    "exitCode": 0,
+    "summary": "Total Upload 11312.20 KiB / gzip 2347.54 KiB (baseline 2258 KiB, +89.5 KiB; under 3 MiB)",
+    "ts": "2026-10-23T14:37:18+0700"
+  },
+  {
+    "command": "npx vitest run",
+    "exitCode": 1,
+    "summary": "GREEN 2: 63 files, 1 failed / 62 passed; 1052 of 1053 tests passed. Failure tests/unit/kudo-content-blocks.test.ts:92 (Kudos timing ceiling 250 ms, measured 290.8 ms under 63-worker load); pre-existing test, not admin",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npx vitest run tests/unit/kudo-content-blocks.test.ts (x3 isolated)",
+    "exitCode": 0,
+    "summary": "GREEN 2 flake check: 25/25 passed in each of 3 isolated runs; flaky under parallel load only",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "GREEN 2: typecheck clean",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "GREEN 2: eslint clean, no warnings in log",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npm run build (run 1)",
+    "exitCode": 1,
+    "summary": "GREEN 2: stopped on Next 16.4.0 SecurityFatalError nudge; no compile error; retried",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npm run build (run 2, retry)",
+    "exitCode": 0,
+    "summary": "GREEN 2: compiled, TypeScript pass, 24 static pages, admin routes built; only the security nudge warning",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npx playwright test tests/e2e/admin-users-actions.spec.ts --repeat-each=10",
+    "exitCode": 0,
+    "summary": "GREEN 2: 50 passed (5 tests x 10), 0 failed, 0 flaky; the former race (line 78) now 10/10",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npx playwright test tests/e2e/admin-users --repeat-each=3",
+    "exitCode": 0,
+    "summary": "GREEN 2: 117 passed (39 cases x 3), 0 failed, 0 flaky",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npx playwright test (full suite)",
+    "exitCode": 0,
+    "summary": "GREEN 2: 356 passed, 0 failed, 0 flaky, 6.6 min",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "node visual-capture.mjs (1440 full, 768, 375 full, account menu 1440)",
+    "exitCode": 0,
+    "summary": "GREEN 2: 4 PNGs written to reports/visual; measurements in scratchpad visual-measure.json; no scrollbar, clientWidth = viewport",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build (run 1)",
+    "exitCode": 1,
+    "summary": "GREEN 2: inner next build stopped on Next security nudge; retried",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npx opennextjs-cloudflare build (run 2, retry)",
+    "exitCode": 0,
+    "summary": "GREEN 2: Worker bundle saved to .open-next/worker.js",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npx wrangler deploy --dry-run",
+    "exitCode": 0,
+    "summary": "GREEN 2: Total Upload 11313.69 KiB / gzip 2347.94 KiB (GREEN 1 2347.54 KiB, +0.40 KiB)",
+    "ts": "2026-10-23T16:44:46+0700"
+  },
+  {
+    "command": "npx vitest run (controller re-run 1 after GREEN 2)",
+    "exitCode": 0,
+    "summary": "63 files, 1053/1053 passed; the GREEN 2 failure (kudo-content-blocks.test.ts:92 timing ceiling 250ms, 290ms under load) did not recur; file unchanged vs main",
+    "ts": "2026-10-23T09:46:30.411Z"
+  },
+  {
+    "command": "npx vitest run (controller re-run 2 after GREEN 2)",
+    "exitCode": 0,
+    "summary": "63 files, 1053/1053 passed",
+    "ts": "2026-10-23T09:46:30.411Z"
+  },
+  {
+    "command": "npx vitest run (GREEN 3, final code)",
+    "exitCode": 0,
+    "summary": "63 files, 1054/1054 passed (GREEN 2 was 1053; +1 repeated-userId export case); 0 failed, 0 skipped",
+    "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+    "command": "npx tsc --noEmit (GREEN 3)",
+    "exitCode": 0,
+    "summary": "typecheck clean, no diagnostics",
+    "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+    "command": "npm run lint (GREEN 3)",
+    "exitCode": 0,
+    "summary": "eslint clean, no errors or warnings reported",
+    "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+    "command": "npm run build (GREEN 3, attempt 1)",
+    "exitCode": 1,
+    "summary": "Next 16.4.0 SecurityFatalError upgrade nudge stopped the build before the Worker/static step; not a code failure; upgrade command NOT run",
+    "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+    "command": "npm run build (GREEN 3, attempt 2 retry)",
+    "exitCode": 0,
+    "summary": "Compiled successfully; 24/24 static pages; admin routes /[locale]/admin/users and export listed as dynamic; Proxy (Middleware) built",
+    "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+    "command": "npx playwright test tests/e2e/admin-users-actions.spec.ts --repeat-each=10 (GREEN 3)",
+    "exitCode": 0,
+    "summary": "50 passed (5 tests x 10), 0 failed, 0 flaky (2.3m)",
+    "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+    "command": "npx playwright test tests/e2e/admin-users --repeat-each=3 (GREEN 3)",
+    "exitCode": 0,
+    "summary": "117 passed (39 tests x 3), 0 failed, 0 flaky (2.3m)",
+    "ts": "2026-10-23T11:37:11.000Z"
+  },
+  {
+    "command": "npx playwright test (full E2E, GREEN 3)",
+    "exitCode": 0,
+    "summary": "356 passed, 0 failed, 0 flaky, 0 skipped (6.9m); matches expected 356",
+    "ts": "2026-10-23T11:37:11.000Z"
+  }
+]

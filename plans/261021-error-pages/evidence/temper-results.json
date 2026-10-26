@@ -1,0 +1,60 @@
+{
+  "commands": [
+    {
+      "command": "npx playwright test tests/e2e/error-pages.spec.ts --repeat-each=3 (via npm run test:e2e, fresh next build)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) 33 passed (11 x 3), 0 failed, 0 flaky, after the controller added the h1 + error-bg wait to expectBackgroundAndFit; ts approximate (run finished before the lint run below)",
+      "ts": "2026-10-21T11:31:00+07:00"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) eslint clean, frozen code",
+      "ts": "2026-10-21T11:33:43+07:00"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) no type errors",
+      "ts": "2026-10-21T11:33:59+07:00"
+    },
+    {
+      "command": "npx vitest run",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) 40 files, 565 tests passed",
+      "ts": "2026-10-21T11:34:25+07:00"
+    },
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(final) next build + Playwright 229 passed, 0 failed, 5.8 m",
+      "ts": "2026-10-21T11:41:20+07:00"
+    },
+    {
+      "command": "npx opennextjs-cloudflare build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(product code unchanged since; only the spec wait changed) OpenNext build complete, .open-next/worker.js saved; warnings only: Windows not fully supported, Node middleware experimental",
+      "ts": "2026-10-21T11:13:38+07:00"
+    },
+    {
+      "command": "npx wrangler deploy --dry-run --outdir C:/Users/HOANGV~1.HUU/AppData/Local/Temp/claude/c--Users-hoang-van-huu-Downloads-AI-AIDD-aidd-mockproject/026bc11f-bafc-4537-8784-9a4397c64892/scratchpad/wrangler-dry",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(product code unchanged since; only the spec wait changed) Total Upload 10924.37 KiB, gzip 2272.13 KiB (limit 3072 KiB)",
+      "ts": "2026-10-21T11:15:50+07:00"
+    },
+    {
+      "command": "npx opennextjs-cloudflare preview; curl http://localhost:8787/403 (NEXT_LOCALE vi and en); curl http://localhost:8787/error-pages-no-such-page (guest)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "(product code unchanged since; only the spec wait changed) /403 -> 403 in VI (Truy cap bi tu choi) and EN (Access Denied); guest unknown path -> 307 /login; no 1101 or 500; signed-in Worker path not verified (build inlines real Supabase env)",
+      "ts": "2026-10-21T11:17:24+07:00"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "score": 8,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "DEC-001 pre-launch non-static routes 307 -> /countdown (live probe + unit + e2e test-1)",
+    "DEC-002 post-launch /countdown -> /login (unit + e2e test-7)",
+    "BR-001 epoch-ms comparison, timezone independent (unit + e2e test-4)",
+    "BR-002 missing/invalid env fail-open + console.error without value (unit + e2e test-8)",
+    "BR-003/ALG-001 Days/Hours/Minutes split, pad, clamp (unit split-remaining-time)",
+    "D001 server clock offset (unit server-clock-offset; client lag direction safe)",
+    "FR-103 router.replace('/login') at zero (e2e test-6)",
+    "D002 one row at 375/768/1512 (visual-report + actual-375.png inspected)",
+    "Static assets not gated (e2e test-2 + live probe)",
+    "cacheComponents PPR build passes (/countdown partial prerender)"
+  ],
+  "regressionChecked": [
+    "npx tsc --noEmit exit 0",
+    "npm run lint exit 0",
+    "npm test 48/48",
+    "npm run build exit 0",
+    "live proxy probe on next start"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    { "severity": "Medium", "category": "security", "location": "proxy.ts:16", "summary": "Extension-based matcher exclusion lets any future dotted page/API path (/users/a.b, /api/x.csv) bypass the prelaunch gate; restrict to explicit asset folders/extensions", "disposition": "Accept" },
+    { "severity": "Medium", "category": "correctness", "location": "components/countdown/countdown-timer.tsx:20-32", "summary": "redirected ref survives a proxy bounce (same component reconciled with new serverNow), so after one premature redirect the timer never redirects at real launch; reset ref per effect or key by serverNow", "disposition": "Accept" },
+    { "severity": "Medium", "category": "observability", "location": "lib/event/get-event-start-at.ts:16-18", "summary": "Invalid EVENT_START_AT logs console.error on every proxied request (no value leaked); memoise per isolate", "disposition": "Defer" },
+    { "severity": "Medium", "category": "test-coverage", "location": "tests/e2e/countdown-prelaunch-gate.spec.ts:37-43", "summary": "test-1 claims 307 but asserts only final URL; test-6 (:119) never asserts no-early/single /login request; no hydration-error guard", "disposition": "Accept" },
+    { "severity": "Low", "category": "performance", "location": "app/countdown/page.tsx:24", "summary": "Suspense fallback height omits scaled gap/label (122.88s+48px vs 122.88s+21s+48s), causing ~10-20px CLS", "disposition": "Accept" },
+    { "severity": "Low", "category": "maintainability", "location": "components/countdown/countdown-screen.tsx:17", "summary": "next/image priority is deprecated in Next 16 (use preload); 3.1MB background PNG needs Workers image optimisation or pre-compression", "disposition": "Accept" },
+    { "severity": "Low", "category": "a11y", "location": "components/countdown/countdown-unit.tsx:49-61", "summary": "Group aria-label plus readable digit spans and visible label double-announce; aria-hide inner spans; English labels lack lang=en", "disposition": "Accept" },
+    { "severity": "Low", "category": "correctness", "location": "components/countdown/countdown-timer.tsx:23", "summary": "Offset sampled after hydration makes the client trail the server by time-to-hydrate; redirect slightly late (safe direction)", "disposition": "Reject" },
+    { "severity": "Low", "category": "correctness", "location": "app/countdown/page.tsx:14", "summary": "redirect() inside streamed Suspense slot yields a client meta redirect, not a 307; unreachable while proxy fails open", "disposition": "Reject" },
+    { "severity": "Low", "category": "api-contract", "location": "proxy.ts:16", "summary": "Gate covers /api/* and POSTs (307 to an HTML page); decide on an api exclusion when the first route handler lands", "disposition": "Defer" }
+  ]
+}

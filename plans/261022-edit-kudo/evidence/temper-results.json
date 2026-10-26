@@ -1,0 +1,39 @@
+{
+ "commands": [
+  {
+   "command": "npx playwright test (full)",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "317 passed, 0 failed (8.8 min); Write Kudo, board, profile specs green",
+   "ts": "2026-10-23T08:54:06+07:00"
+  },
+  {
+   "command": "npx vitest run",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "54 files, 922 tests passed",
+   "ts": "2026-10-23T08:56:37+07:00"
+  },
+  {
+   "command": "npm run lint",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "eslint clean",
+   "ts": "2026-10-23T08:56:57+07:00"
+  },
+  {
+   "command": "npx opennextjs-cloudflare build && npx wrangler deploy --dry-run",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "Worker Total Upload 10884.11 KiB / gzip 2258.47 KiB (Profile baseline 2259 KiB; no growth; under 3 MiB). First attempt stopped on the Next 16.4.0 security nudge, retry passed",
+   "ts": "2026-10-23T09:10:00+07:00"
+  },
+  {
+   "command": "psql (owner, real Supabase): migrations/20261023100000_create_update_kudo_rpc.sql + verify/20261023100000_create_update_kudo_rpc_verify.sql",
+   "exitCode": 0,
+   "status": "pass",
+   "summary": "Real SQL verify 11/11 PASS (P1 metadata/grants/order, U0-U9 incl. not_found for other user, forbidden, anon 42501); screenshot reports/sql-verify-261023-update-kudo.png",
+   "ts": "2026-10-23T09:30:00+07:00"
+  }
+ ]
+}

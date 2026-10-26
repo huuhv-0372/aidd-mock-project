@@ -1,0 +1,15 @@
+[33m(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.[39m
+
+ RUN  v5.0.3 C:/Users/hoang.van.huu/Downloads/AI/AIDD/aidd-mockproject
+
+
+ Test Files  64 passed (64)
+      Tests  1067 passed (1067)
+   Start at  09:20:04
+   Duration  33.66s (import 57%, tests 22%, transform 17%, worker 4%)
+
+    Isolate  64 workers spawned · ~998ms startup each (spawn + environment, per file)
+             at least ~20.29s faster with isolate: false — reuses workers across files instead of one per file
+

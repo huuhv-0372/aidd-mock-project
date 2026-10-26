@@ -1,0 +1,166 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "clicking the Widget on /, /awards-information and /sun-kudos opens the quick-action menu with Thể lệ, Viết KUDOS and a close button; close or Esc collapses it — kudos-quick-actions.spec.ts:22 'ID-54 widget opens the menu (Thể lệ, Viết KUDOS); red ✕ and Esc close it' on all 3 paths; widget-button.tsx:40-44 + use-dismissable.ts:33-38 (Esc still collapses the menu and hands focus back; with no modal open preventDefault is harmless, with a modal on top the menu closes without swallowing the modal's Esc); tester final run 2026-10-20 12:51: full E2E 195/195 0 flaky",
+    "Thể lệ opens the rules panel with Figma copy, 4 hero badges and 6 icons; Đóng closes it and Viết KUDOS in the panel opens the Viết Kudo modal — kudos-quick-actions.spec.ts:49 'FAB A / TC_THELE_FUN_003, FUN_004 …', :66 'TC_THELE_GUI_001 panel shows … 6 badges …'; untouched by this round; full E2E 195/195",
+    "the compose pill on /sun-kudos opens the Viết Kudo modal; a guest on / choosing Viết KUDOS is sent to /login — kudos-quick-actions.spec.ts:99 'clicking … opens the Viết Kudo modal directly', :110 'widget shows the menu; Viết KUDOS is a link to /login and goes there'; full E2E 195/195",
+    "the modal shows Người nhận, Danh hiệu, editor, Hashtag, Image and the anonymous checkbox (unchecked) in Figma order with Hủy and Gửi; Gửi stays disabled until recipient, title, content and at least one hashtag are filled, and each required field shows its error after blur — write-kudo.spec.ts:61 ID-3, :83 ID-4/5/6/48, :92 ID-49, :101 ID-48 per missing field, :166 ID-7/50, :323, :329 ID-11/51, :457 ID-14/52; canSend now also requires !contentTooLong (use-write-kudo-form.ts:72) proven by write-kudo-resilience.spec.ts:150-165; a field the server refuses (invalid_recipient/title/content/hashtags) shows errors.invalid, not 'required': use-write-kudo-form.ts:38,63-64,98-100 (fieldError; refused state cleared on the next try :80), write-kudo-resilience.spec.ts:167-192 refuse-once tests for the 4 fields (modal stays open, Gửi works again); repeat-each=5 425/425",
+    "recipient search suggests up to 10 Sunners accent-insensitively, trims input, excludes the current user, and selecting one fills the field; typing @ in the editor suggests colleagues and inserts a mention — write-kudo.spec.ts:116 ID-8/25, :139 ID-10, :148 'results cap at 10; the signed-in user is never suggested, not even by name or email' (caller now in the fake's search pool, write-kudo-fixtures.mjs:96-97, mirroring SQL migration:92/103), :159 ID-26, :361 ID-12/13/33, :390; debounce/in-flight blur cases :275, :292 deterministic",
+    "editor toolbar applies bold, italic, strike, numbered list, quote and inserts links through the Add link dialog (Text 1-100 non-blank, Link http/https 5-2048) — write-kudo.spec.ts:340 per-button wrap, :351 ID-30, :781 ID-31, :792, :796, :802; serializer per-line marks across hard breaks kudo-content-markdown.ts:47,85,88 with unit tests kudo-content-markdown.test.ts:62-80; wrap() trims by trimStart/trimEnd offsets (kudo-content-markdown.ts:39-44; identical to the old regex on 300k random whitespace/mark strings, linear on a 20k-space run: unit tests :113-128)",
+    "hashtags come only from the DB catalog, max 5 (remaining rows disabled), chips removable; images accept jpg/png/webp up to 5 MB, max 5 with + Image hidden at 5, thumbnails removable, other formats show an invalid-format error — write-kudo.spec.ts:466 ID-15/34/35, :472 ID-36, :479 ID-16/17/53, :501 ID-21/22/37, :515 ID-19/20/38/54, :528 ID-39/40, :543, :550; catalog-failure retry write-kudo-resilience.spec.ts:119-148 (focus returns to the new Retry button after a failed reload and to the first row after a successful one); stale-answer guard use-hashtag-options.ts:27-40 (only the newest request writes state, an older answer is ignored), focus hand-back hashtag-picker.tsx:70-81 (skipped when the user already moved focus elsewhere); 5 MB boundary write-kudo-validation.test.ts:123-125",
+    "Gửi validates on the server with zod, uploads images to kudo-images under an identity-free object name owned by the sender (owner_id), calls create_kudo, removes uploaded images when the RPC fails, closes the modal on success and the new Kudo appears at the top of the /sun-kudos feed; Hủy closes and discards — create-kudo-action.ts:205 zod first (content abort write-kudo.ts:103), :218 getClaims, :181 flat {uuid}.{ext}; images removed when the RPC fails definitively (coded error, :160) or before it is sent (:172); kept on uncoded/unknown outcomes per phase-08 A4 decision (rollback.test.ts:53-88); E2E write-kudo.spec.ts:644 ID-46 (upload paths + board images :670-677), :695 server failure deletes uploads (fake XX000), :713 new Kudo leads the feed, :614 ID-45 Hủy/Esc/backdrop discard; Esc closes the modal even when a popup is left open: use-dismissable.ts:13,36 decides by the topmost dialog:modal, not by the key target — a filter dropdown left open behind the modal (write-kudo-resilience.spec.ts:46-59, and with focus on body :102-116) never swallows the modal's Esc, and a hashtag reload pending with focus on body closes only the dropdown first, the form survives (:75-100); the hashtag dropdown's own Esc closes it alone (:20-44)",
+    "create_kudo takes the sender from auth.uid(), rejects non-allowed accounts, self-recipient, out-of-range title/content, 0 or more than 5 or unknown hashtags, images outside the sender folder or not in storage, and alias when not anonymous; kudos_search_sunners never returns email; both are executable by authenticated only — no SQL touched this round (git diff on supabase/ empty); migration create_kudo :114-177 (allowed-account check :142), search :63-106 (allowed :85, no email in result), storage policies :240-256; supabase/verify/20261019110000_create_kudo_write_verify.sql PASS on real Supabase (reports/db-verify-result.md); client maps 22023 codes only through Object.hasOwn (create-kudo-action.ts:145, rollback.test.ts:90-96)",
+    "every new string switches between VI and EN; the existing unit and E2E suites stay green — new keys hashtag.loadFailed/retry and errors.contentTooLong exist in messages/vi/kudos-compose.ts:94-95,104 and messages/en/kudos-compose.ts:82-83,92 (EN typed as Dictionary[\"kudosCompose\"], a missing key fails tsc); errors.invalid ('Giá trị không hợp lệ, vui lòng kiểm tra lại' / 'Invalid value, please check and try again') in messages/vi/kudos-compose.ts:105 and messages/en/kudos-compose.ts:93, asserted by write-kudo-resilience.spec.ts:15,181; logged in reports/en-localizations.md; tester final run 2026-10-20 12:42-13:12 on frozen code: lint 0, tsc 0, vitest 39 files 538/538, full E2E 195/195 0 flaky, write-kudo + resilience --repeat-each=5 425/425, OpenNext build 0, wrangler gzip 2220.64 KiB"
+  ],
+  "regressionChecked": [
+    "homepage guest render — no change to widget-session-gate or page files this round",
+    "shared fake Supabase server — new control state (searchDelayMs, failHashtags, hashtagDelayMs, refuseOnce) is per-sub and defaults off (write-kudo-fixtures.mjs:47); sub is a fresh random UUID per test (kudos-contract.ts:119) so the 15 s hashtag hold of the round-2 test cannot leak into another test; holdHashtagCatalog resolves at once when unset (write-kudo-fixtures.mjs:160); hashtag failure/delay path only for hashtags GETs of an explicit sub (fake-supabase-server.mjs:107-113); full E2E 195/195",
+    "next.config body limits — unchanged; oversized content now stops at the max check, before the refines (write-kudo.ts:103)",
+    "Worker bundle size — wrangler dry-run gzip 2220.64 KiB of 3072; 0 tiptap/prosemirror in worker; KUDO_LIMITS mirror keeps zod out of client files (write-kudo-types.ts:28)",
+    "useDismissable shared hook — 5 consumers re-checked under the round-2 rule (consume Esc only when the popup sits in the topmost dialog:modal, or none is open and it sits in none): widget-button, account-menu, notification-button, kudos-filter-dropdown sit outside any dialog — with a modal on top they close themselves without consuming the Esc (the native cancel closes the modal), with none open preventDefault is harmless; hashtag-picker sits in the Write dialog — consumed when Write is topmost, not consumed when Add link is open on top (keyboard route only, both close, same as HEAD); no consumer inside Add link, the rules dialog or the image gallery; document order equals stacking (Add link is a DOM descendant of Write, rules/write never overlap, the page behind a modal is inert); dialog:modal needs Chrome/Edge/Firefox 103-105+/Safari 15.6+, inside Next 16's browser matrix (111/111/111/16.4)",
+    "kudoPlainText on every stored card — 100k random editor docs: 0 old-correct/new-wrong outputs, 1126 fixed; 200k-char adversarial worst 6.9 ms",
+    "link validator equivalence — 300k random strings: new never accepts what HEAD refused; serializer output never refused",
+    "serializer wrap() equivalence — 300k random whitespace/mark strings (NBSP, U+2028/2029, U+FEFF, U+3000, U+180E): trimStart/trimEnd slicing gives output identical to the old regex (0 diffs); 20k-space run 0.01 ms vs old regex 68 ms at 5k; vitest kudo-content-markdown.test.ts 24/24",
+    "create_kudo image lifecycle — postgrest-js 2.117.3 transport failures always code '' (index.cjs:420-460); non-JSON error bodies have no code (:521-526)",
+    "E2E determinism — Next awaits the action before the response (action-handler.js:823), so waitForResponse covers the late answer; page.clock only fakes timers created after install"
+  ],
+  "contractStatus": "CHANGED — nothing contract-related moved in this round (no SQL/migration, RPC params, storage path or CreateKudoResult shape change; the Markdown subset is the same, with spans now closed per line; round 2 only adds a test-only fake control /__kudo-delay-hashtags and rewrites use-dismissable's Esc rule and wrap() internals). The status stays CHANGED only because of the earlier phase-07 change: kudos_search_sunners gained p_name_only boolean default false, which differs from the 2-arg signature listed in study-context.json. kudos_feed/highlight/spotlight unchanged. Behavioural change (planned, A4): uploaded images are removed only on a coded RPC refusal or a failure before the RPC is sent.",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": true
+  },
+  "findings": [
+    {
+      "severity": "Low",
+      "category": "backwards-compatibility",
+      "location": "components/site-shell/use-dismissable.ts:23",
+      "summary": "addressed — Esc is consumed by any open popup, even one outside the modal; a filter dropdown or notification panel left open makes the first Esc fail to close the Viết Kudo modal. Guard: if (rootRef.current?.contains(event.target as Node)) event.preventDefault().",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "error-boundaries",
+      "location": "components/kudos-compose/use-write-kudo-form.ts:68",
+      "summary": "addressed — A server-refused title/content/hashtags field shows 'Không được để trống' while the field is filled (realistic for invalid_hashtags when the catalog changed); the mapping at :97-101 has no test. Use a refused/invalid message and add one E2E with a fake 22023.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "query-efficiency",
+      "location": "lib/kudos/kudo-content-markdown.ts:115",
+      "summary": "addressed — /^\\n+|\\s+$/g is quadratic on a whitespace run in the middle of the text (20k → ~0.5 s); since A7 it runs on every editor update (use-write-kudo-form.ts:53). Replace with .replace(/^\\n+/, '').trimEnd().",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "concurrency",
+      "location": "components/kudos-compose/use-hashtag-options.ts:74",
+      "summary": "addressed — Retry unmounts the focused button (focus drops to the dialog body), shows an empty list while loading, and an older rejection can overwrite a newer success. Restore focus to the trigger or first row; ignore answers from older requests.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "input-validation",
+      "location": "tests/unit/write-kudo-validation.test.ts:422",
+      "summary": "Mutant 'drop the lastIndexOf slice' (write-kudo.ts:90) survives: 16.6 ms at 5000 chars < 50 ms budget. Pin it with a 50k-char direct call or a step count.",
+      "disposition": "Reject"
+    },
+    {
+      "severity": "Low",
+      "category": "input-validation",
+      "location": "lib/kudos/create-kudo-action.ts:153",
+      "summary": "Residual: images are removed on any coded error. This assumes nothing between the app and PostgREST returns a JSON error with a code after the Kudo committed (postgrest-js itself never does: index.cjs:420-460). Gateway behaviour not verified.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Medium",
+      "category": "input-validation",
+      "location": "lib/validation/write-kudo.ts:81",
+      "summary": "Review Defer: link validator bypasses (nested brackets, <javascript:> autolinks, reference-style links, and a target swallowing a link, e.g. [a](https://x[b](javascript:y) accepted). Behaviour is identical to HEAD; not exploitable while cards render plain text. Fix before any Markdown renderer.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Medium",
+      "category": "input-validation",
+      "location": "next.config.ts:10",
+      "summary": "Review Defer: 26 MB Server Action / proxy body limit applies to every route, guests included; cap with a Cloudflare rule.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Medium",
+      "category": "identity-permission",
+      "location": "supabase/migrations/20261019110000_create_kudo_write.sql:114",
+      "summary": "Review Defer: create_kudo has no per-sender rate limit (callable directly through PostgREST).",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "data-leakage",
+      "location": "supabase/migrations/20261019110000_create_kudo_write.sql:240",
+      "summary": "Review Defer: direct uploads to kudo-images skip metadata stripping and flat naming; docs should say this protection is best-effort and UI-only; no upload quota.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "data-leakage",
+      "location": "supabase/migrations/20261019110000_create_kudo_write.sql:105",
+      "summary": "Review Defer: email substring match lets kudos_search_sunners be used to guess emails character by character; match email only when the query contains '@'.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "data-leakage",
+      "location": "lib/kudos/strip-jpeg-metadata.ts:10",
+      "summary": "Review Defer: JPEG stripping uses a deny-list (APP3–10 and APP12 kept); switch to an allow-list or correct the docs.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "error-boundaries",
+      "location": "lib/kudos/create-kudo-action.ts:163",
+      "summary": "Review Defer: images kept on an unknown RPC outcome (and failed partial uploads) become orphans; no sweep job yet.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "api-contracts",
+      "location": "components/kudos-compose/use-write-kudo-form.ts:74",
+      "summary": "Review Defer: no idempotency key against double send; the @ mention list lacks combobox ARIA (mention-suggestion-list.tsx:31); drag-select released on the backdrop closes the modal; images over 5 are dropped silently; background scroll not locked.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "api-contracts",
+      "location": "tests/e2e/write-kudo.spec.ts:1",
+      "summary": "Review Defer: 821-line spec should be split into ~6 files; fake does not allow-list RPC param names; '+ Image' file chooser is never clicked; retry after failRpc is unproven; no mobile/EN E2E.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "backwards-compatibility",
+      "location": "lib/kudos/kudo-plain-text.ts:42",
+      "summary": "Pre-existing (same output at HEAD): italic '_' stays on cards when an italic run touches a letter (e.g. '_team_team', 'team_Cảm ơn_') — about 19% of random mixed-mark docs show some leftover delimiter. Consider '*' for italic (text '*' is already escaped).",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "concurrency",
+      "location": "components/site-shell/use-dismissable.ts:28",
+      "summary": "addressed — Fix round 1: Esc is judged by the dialog of event.target, so with focus on body the verdict is wrong. While a hashtag retry is pending (focused Retry unmounted) the first Esc closes the whole modal and discards the form; inversely a filter dropdown left open behind the modal plus focus lost to body swallows the modal Esc. Compare with the open modal instead.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "query-efficiency",
+      "location": "lib/kudos/kudo-content-markdown.ts:36",
+      "summary": "addressed — Fix round 1 sibling of the :115 fix: wrap() regex /^(\\s*)([\\s\\S]*?)(\\s*)$/ is still quadratic on a long whitespace run inside a bold/italic/strike span (20k spaces 2.5 s), on every editor update. Slice by trimStart/trimEnd lengths instead.",
+      "disposition": "Accept"
+    }
+  ]
+}

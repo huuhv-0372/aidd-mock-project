@@ -1,0 +1,34 @@
+{ "score": 7, "criticalCount": 0, "decision": "REWORK",
+  "acceptanceCovered": [
+    "the pill keeps the Figma look (381x72 on desktop, 1px #998C5F border, 10% #FFEA9E fill, 68px radius, magnifier icon) and becomes a combobox whose placeholder is 'Tìm kiếm profile Sunner' (EN 'Search for Sunner profile'); A.1 still opens the compose modal — combobox + VI placeholder: sun-kudos-profile-search.spec '1ce82447 / d3877e54'; EN: 'EN: placeholder and the no-result line…'; A.1 opens modal: kudos-quick-actions.spec 'Pill A.1 on /sun-kudos'. 381x72/border/fill/radius only by code (profile-search-box.tsx:15, lg:flex-[381_1_381px]); pixel check pending visual run (see unproven)",
+    "typing (after trim, debounced) calls the kudos_search_sunners RPC through a zod-validated server action and lists at most 10 Sunners with avatar, name and department, accent-insensitive, never the caller and never an email — spec 'Nguyễn Văn: named Sunners with department, no email, accent-free query, caller excluded, trimmed query sent' + 'Sunner Tester: exactly 10 suggestions out of 12 matches'; unit search-profiles-action.test.ts (zod rejects, trimmed p_query, email stripped)",
+    "clicking a result, Enter (highlighted row or else the first row) or the magnifier opens /profile/{id}; ArrowUp/ArrowDown move through the rows with aria-activedescendant, Escape and Tab close the list — spec 'click a suggestion…'; keyboard spec 'Enter without a pick…', 'ArrowDown then Enter…', 'ArrowDown twice…', 'ArrowUp from nothing picks the last row…', 'the magnifier does the same as Enter…', 'Escape closes the list and keeps the text; Tab closes it too'",
+    "the input is capped at 100 characters (maxlength in the browser, zod 1-100 on the server); an empty or whitespace-only query sends no request and shows no error — maxlength/100 accepted: spec '9e689933'; zod 1-100: unit profileSearchQuerySchema/searchProfiles; blank shows no error: spec 'blank or spaces…'. The 'sends no request' clause is only checked through the RPC log (see unproven)",
+    "no match shows 'Không tìm thấy Sunner nào.' and a failed search shows a generic message with no internal detail; an older slower response never overwrites a newer one — spec 'zzzz: one status line…', 'server error: generic line, the internal detail never reaches the page…', 'a slow answer for an old query never replaces the newer one' (outcome asserted; guard not discriminated, finding #2)",
+    "at 375 the pill sits under A.1 at full width with no horizontal scroll, the dropdown is as wide as the pill and is not covered by the Highlight section, and interactive elements are at least 44px with focus-visible styles — keyboard spec '375px: pill under A.1…' and 'the first row is the topmost element…'; 44px refuted for the combobox input (24px tall); focus-visible not asserted",
+    "the Spotlight B.7.3 search and the Write Kudo recipient/mention search behave exactly as before — Spotlight code untouched, sun-kudos-feed.spec ID-11 search tests (in the concurrent full run); Write Kudo: searchSunners logic unchanged by inspection, classes byte-identical, evidence/write-kudo-regression.log 75/75 passed",
+    "the existing unit and E2E suites stay green, lint and build pass — tsc 0 errors, eslint 0 findings on the touched files, vitest new suite 13/13 (run by me); build + full E2E owned by the concurrent testing agent"
+  ],
+  "regressionChecked": [
+    "searchSunners server action used by the Write/Edit Kudo recipient picker and @mention suggestions — same zod, nameOnly default, limit, logging; write-kudo-regression.log 75/75",
+    "recipient-picker dropdown styles moved to a shared module — SUGGEST_PANEL/SUGGEST_OPTION byte-identical to the old PANEL/OPTION",
+    "Sun* Kudos page KV area (compose trigger) and its stacking over the Highlight section — header z-30 above, dialog in top layer, filter dropdown z-40/tooltip z-50 above, Highlight has no other z-indexed elements",
+    "i18n dictionaries (a missing key breaks the build) — 4 keys added to both vi and en; tsc passes",
+    "E2E fake Supabase server shared by every kudos spec — failSearch defaults to false per sub and only affects kudos_search_sunners"
+  ],
+  "contractStatus": "OK",
+  "refuted": ["AC6 'interactive elements are at least 44px': the combobox input is 24px tall and the pill padding is not part of the tap target (profile-search-box.tsx:56)"],
+  "unproven": [
+    "AC4 'an empty or whitespace-only query sends no request': the spec reads only the fake RPC log, which server-side zod would hide (sun-kudos-profile-search.spec.ts:84-100)",
+    "AC1 pixel look 381x72 / border / fill / radius at 1440: no spec assertion, pending the concurrent visual run",
+    "AC6 focus-visible styles: no spec assertion"
+  ],
+  "reachableRegressions": [],
+  "findings": [
+    { "severity": "Medium", "category": "Accessibility", "location": "components/kudos/profile-search-box.tsx:56", "summary": "combobox input is 24px tall; pill padding is on a non-interactive div, so the tap target is under 44px (old pill was a full-height button)", "disposition": "Accept" },
+    { "severity": "Medium", "category": "Testing", "location": "tests/e2e/sun-kudos-profile-search.spec.ts:103-115", "summary": "stale-response test passes without the guard because server actions are sent one at a time; add clear/blur-while-in-flight cases", "disposition": "Accept" },
+    { "severity": "Medium", "category": "Testing", "location": "tests/e2e/sun-kudos-profile-search.spec.ts:84-100", "summary": "blank 'no request' only checked via RPC log; server zod masks a client-side blank action call", "disposition": "Accept" },
+    { "severity": "Low", "category": "UX", "location": "components/kudos/use-profile-search.ts:89-95", "summary": "blur clears items; refocus with text shows nothing and Enter is inert until typing", "disposition": "Defer" },
+    { "severity": "Low", "category": "Maintainability", "location": "lib/kudos/run-sunner-search.ts:5", "summary": "SearchSunnersResult defined twice (lib Sunner vs components SunnerOption); compatible, pre-existing", "disposition": "Defer" },
+    { "severity": "Low", "category": "Security", "summary": "email-substring search lets callers probe whether an email exists; existing RPC design, plan decision final", "disposition": "Defer" }
+  ] }

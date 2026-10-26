@@ -1,0 +1,36 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dialog": {
+    "x": 344,
+    "y": 16,
+    "w": 752,
+    "h": 868
+  },
+  "alias": {
+    "labelText": "Tên ẩn danh",
+    "labelFontSize": "22px",
+    "label": {
+      "x": 384,
+      "y": 766,
+      "w": 142,
+      "h": 28
+    },
+    "input": {
+      "x": 542,
+      "y": 752,
+      "w": 514,
+      "h": 56
+    },
+    "inputFontSize": "16px",
+    "inlineLabelLeftOfInput": true,
+    "placeholder": null,
+    "accessibleNameOk": true
+  },
+  "overflow": {
+    "scrollW": 1440,
+    "clientW": 1440
+  }
+}

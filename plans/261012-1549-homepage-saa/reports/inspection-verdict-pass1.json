@@ -1,0 +1,34 @@
+{
+  "score": 8.6,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "anonymous visitors are redirected to /login on every non-public path while /login, /auth/callback and /countdown stay reachable",
+    "signed-in users see the homepage header, hero with countdown, Root Further, awards grid, Sun* Kudos, widget button and footer per the selector contract",
+    "award cards and navigation links point to the route constants (/awards-information#slug, /sun-kudos, /tieu-chuan-chung, /profile)",
+    "account menu offers Profile and a working Sign out that ends the session and lands on /login",
+    "homepage countdown shows 2-digit days/hours/minutes, 00 and no Coming soon at or after EVENT_START_AT, without crashing on invalid env",
+    "logo and About SAA 2025 links return to the top of the homepage"
+  ],
+  "regressionChecked": [
+    "proxy order gate -> getClaims -> auth redirect unchanged; no redirect loops pre/post-launch, invalid env, missing Supabase env",
+    "redirectWithSession preserves refreshed cookies and no-store headers",
+    "countdown test-8 tightened (root -> /login), other countdown gate tests unchanged",
+    "login page: LanguageSelector moved byte-identical, import updated",
+    "fake Supabase not imported by app code; runtime env read prevents build-time inlining",
+    "tester spec edits: copy alignment + per-iteration goto, no assertion weakened"
+  ],
+  "contractStatus": "CHANGED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {"severity": "Medium", "category": "performance", "location": "components/home/home-hero.tsx:24-31", "summary": "keyvisual-bg.png is 4.4MB; recompress to WebP/AVIF <=500KB and configure Cloudflare images binding at deploy", "disposition": "Defer"},
+    {"severity": "Low", "category": "security", "location": "proxy.ts:22", "summary": "Matcher negative lookahead unanchored; future routes with those prefixes would bypass default-deny", "disposition": "Defer"},
+    {"severity": "Low", "category": "security", "location": "app/page.tsx:18-38", "summary": "Auth enforced only by proxy; data-bearing pages must re-verify server-side", "disposition": "Defer"},
+    {"severity": "Low", "category": "a11y", "location": "components/home/award-card.tsx:44-49", "summary": "Award card link accessible name duplicates title", "disposition": "Defer"},
+    {"severity": "Low", "category": "standards", "location": "components/home/kudos-section.tsx:56-62", "summary": "next/image without sizes (also widget-button.tsx:25)", "disposition": "Defer"},
+    {"severity": "Low", "category": "a11y", "location": "components/home/widget-button.tsx:9-27", "summary": "Focusable no-op widget button until ID-54 menu lands", "disposition": "Defer"}
+  ],
+  "riskGate": {"touchesSensitiveArea": true, "signoffRequired": true}
+}

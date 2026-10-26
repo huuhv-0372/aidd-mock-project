@@ -1,0 +1,31 @@
+
+Running 18 tests using 2 workers
+
+  ok  1 [chromium] › tests\e2e\edit-kudo.spec.ts:86:7 › Sửa Kudo: lối vào bút chì › the pencil is a 44px button: Tab-reachable, Enter opens the dialog (7.0s)
+  ok  2 [chromium] › tests\e2e\edit-kudo.spec.ts:76:7 › Sửa Kudo: lối vào bút chì › bút chì chỉ có trên Kudo tôi gửi; bấm mở hộp thoại Chỉnh sửa bài viết của bạn (7.2s)
+  ok  3 [chromium] › tests\e2e\edit-kudo.spec.ts:98:7 › Sửa Kudo: lối vào bút chì › Đã gửi on the profile: the pencil on each Kudo I sent, none on Đã nhận (2.9s)
+  ok  4 [chromium] › tests\e2e\edit-kudo.spec.ts:113:7 › Sửa Kudo: điền sẵn › title, content with bold / italic / mention / link, hashtags, images in order; recipient and anonymous state locked (2.9s)
+  ok  5 [chromium] › tests\e2e\edit-kudo.spec.ts:144:7 › Sửa Kudo: điền sẵn › anonymous Kudo: checkbox checked and locked, alias pre-filled; Lưu without a change sends the same alias (3.4s)
+  ok  6 [chromium] › tests\e2e\edit-kudo.spec.ts:156:7 › Sửa Kudo: lưu › title, content, one hashtag swapped, one image removed and one added: update_kudo gets them, the card changes in place (4.8s)
+  ok  7 [chromium] › tests\e2e\edit-kudo.spec.ts:206:7 › Sửa Kudo: lưu › open then Lưu with no change: the Markdown content, title, hashtags and images reach update_kudo byte for byte (2.8s)
+  ok  8 [chromium] › tests\e2e\edit-kudo.spec.ts:239:9 › Sửa Kudo: lưu › Lưu disabled while title is empty; leaving it shows the required line; nothing is sent (3.1s)
+  ok  9 [chromium] › tests\e2e\edit-kudo.spec.ts:239:9 › Sửa Kudo: lưu › Lưu disabled while content is empty; leaving it shows the required line; nothing is sent (3.0s)
+  ok 10 [chromium] › tests\e2e\edit-kudo.spec.ts:239:9 › Sửa Kudo: lưu › Lưu disabled while hashtags is empty; leaving it shows the required line; nothing is sent (3.0s)
+  ok 11 [chromium] › tests\e2e\edit-kudo.spec.ts:253:9 › Sửa Kudo: lưu › Hủy discards the edit: reopening shows the saved values and no update_kudo was sent (2.8s)
+  ok 12 [chromium] › tests\e2e\edit-kudo.spec.ts:253:9 › Sửa Kudo: lưu › Esc discards the edit: reopening shows the saved values and no update_kudo was sent (2.2s)
+[WebServer] [kudos] update_kudo failed { code: '22023', details: null, hint: null, message: 'not_found' }
+  ok 13 [chromium] › tests\e2e\edit-kudo.spec.ts:270:9 › Sửa Kudo: lưu › not_found (the Kudo is not the caller's): the generic line shows in the dialog, it stays open, the new upload is deleted and the removed image is kept (2.5s)
+[WebServer] [kudos] update_kudo failed {
+[WebServer]   code: 'XX000',
+[WebServer]   details: null,
+[WebServer]   hint: null,
+[WebServer]   message: 'fake: injected update failure boom-secret-detail'
+[WebServer] }
+  ok 14 [chromium] › tests\e2e\edit-kudo.spec.ts:270:9 › Sửa Kudo: lưu › a generic server failure: the generic line shows in the dialog, it stays open, the new upload is deleted and the removed image is kept (2.8s)
+  ok 15 [chromium] › tests\e2e\edit-kudo.spec.ts:288:7 › Sửa Kudo: bộ đếm, ngôn ngữ, bố cục › Viết Kudo counter: 0/5.000 when empty, then the typed Markdown length (2.4s)
+  ok 16 [chromium] › tests\e2e\edit-kudo.spec.ts:297:7 › Sửa Kudo: bộ đếm, ngôn ngữ, bố cục › Sửa counter: the saved Markdown length, and it follows the typing (2.2s)
+  ok 17 [chromium] › tests\e2e\edit-kudo.spec.ts:307:7 › Sửa Kudo: bộ đếm, ngôn ngữ, bố cục › EN: 'Edit your Kudo', Lưu reads 'Save', the counter uses the comma (N/5,000) (2.3s)
+  ok 18 [chromium] › tests\e2e\edit-kudo.spec.ts:314:7 › Sửa Kudo: bộ đếm, ngôn ngữ, bố cục › 375px: the edit dialog has no horizontal scroll (1.8s)
+
+  18 passed (1.0m)
+EXIT=0

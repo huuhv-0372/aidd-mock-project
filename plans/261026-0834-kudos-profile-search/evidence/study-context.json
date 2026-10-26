@@ -1,0 +1,44 @@
+{
+  "task": "Sun* Kudos Live board (MaZUn5xHXZ): the 'Tìm kiếm profile Sunner' pill (Figma 2940:13450, next to A.1) becomes a type-ahead profile search — typing shows up to 10 Sunners and choosing one (click or Enter) opens /profile/{id}; Spotlight B.7.3 search unchanged",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "the pill keeps the Figma look (381x72 on desktop, 1px #998C5F border, 10% #FFEA9E fill, 68px radius, magnifier icon) and becomes a combobox whose placeholder is 'Tìm kiếm profile Sunner' (EN 'Search for Sunner profile'); A.1 still opens the compose modal",
+    "typing (after trim, debounced) calls the kudos_search_sunners RPC through a zod-validated server action and lists at most 10 Sunners with avatar, name and department, accent-insensitive, never the caller and never an email",
+    "clicking a result, Enter (highlighted row or else the first row) or the magnifier opens /profile/{id}; ArrowUp/ArrowDown move through the rows with aria-activedescendant, Escape and Tab close the list",
+    "the input is capped at 100 characters (maxlength in the browser, zod 1-100 on the server); an empty or whitespace-only query sends no request and shows no error",
+    "no match shows 'Không tìm thấy Sunner nào.' and a failed search shows a generic message with no internal detail; an older slower response never overwrites a newer one",
+    "at 375 the pill sits under A.1 at full width with no horizontal scroll, the dropdown is as wide as the pill and is not covered by the Highlight section, and interactive elements are at least 44px with focus-visible styles",
+    "the Spotlight B.7.3 search and the Write Kudo recipient/mention search behave exactly as before",
+    "the existing unit and E2E suites stay green, lint and build pass"
+  ],
+  "touchpoints": [
+    "components/kudos/kudos-compose-trigger.tsx",
+    "components/kudos/profile-search-*.tsx",
+    "components/kudos/use-profile-search.ts",
+    "components/kudos-compose/compose-field-styles.ts",
+    "components/kudos-compose/recipient-picker.tsx",
+    "lib/kudos/search-profiles-action.ts",
+    "lib/kudos/run-sunner-search.ts",
+    "lib/kudos/search-sunners-action.ts",
+    "lib/validation/profile-search.ts",
+    "app/[locale]/sun-kudos/page.tsx",
+    "messages/vi/kudos.ts",
+    "messages/en/kudos.ts",
+    "tests/unit/*",
+    "tests/e2e/sun-kudos-profile-search.spec.ts",
+    "tests/e2e/support/*"
+  ],
+  "blastRadius": [
+    "searchSunners server action used by the Write/Edit Kudo recipient picker and @mention suggestions",
+    "recipient-picker dropdown styles moved to a shared module",
+    "Sun* Kudos page KV area (compose trigger) and its stacking over the Highlight section",
+    "i18n dictionaries (a missing key breaks the build)",
+    "E2E fake Supabase server shared by every kudos spec"
+  ],
+  "contracts": [
+    "searchProfiles(query: string): Promise<SearchSunnersResult> server action",
+    "KudosComposeTrigger({ copy: KudosComposeCopy, searchProfiles })",
+    "searchSunners(query, options) signature and behaviour unchanged",
+    "RPC kudos_search_sunners(p_query, p_limit, p_name_only) unchanged (no migration)"
+  ]
+}

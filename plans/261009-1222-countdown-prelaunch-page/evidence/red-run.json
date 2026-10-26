@@ -1,0 +1,1 @@
+[{"command":"npm run test:e2e","exitCode":1,"summary":"4 failed (test-3,4,5,6: missing /countdown page component); 4 passed (test-1,2,7,8: proxy.ts gate + asset serving verified)","stage":"red"}]

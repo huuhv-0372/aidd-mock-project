@@ -1,0 +1,34 @@
+{
+  "task": "Persist a profile row per Supabase auth user (public.profiles via auth.users trigger, RLS, manual SQL migration) and a zod-validated server helper getCurrentProfile for later Kudos screens",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "migration creates public.profiles with RLS enabled, authenticated SELECT only, no client writes, anon revoked",
+    "trigger syncs email from auth.users and full_name/avatar_url from the Google identity on sign-in and never touches department",
+    "existing auth users are backfilled and the migration is idempotent and transactional",
+    "rollback file removes trigger, function, policy and table without touching auth.users",
+    "getCurrentProfile reads the signed-in user's row via getClaims (never getSession), validates with zod, and returns null on any failure without throwing",
+    "only @sun-asterisk.com accounts can sign in (DB gate, domain-scoped RLS, domain-only backfill, callback check)"
+  ],
+  "touchpoints": [
+    "supabase/migrations/20261012133000_create_profiles.sql",
+    "supabase/rollbacks/20261012133000_create_profiles_down.sql",
+    "supabase/verify/20261012133000_create_profiles_verify.sql",
+    "lib/validation/profile.ts",
+    "lib/profiles/get-current-profile.ts",
+    "tests/unit/get-current-profile.test.ts",
+    "lib/auth/is-allowed-email.ts",
+    "lib/auth/constants.ts",
+    "lib/auth/sign-in-with-google.ts",
+    "app/auth/callback/route.ts",
+    "tests/unit/is-allowed-email.test.ts"
+  ],
+  "blastRadius": [
+    "Google sign-in (trigger on auth.users can block it)",
+    "unit suite and build",
+    "login/countdown e2e"
+  ],
+  "contracts": [
+    "auth.users untouched by rollback",
+    "Profile type / getCurrentProfile(client?) signature for future Homepage/Kudos consumers"
+  ]
+}

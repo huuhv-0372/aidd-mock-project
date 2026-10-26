@@ -1,0 +1,30 @@
+{
+  "task": "Fix Sun* Kudos review findings 1-4: stale 'SQL not run' docs, missing anonymous-sender UI test, fake RPC fixture diverging from the SQL RPCs, and a false e102ebe commit message",
+  "mode": "interactive",
+  "acceptanceCriteria": [
+    "README, codebase-summary, project-changelog and permissions docs state the kudos migration ran on real Supabase on 2026-10-15 with verify 20/20 PASS, and none of the files changed in this round links into plans/261015-1010-sun-kudos-live-board/",
+    "an E2E case proves an anonymous kudo card shows the alias, never the sender's name, and every /profile link on it is the recipient's",
+    "the fake kudos RPCs mirror the SQL: spotlight recipients ordered kudos_count desc, last_received_at desc, id; hearts_received sums hearts_awarded; gift limit clamped 1..20; cursor applied only with both halves; feed ordered created_at desc, id desc",
+    "the fixture has a created_at tie at the first-page boundary so ID-6 exercises the id tie-break, and non-RFC-4122 ids like the seed",
+    "all kudos E2E specs and unit tests pass; lint and tsc clean"
+  ],
+  "touchpoints": [
+    "README.md",
+    "docs/codebase-summary.md",
+    "docs/project-changelog.md",
+    "docs/system/permissions.md",
+    "tests/e2e/support/kudos-fixtures.mjs",
+    "tests/e2e/sun-kudos-feed.spec.ts",
+    "tests/e2e/support/kudos-contract.ts",
+    "tests/unit/load-more-kudos-action.test.ts"
+  ],
+  "blastRadius": [
+    "every E2E case served by the kudos fixture (sun-kudos.spec.ts, sun-kudos-feed.spec.ts)",
+    "unit tests importing kudos-fixtures.mjs (get-kudos-board-data, kudos-validation, load-more-kudos-action)",
+    "Spotlight layout now receives recipients in SQL order"
+  ],
+  "contracts": [
+    "kudosRpc(name, body, sub) and exports of kudos-fixtures.mjs used by specs and unit tests",
+    "no app source or SQL changes"
+  ]
+}

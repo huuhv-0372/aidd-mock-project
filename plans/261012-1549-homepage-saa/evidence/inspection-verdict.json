@@ -1,0 +1,68 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "anonymous visitors can open / and stay on /, seeing header, hero, awards, kudos and footer — homepage-guest.spec.ts guest case + constants.ts:18 exact match",
+    "every other non-public path stays default-deny to /login; /login, /auth/callback, /countdown stay reachable; // stays denied — resolve-auth-redirect unit tests incl. // + homepage-guest protection case",
+    "guest header shows the language selector and a Đăng nhập link to /login, and no bell or account menu — login-link.tsx + header-session-controls.tsx; homepage-guest.spec.ts expectGuestHome",
+    "signed-in header shows bell, language selector and account menu (with working Sign out) and no login link — signed-in-controls.tsx; homepage.spec.ts header assertions + account-menu sign-out",
+    "session is read server-side with getClaims() inside <Suspense>, so / remains Partial Prerender with no prerender errors — header-session-controls.tsx connection() before getClaims-only getIsAuthenticated; build shows / ◐ with no errors",
+    "a forged session cookie renders / as guest and cannot reach protected paths — homepage-guest.spec.ts forged-cookie case",
+    "countdown test-8: anonymous / on the invalid-env server stays on / — countdown-prelaunch-gate.spec.ts test-8"
+  ],
+  "regressionChecked": [
+    "Path normalisation bypass (//, ///, /%2e, /index, trailing slash)",
+    "signOut server action now reachable anonymously via POST / (harmless, Origin-checked)",
+    "Refresh-token rotation visibility from proxy to RSC cookies()",
+    "PPR static shell carries no per-user markup",
+    "No-session getClaims returns null/null (no log noise)",
+    "Homepage components do not read Supabase/cookies except header-session-controls"
+  ],
+  "contractStatus": "CHANGED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "Low",
+      "category": "performance/CLS",
+      "location": "components/home/header-controls-placeholder.tsx:8",
+      "summary": "Placeholder sized for guest link; signed-in users see language selector shift ~68-72px and bell appear when Suspense resolves",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "observability",
+      "location": "lib/auth/get-is-authenticated.ts:15-18",
+      "summary": "Invalid/forged token logged twice per request on '/' (proxy + RSC); JWT verified twice",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "consistency",
+      "location": "lib/auth/get-is-authenticated.ts:19",
+      "summary": "Header requires claims.sub while proxy accepts any verified claims (update-session.ts:93); theoretical divergence",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "docs",
+      "location": "plans/261012-1549-homepage-saa/phase-06-public-homepage.md:4",
+      "summary": "Phase status still pending; plan says connection() not needed but it was required",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "test-gap",
+      "location": "tests/e2e/homepage-guest.spec.ts:38-53",
+      "summary": "Guest header not exercised at 375px viewport",
+      "disposition": "Defer"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": true
+  }
+}

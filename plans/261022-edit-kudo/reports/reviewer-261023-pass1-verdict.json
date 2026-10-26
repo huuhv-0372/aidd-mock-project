@@ -1,0 +1,4 @@
+{ "score": 8, "criticalCount": 0, "decision": "REWORK", "contractStatus": "CHANGED",
+  "refuted": ["kudoMarkdownToEditorJson is the exact inverse for everything the editor produces: a linked mention does not round-trip"],
+  "unproven": ["update_kudo on a real Supabase database (verify P1, U0-U9)", "row lock / concurrent edit behaviour", "E2E GREEN for edit-kudo and existing suites"],
+  "reachableRegressions": [] }

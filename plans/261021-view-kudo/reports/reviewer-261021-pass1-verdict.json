@@ -1,0 +1,37 @@
+{
+  "score": 8.5,
+  "criticalCount": 0,
+  "decision": "REWORK",
+  "acceptanceCovered": [
+    "a signed-in user opening /sun-kudos/{id} sees the Kudo frame with sender, recipient, time, title, the full content with its formatting, up to 5 images, hashtags, hearts, Copy Link and a Close button — kudo-detail.spec.ts tests at lines 52/74/86/109 (15/15 green after fresh build); unit kudo-content-blocks + kudo-rich-content",
+    "an unknown or malformed Kudo id returns HTTP 404 with the existing not-found page — E2E tests at lines 61/67; notFound() runs before any Suspense, no loading.tsx under app/[locale]; getKudoDetail validates with z.guid before any query",
+    "the Highlight 'View details' link and the All Kudos card content both open the detail page — E2E tests at lines 122/136; kudo-highlight-card.tsx:92 and kudo-post-card.tsx:78 use kudoDetailHref",
+    "a guest opening /sun-kudos/{id} is sent to login and, after signing in, lands on the same Kudo; any other next value is ignored — E2E tests at lines 146/155; unit post-login-next, resolve-auth-redirect, sign-in-with-google-next, auth-callback-next (re-run 187/187); code read of all 4 hops"
+  ],
+  "regressionChecked": [
+    "proxy default-deny unchanged: non-allow-listed anonymous paths still go to plain /login; PUBLIC_PATHS untouched",
+    "OAuth PKCE flow unchanged: redirectTo stays the constant callback URL; Origin check runs before Supabase and before the cookie write",
+    "callback error paths unchanged (same generic login error) and each one now also clears the next cookie",
+    "authenticated /login without a valid next still goes to /",
+    "KudoPostCard: the content link wraps only a <p>, no nested interactive elements; hashtags/hearts/Copy Link unchanged",
+    "anonymity: kudo_detail reuses kudos_rows (sender null when anonymous, is_mine only for the real sender, flat image names, distinct_senders excludes anonymous)",
+    "Dictionary: en typed Dictionary['kudos'], both locales have kudos.detail; allKudos.card content unchanged (refactored into postCard)"
+  ],
+  "contractStatus": "CHANGED",
+  "refuted": [],
+  "unproven": [
+    "Close returns to the previous in-app page, or to /sun-kudos when the page was opened directly — proven for board->detail and direct open (E2E lines 122/130); after OAuth with an instant Google redirect, Close goes back to /login (Medium #1), not exercised by any test",
+    "the frame matches the Figma screenshots at 1440 wide and has no horizontal scroll at 375; every string switches between VI and EN; the existing unit and E2E suites stay green — 375 and EN are covered by E2E lines 166/173, but there is no 1440 screenshot-vs-Figma evidence and the full E2E result is still pending"
+  ],
+  "reachableRegressions": [],
+  "findings": [
+    {"severity": "Medium", "category": "behaviour", "location": "components/kudos/kudo-detail-close-button.tsx:14", "summary": "After an OAuth round trip with no Google page in history, canGoBack is true (previous entry /login?next=...) so Close goes back to login, which either shows the login screen to a signed-in user or redirects back to the same Kudo; check the previous navigation entry's path and add an E2E test", "disposition": "Accept"},
+    {"severity": "Low", "category": "behaviour", "location": "components/kudos/kudo-detail-close-button.tsx:16", "summary": "Referrer fallback (no Navigation API): a new tab with a same-origin referrer calls router.back() with no history, so nothing happens; guard with history.length > 1", "disposition": "Accept"},
+    {"severity": "Low", "category": "performance", "location": "components/kudos/kudo-post-card.tsx:78", "summary": "Default Link prefetch on every feed card may fire one request per card on the Worker; spotlight-node uses prefetch={false}", "disposition": "Defer"},
+    {"severity": "Low", "category": "correctness", "location": "lib/kudos/kudo-content-blocks.ts:40", "summary": "A paragraph starting with '2025. ' or '>' renders as a list or quote because the serializer does not escape line-start markers (same as kudoPlainText)", "disposition": "Defer"},
+    {"severity": "Low", "category": "craft", "location": "lib/navigation/routes.ts:24", "summary": "Out-of-date comment says the Kudo detail route is not built yet", "disposition": "Accept"},
+    {"severity": "Low", "category": "test", "location": "supabase/verify/20261021120000_create_kudo_detail_rpc_verify.sql:135", "summary": "The anonymous test Kudo has no image, so D3's 'sender id nowhere in the row' does not cover images (safe today: flat {uuid}.{ext} names)", "disposition": "Defer"},
+    {"severity": "Low", "category": "a11y", "location": "components/kudos/kudo-post-card.tsx:78", "summary": "The feed card link's accessible name is the whole content text; the planned openDetail label was dropped on purpose", "disposition": "Defer"}
+  ],
+  "riskGate": {"touchesSensitiveArea": true, "signoffRequired": true, "humanSignedOff": false}
+}

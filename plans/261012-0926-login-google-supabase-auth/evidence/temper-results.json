@@ -1,0 +1,46 @@
+{
+  "commands": [
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "15/15 passed (8 countdown + 7 login) after review fix round 1",
+      "ts": "2026-10-12T04:14:14Z"
+    },
+    {
+      "command": "npm run test:e2e -- --repeat-each=2",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "30/30 passed; login test-4 flake fixed (POST held instead of fixed delay)",
+      "ts": "2026-10-12T04:14:14Z"
+    },
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "vitest 81/81 passed across 8 files (after review fix round 1)",
+      "ts": "2026-10-12T04:14:14Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "eslint clean",
+      "ts": "2026-10-12T04:14:14Z"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "typecheck clean",
+      "ts": "2026-10-12T04:14:14Z"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "build ok; /login partial prerender, /auth/callback dynamic (part of test:e2e)",
+      "ts": "2026-10-12T04:14:14Z"
+    }
+  ]
+}

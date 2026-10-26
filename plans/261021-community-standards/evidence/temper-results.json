@@ -1,0 +1,67 @@
+{
+  "commands": [
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "eslint: no findings (fix-round-1)",
+      "ts": "2026-10-21T09:42:41.113+07:00"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "no type errors (fix-round-1)",
+      "ts": "2026-10-21T09:42:41.113+07:00"
+    },
+    {
+      "command": "npx vitest run",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "40 files, 562 passed, 0 failed (fix-round-1)",
+      "ts": "2026-10-21T09:42:41.113+07:00"
+    },
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "next build OK; Playwright 218 passed, 0 failed, 0 flaky (fix-round-1)",
+      "ts": "2026-10-21T09:42:41.113+07:00"
+    },
+    {
+      "command": "npx playwright test tests/e2e/standards.spec.ts --repeat-each=3",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "30 passed (10 x 3), 0 failed, 0 flaky (fix-round-1)",
+      "ts": "2026-10-21T09:42:41.113+07:00"
+    },
+    {
+      "command": "node measure-standards.mjs http://localhost:3101 1440 (guest, visual)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "1440: docHeight 1518 (export 1517), footer 145 single row, intro line 1 ends after 'tích cực', h2 520 unfaded (fix-round-1)",
+      "ts": "2026-10-21T09:42:41.113+07:00"
+    },
+    {
+      "command": "node measure-standards.mjs http://localhost:3101 375 (guest, visual)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "375: no horizontal overflow; h2 and intro readable in viewport capture (fix-round-1)",
+      "ts": "2026-10-21T09:42:41.113+07:00"
+    },
+    {
+      "command": "node footer probe (vi/en x /tieu-chuan-chung,/ x 1440,1280)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "1440 single row 145px on all four; 1280 wraps to 193px (fix-round-1)",
+      "ts": "2026-10-21T09:42:41.113+07:00"
+    },
+    {
+      "command": "node compare-png.mjs figma/standards-1161-8944-1440.png reports/visual/fr1-standards-1440-actual.png",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "863767/2185920 px differ in rows 0-1372 (sizes 1517 vs 1518); not exact (fix-round-1)",
+      "ts": "2026-10-21T09:42:41.113+07:00"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "task": "Edit Kudo (VI/EN): the pencil on a Kudo the viewer sent opens the Write Kudo modal in edit mode with every field pre-filled; only the sender can save, through the new update_kudo RPC",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "the pencil shows only on a Kudo the viewer sent (board feed and profile), is a 44px keyboard-reachable button, and opens the modal titled 'Chỉnh sửa bài viết của bạn'",
+    "the modal pre-fills the title, the content with its formatting, mentions and links, the hashtags, the images in order and the anonymous alias; the recipient and the anonymous state are shown but locked",
+    "saving sends title, content, hashtags, alias, kept and new images; Lưu stays disabled until title, content and at least one hashtag are set; field errors behave as in Write Kudo",
+    "after a successful save the modal closes and the card shows the new title, content, hashtags and images in place, keeping its hearts, time and feed position; Hủy or Esc discards every change",
+    "update_kudo refuses anyone but the sender with the same not_found as a missing Kudo, keeps recipient, anonymity, created_at and hearts, replaces hashtags and images, and the removed images are deleted from Storage only after a successful update",
+    "the character counter shows N/5.000 under the editor in both Write and Edit; every string switches between VI and EN; the modal matches the owner's screenshot at 1440 and has no horizontal scroll at 375; the existing unit and E2E suites stay green"
+  ],
+  "touchpoints": [
+    "components/kudos-compose/*", "components/kudos/kudo-post-card.tsx", "components/kudos/kudos-feed-list.tsx", "components/kudos/edit-kudo-button.tsx",
+    "lib/kudos/*", "lib/validation/write-kudo.ts", "supabase/migrations/*", "supabase/rollbacks/*", "supabase/verify/*",
+    "messages/vi/kudos-compose.ts", "messages/en/kudos-compose.ts", "tests/e2e/*", "tests/unit/*"
+  ],
+  "blastRadius": [
+    "new security-definer RPC that mutates kudos, kudo_hashtags and kudo_images (sender-only)",
+    "Storage deletes of removed images (owner policy)",
+    "Write Kudo modal, form hook and image picker shared with the create flow",
+    "create_kudo action refactor (shared image upload helper)",
+    "KudoPostCard and KudosFeedList shared by the board and the profile",
+    "fake Supabase fixtures shared by the Write Kudo and board specs"
+  ],
+  "contracts": [
+    "update_kudo(p_id uuid, p_title text, p_content text, p_hashtag_slugs text[], p_image_urls text[], p_anonymous_name text) returns text[] (removed image URLs)",
+    "updateKudo(formData) server action -> { ok: true, kudo: KudoRow } | { ok: false, error: 'validation' | 'server' | 'not_found', fields? }",
+    "useKudosComposer().openEditor(kudo: KudoRow)",
+    "kudoMarkdownToEditorJson(markdown) is the inverse of kudoEditorJsonToMarkdown"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "task": "Profile (VI/EN): /profile shows the signed-in Sunner's own profile per Figma 362:5037 and /profile/<id> shows another Sunner's profile, with the hero, icon collection, statistics or a write-Kudo bar, and a KUDOS feed by direction",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "a guest opening /profile or /profile/<id> is sent to /login and sees no profile data",
+    "/profile shows the signed-in Sunner's avatar, name, department, Hero badge and stars, six grey icon slots under 'Bộ sưu tập icon của tôi', the statistics card with the Secret Box button, and the KUDOS section with Received selected",
+    "/profile/<id> shows that Sunner's hero, the 'Bộ sưu tập icon của {tên}' heading, a write-Kudo bar that opens Write Kudo with that Sunner pre-selected, and the static 'Đã nhận: N Kudos' count; their sent count and sent Kudos never appear",
+    "/profile/<own id> lands on the self view; a malformed or unknown id returns HTTP 404",
+    "switching Received/Sent loads page 1 of that list, infinite scroll loads further pages without duplicates, each direction has its own empty message, and hearts, hashtags and Copy Link behave as on the board",
+    "the page matches the Figma export at 1440 wide and has no horizontal scroll at 375; every string switches between VI and EN; the existing unit and E2E suites stay green"
+  ],
+  "touchpoints": [
+    "app/[locale]/profile/page.tsx", "app/[locale]/profile/[id]/page.tsx", "components/profile/*", "components/kudos-compose/*", "lib/profile/*",
+    "supabase/migrations/*", "supabase/rollbacks/*", "supabase/verify/*", "messages/vi/*", "messages/en/*", "tests/e2e/*", "tests/unit/*"
+  ],
+  "blastRadius": [
+    "new security-definer RPCs reading profiles and kudos (anonymity rules)",
+    "KudosComposer openComposer API shared by homepage, board and widget",
+    "Dictionary type shared by all pages",
+    "fake Supabase fixtures shared by board specs"
+  ],
+  "contracts": [
+    "profile_card(p_id uuid) returns jsonb person (no email)",
+    "kudos_profile_feed(p_profile uuid, p_direction text, p_cursor_created_at timestamptz, p_cursor_id uuid, p_limit int) returns setof kudo_row; sent only for the caller",
+    "openComposer(options?: { recipient?: { id, name } })"
+  ]
+}

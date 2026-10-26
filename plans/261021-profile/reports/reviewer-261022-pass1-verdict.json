@@ -1,0 +1,78 @@
+{
+  "score": 8,
+  "criticalCount": 0,
+  "decision": "REWORK",
+  "acceptanceCovered": [
+    "a guest opening /profile or /profile/<id> is sent to /login and sees no profile data — proxy default-deny (lib/auth/resolve-auth-redirect.ts:19, /profile not in PUBLIC_PATHS); E2E 'guest on /profile or /profile/<id> lands on /login with no next, and no profile renders' passes",
+    "/profile shows the signed-in Sunner's avatar, name, department, Hero badge and stars, six grey icon slots under 'Bộ sưu tập icon của tôi', the statistics card with the Secret Box button, and the KUDOS section with Received selected — profile-view.tsx:42-71, profile-hero.tsx, profile-icons.tsx, KudosStatsPanel reuse; E2E 'Profile: my own page' hero/icons/statistics/KUDOS cases pass (against the fake RPCs)",
+    "/profile/<id> shows that Sunner's hero, the 'Bộ sưu tập icon của {tên}' heading, a write-Kudo bar that opens Write Kudo with that Sunner pre-selected, and the static 'Đã nhận: N Kudos' count; their sent count and sent Kudos never appear — self=false renders a static count, no dropdown, no kudos_my_stats call (profile-kudos-section.tsx:85-95, get-profile-page-data.ts:55-60); prefill path provider->dialog->form->hook->picker reviewed; E2E write-bar and 'Đã gửi is nowhere' cases pass in VI and EN; the server-side backstop (RPC sent = 0 rows for others) is correct on reading but proven on real Postgres only by the verify run",
+    "/profile/<own id> lands on the self view; a malformed or unknown id returns HTTP 404 — z.guid() before any query, case-insensitive redirect_self, notFound() before render ([id]/page.tsx:33-35); E2E redirect, unknown-guid 404 and 5 malformed-id 404 cases pass; unit test covers the upper-case own id",
+    "switching Received/Sent loads page 1 of that list, infinite scroll loads further pages without duplicates, each direction has its own empty message, and hearts, hashtags and Copy Link behave as on the board — cursor:null first page per switch with request-counter race guard (profile-kudos-section.tsx:58-71), KudosFeedList keyed by direction with id dedupe, emptySent vs board empty; E2E switch, re-pick, infinite scroll 13 in order, empty lines VI/EN, card links, Copy Link and heart cases pass against the fake; real keyset proven only by verify R2"
+  ],
+  "regressionChecked": [
+    "openComposer(options?) callers: board pill kudos-compose-trigger.tsx:25 wraps to openComposer(); widget-button.tsx:80-83 calls onWriteKudo() with no args; rules dialog kudos-composer-provider.tsx:85 wraps; guest redirect kudos-composer-provider.tsx:71-73 runs before setInitialRecipient; getInitialRecipient rejects events/non-objects",
+    "WriteKudoDialog/Form/useWriteKudoForm/RecipientPicker: new props optional with null/'' defaults, form mounted per open so no stale prefill",
+    "KudosFeedList loadMore type widened to KudosFeedLoadMore; board still passes loadMoreKudos (tsc 0)",
+    "kudo-person.tsx HeroTitle/Stars exported, align union widened with center; board cards still pass start/end (kudo-post-card.tsx:51-54, kudo-highlight-card.tsx, kudo-detail-card.tsx)",
+    "readBlock exported from get-kudos-board-data.ts with unchanged behaviour",
+    "Dictionary type gains profile; en typed so missing keys fail tsc (tsc 0)",
+    "shared E2E fixtures: kudos-fixtures.mjs only adds exports; applyKudoHearts list adds kudos_profile_feed; fake server routes profileRpc before board RPCs; full E2E 297/297",
+    "SQL: no change to existing functions, tables, grants or indexes; rollback drops exactly the two new functions"
+  ],
+  "contractStatus": "CHANGED",
+  "refuted": [],
+  "unproven": [
+    "the page matches the Figma export at 1440 wide and has no horizontal scroll at 375; every string switches between VI and EN; the existing unit and E2E suites stay green — 375 no-scroll (E2E both faces), VI/EN (E2E + typed Dictionary) and green suites (vitest 826/826, E2E 297/297, lint 0, tsc 0) are proven; the 1440 Figma match depends on the parallel visual validation, not provable from code",
+    "Real-Postgres behaviour of profile_card and kudos_profile_feed (P1/P2 grants and definer settings, C1-C3, R1-R5 keyset and clamp, SEC_002 own anonymous Kudo in Sent with sender null and is_mine, SEC_003 Sent never crosses users, SEC_004 no email/auth/anonymous-sender id, anon 42501): judged correct by line-by-line reading, but proven only when the user runs supabase/verify/20261022100000_create_profile_rpcs_verify.sql and every row is PASS; the E2E runs against a hand-written fake"
+  ],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "Medium",
+      "category": "Maintainability",
+      "location": "components/profile/profile-page-layout.tsx:11-44",
+      "summary": "Third copy of the Kudos key-visual band (also kudos-kv-banner.tsx, kudo-detail-layout.tsx) and second verbatim copy of ALERT_CARD; extract KudosKvBackdrop({ dimmed, preload }) + shared ALERT_CARD per the CLAUDE.md reuse rule",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "Performance",
+      "location": "supabase/migrations/20261022100000_create_profile_rpcs.sql:63-88",
+      "summary": "Profile feed filters on single-column recipient/sender indexes then sorts all of that person's rows; composite (recipient_id|sender_id, created_at desc, id desc) indexes would make keyset pages range scans if volume grows",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "Verification",
+      "location": "supabase/verify/20261022100000_create_profile_rpcs_verify.sql:96",
+      "summary": "P1 checks profile_card contains is_allowed_account but not that it precedes kudos_person_json (P2 checks ordering for the feed)",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "Accessibility",
+      "location": "components/profile/profile-direction-dropdown.tsx:48",
+      "summary": "Listbox stays open when Tab moves focus out (useDismissable handles only outside pointerdown and Escape); same as the board dropdown",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "Maintainability",
+      "location": "tests/e2e/profile.spec.ts:1-380",
+      "summary": "Spec is 380 lines vs the ~200-line guide; could split into self/other specs (precedent: write-kudo.spec.ts 821)",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "Style",
+      "location": "lib/kudos/get-kudos-board-data.ts:49",
+      "summary": "readBlock logs profile RPC failures under a [kudos] prefix; cosmetic, the RPC name is in the message",
+      "disposition": "Reject"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": false
+  }
+}

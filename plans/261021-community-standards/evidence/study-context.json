@@ -1,0 +1,26 @@
+{
+  "task": "Community standards page (Tiêu chuẩn chung, VI/EN) at /tieu-chuan-chung per Figma 1161:8944: ROOT FURTHER key visual, Tiêu chuẩn cộng đồng (intro + 10 rules) and Tiêu chuẩn bảo mật sections; public route; reached from the Viết Kudo toolbar link and the footer link",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "a guest and a signed-in Sunner can both open /tieu-chuan-chung without being redirected to /login",
+    "the page shows the ROOT FURTHER key visual, the Tiêu chuẩn cộng đồng section with its intro and exactly 10 numbered rules, a divider, and the Tiêu chuẩn bảo mật section with its statement, 2 bullet points and the support contact line, with the Figma copy",
+    "the Tiêu chuẩn cộng đồng link in the Viết Kudo toolbar opens this page in a new tab and the footer Tiêu chuẩn chung link navigates to it; on this page the footer link is marked as the current page",
+    "the layout matches the Figma 1161:8944 export at 1440 wide and stays readable without horizontal scroll at 375 wide",
+    "every string of the page switches between VI and EN; the existing unit and E2E suites stay green"
+  ],
+  "touchpoints": [
+    "app/[locale]/tieu-chuan-chung/page.tsx", "components/standards/*", "components/site-shell/site-footer.tsx",
+    "lib/auth/constants.ts", "messages/vi/*", "messages/en/*", "tests/e2e/standards.spec.ts", "tests/unit/*"
+  ],
+  "blastRadius": [
+    "auth gate PUBLIC_PATHS (default-deny proxy)",
+    "SiteFooter used by every page",
+    "Dictionary type shared by all pages",
+    "homepage E2E that walks every footer/header link"
+  ],
+  "contracts": [
+    "STANDARDS_PATH = /tieu-chuan-chung unchanged",
+    "SiteFooter gains an optional activeHref prop; callers that omit it render as before",
+    "PUBLIC_PATHS adds /tieu-chuan-chung only"
+  ]
+}
