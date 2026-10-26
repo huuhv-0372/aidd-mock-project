@@ -60,6 +60,10 @@ export const kudos = {
   compose: {
     placeholder: "Hôm nay, bạn muốn gửi lời cảm ơn và ghi nhận đến ai?",
     searchPlaceholder: "Tìm kiếm profile Sunner",
+    searchSubmitLabel: /* not from Figma */ "Tìm kiếm",
+    searchListLabel: /* not from Figma */ "Kết quả tìm kiếm Sunner",
+    searchNoResult: /* not from Figma */ "Không tìm thấy Sunner nào.",
+    searchError: /* not from Figma */ "Không tìm kiếm được, hãy thử lại.",
   },
   highlight: {
     eyebrow,

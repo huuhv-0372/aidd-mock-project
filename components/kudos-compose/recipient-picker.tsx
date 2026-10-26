@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { ChevronDownIcon } from "./compose-icons";
 import { FieldLabel } from "./compose-field-label";
-import { ERROR_FLOAT, INPUT } from "./compose-field-styles";
+import { ERROR_FLOAT, INPUT, SUGGEST_OPTION, SUGGEST_PANEL } from "./compose-field-styles";
 import { RecipientOptionContent } from "./recipient-option-content";
 import type { WriteKudoCopy } from "./write-kudo-copy";
 import type { RecipientChoice, SunnerOption, WriteKudoActions } from "./write-kudo-types";
@@ -25,11 +25,6 @@ type Props = {
 };
 
 const SEARCH_DELAY_MS = 150;
-
-// Dropdown panel reuses the hashtag dropdown look (p9zO-c4a4x): #00070C panel, white bold text. Rows carry avatar + name + department.
-const PANEL = "absolute top-full right-0 left-0 z-20 mt-1 rounded-lg border border-home-border bg-kudos-panel p-1.5";
-const OPTION =
-  "flex min-h-11 md:min-h-10 w-full cursor-pointer items-center gap-3 rounded-sm py-2 pr-4 pl-2.5 text-left text-base leading-6 font-bold tracking-[0.15px] text-white hover:bg-[rgb(255_234_158/0.1)] aria-selected:bg-[rgb(255_234_158/0.2)]";
 
 /*
  * Người nhận (B / B.1 / B.2, mm:520:9871): autocomplete over Sunners. Typing (after trim) asks the server action for
@@ -162,7 +157,7 @@ export function RecipientPicker({ copy, searchSunners, value, initialText = "", 
             id={listId}
             role="listbox"
             aria-label={copy.recipient.listLabel}
-            className={`${PANEL} max-h-60 overflow-y-auto`}
+            className={`${SUGGEST_PANEL} max-h-60 overflow-y-auto`}
           >
             {items.map((item, index) => (
               <li
@@ -173,7 +168,7 @@ export function RecipientPicker({ copy, searchSunners, value, initialText = "", 
                 onMouseDown={(event) => event.preventDefault()}
                 onMouseEnter={() => setActive(index)}
                 onClick={() => pick(item)}
-                className={OPTION}
+                className={SUGGEST_OPTION}
               >
                 <RecipientOptionContent item={item} />
               </li>
@@ -181,7 +176,7 @@ export function RecipientPicker({ copy, searchSunners, value, initialText = "", 
           </ul>
         )}
         {/* Always mounted so screen readers register the live region before its text appears. */}
-        <div role="status" className={noResult ? PANEL : "sr-only"}>
+        <div role="status" className={noResult ? SUGGEST_PANEL : "sr-only"}>
           {noResult && <p className="flex min-h-11 items-center px-4 text-base leading-6 font-bold tracking-[0.15px] text-kudos-muted md:min-h-10">{copy.recipient.noResult}</p>}
         </div>
         {error && (

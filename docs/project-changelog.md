@@ -2,6 +2,17 @@
 
 Ghi các thay đổi đáng kể về hành vi. Mới nhất ở trên. Chi tiết mã nằm ở `git log`.
 
+## 2026-10-26
+
+### Thêm: ô "Tìm kiếm profile Sunner" trên Sun* Kudos tìm được người (`/sun-kudos`)
+
+- Ô cạnh nút soạn Kudo A.1 (Figma 2940:13450), trước chỉ hiển thị (`aria-disabled`), nay là combobox gợi ý khi gõ. Gõ thì chờ 150 ms rồi liệt kê tối đa 10 Sunner (avatar, tên, phòng ban; theo tên hoặc email, không phân biệt dấu, không gồm chính người gọi, không trả email). Bấm một dòng, Enter, hoặc kính lúp thì mở `/profile/<id>`; có thao tác bàn phím theo kiểu combobox. Ô nhập tối đa 100 ký tự; ô trống thì không gọi gì; không có kết quả hoặc lỗi thì một dòng trạng thái chung (VI/EN, `messages/{vi,en}/kudos.ts`).
+- Mã: `components/kudos/profile-search-box.tsx`, `profile-search-results.tsx`, `use-profile-search.ts`; `kudos-compose-trigger.tsx` nay nhận prop `searchProfiles` (trang `/sun-kudos` truyền vào). Server Action mới `searchProfiles(query)` ở `lib/kudos/search-profiles-action.ts`, input qua zod `lib/validation/profile-search.ts` (cắt khoảng trắng, 1-100 ký tự; sai thì không chạm CSDL).
+- Tách chung: lần gọi RPC `kudos_search_sunners` của `searchSunners` chuyển sang `runSunnerSearch` ở `lib/kudos/run-sunner-search.ts` (không phải module `"use server"`, nên không thành endpoint công khai); hai action chỉ còn validate rồi gọi nó. RPC không đổi, không có migration. Kiểu dropdown (`SUGGEST_PANEL`, `SUGGEST_OPTION` ở `components/kudos-compose/compose-field-styles.ts`) dùng chung với ô Người nhận; `kudos-kv-banner` thêm `z-10` để dropdown nằm trên khối Highlight.
+- Không đổi: ô tìm của Spotlight (B.7.3) vẫn chỉ tô sáng tên trong word cloud, không liên quan ô mới.
+- Kiểm thử: E2E `tests/e2e/sun-kudos-profile-search.spec.ts`, `sun-kudos-profile-search-keyboard.spec.ts`; unit `tests/unit/search-profiles-action.test.ts`; Supabase giả của E2E thêm cờ `failSearch` (`/__kudo-fail-search`) để ép `kudos_search_sunners` trả lỗi. E2E dùng Supabase giả nên không bắt được lỗi SQL; RPC đã verify từ 2026-10-19. Lần chạy cuối: lint 0, tsc 0, vitest 1067/1067, E2E 377/377, Worker gzip 2350.57 KiB (trước đó 2347.94 KiB).
+- Tài liệu cập nhật: `README.md`, `docs/codebase-summary.md`, `docs/system/permissions.md`, `docs/project-changelog.md`.
+
 ## 2026-10-23
 
 ### Thêm: khu Admin và màn Admin - User (`/admin`, `/admin/users`)

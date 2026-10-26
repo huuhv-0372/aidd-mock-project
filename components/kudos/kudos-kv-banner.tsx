@@ -12,7 +12,8 @@ export type KudosKvCopy = { title: string; logoAlt: string };
 export function KudosKvBanner({ copy, children }: { copy: KudosKvCopy; children: ReactNode }) {
   return (
     // mm:2940:13434
-    <section data-testid="kudos-kv" className="relative isolate w-full font-montserrat lg:-mt-20">
+    // z-10: the profile search dropdown (z-20 inside this isolated band) hangs below the band, so the band must paint above the Highlight section that follows; the header stays above (z-30).
+    <section data-testid="kudos-kv" className="relative isolate z-10 w-full font-montserrat lg:-mt-20">
       <KudosKvBackdrop preload />
       <div className="mx-auto flex w-full max-w-[1512px] flex-col gap-16 px-4 pt-10 md:px-12 lg:pt-[184px] xl:px-36">
         {/* mm:2940:13437 */}

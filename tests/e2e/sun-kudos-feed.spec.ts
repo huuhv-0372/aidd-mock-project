@@ -35,7 +35,7 @@ test.describe("Sun* Kudos: All Kudos feed", () => {
     const card = feedCards(page).first();
     const id = await card.getAttribute("data-kudo-id");
     await card.getByRole("button", { name: TXT.copyLink }).click();
-    await expect(page.getByRole("status")).toContainText(TXT.toast);
+    await expect(page.getByRole("status").filter({ hasText: TXT.toast })).toContainText(TXT.toast); // the profile-search status is also role=status
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(`${AUTHED}/sun-kudos/${id}`);
   });
 
